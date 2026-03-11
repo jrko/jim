@@ -69,6 +69,8 @@ Carried forward from v1. Drill into vague statements:
 
 Ask 1-3 questions at a time, never a wall of questions.
 
+The interview phase ends — and the spec becomes "writable" — when the PM has gathered sufficient context to populate the mandatory template sections for the detected type (e.g., Problem Statement and User Stories for a feature).
+
 ### Mockup First
 
 For any spec with visible output (UI, CLI output, file format), sketch an ASCII mockup before writing acceptance criteria. This forces concrete thinking and catches misunderstandings early. Omit for purely internal changes.
@@ -134,6 +136,10 @@ User describes idea (or invokes /jim:spec [name])
   │    ├─ Reference vision/roadmap alignment (if docs exist)
   │    └─ Fill Open Questions with any unresolved items
   │
+  ├─ Self-check draft
+  │    ├─ Evaluate silently against anti-patterns and locked constraints
+  │    └─ Auto-correct if violations found
+  │
   └─ STOP → present spec to user for review
        ├─ User requests changes → refine and re-present
        └─ User approves → set status: approved
@@ -176,6 +182,7 @@ model: sonnet
 - [ ] skills/spec/assets/spec-template.md includes an optional origin: frontmatter field (list) to link back to source brainstorms, debug docs, or other upstream artifacts.
 - [ ] When /jim:spec is invoked with a reference to a source document, the skill automatically populates the origin: link in the generated spec.md frontmatter.
 - [ ] For bug specs specifically, the skill asks if there is an existing debug document to link before generating the spec.
+- [ ] Prior to presenting the draft to the human, the skill performs a silent self-check against the defined anti-patterns and locked constraints, auto-correcting if necessary.
 
 ### @jim:pm Agent
 - [ ] `agents/pm.md` exists with valid frontmatter (name, description, skills, tools, model).
