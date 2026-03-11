@@ -1,4 +1,4 @@
-# Development Workflow v5: The "Jim" Plugin
+# Development Workflow: The "Jim" Plugin
 
 This document defines the agentic development workflow for projects using Jim. "Jim" is a **Claude Code plugin** that provides a command-driven SDLC through namespaced skills and specialized agents. You talk to Jim like a person: `/jim:spec`, `/jim:plan`, `/jim:build`.
 
