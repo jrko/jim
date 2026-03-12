@@ -59,7 +59,23 @@ Jim can also develop itself — skills and agents for the plugin are specs like 
 
 ## How to install
 
-*(coming soon — marketplace and GitHub install instructions)*
+### From the Marketplace
+
+*(coming soon)*
+
+### From source
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/JamSuite/jim.git
+   ```
+
+2. Launch Claude Code in your project with `--plugin-dir` pointing to your local clone:
+   ```bash
+   claude --plugin-dir /path/to/jim
+   ```
+
+That's it — Jim's slash commands and agents are now available in your session.
 
 ## How to develop for Jim
 
