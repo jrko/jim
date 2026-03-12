@@ -1,0 +1,186 @@
+---
+name: spec
+description: >
+  Create or update a feature, bug, or refactor spec through collaborative
+  interview. Use when the user invokes /jim:spec, describes an idea they
+  want scoped, reports a bug, or wants to refine an existing spec. Do not
+  use for technical planning (/jim:plan) or implementation (/jim:build).
+agent: pm
+argument-hint: "[idea-or-name]"
+---
+
+# /jim:spec
+
+Turn a rough idea into a structured spec (`docs/specs/{group}/{00X}-{name}/spec.md`) through collaborative interview.
+
+*(The `agent: pm` field in this frontmatter is a jim documentation convention, not a Claude Code routing mechanism.)*
+
+## Process
+
+### 1. Seed the conversation
+
+Use `$ARGUMENTS` as the idea or name hint.
+
+| Input | Behavior |
+|-------|----------|
+| Empty | Ask the user what they want to scope |
+| String | Treat as idea seed — begin interview with it |
+| Path to existing spec | Enter differential update mode (step 11) |
+
+### 2. Read strategic context
+
+Read these files from the project root if they exist:
+
+- **VISION.md** — locked constraint. Do not re-litigate strategic decisions.
+- **ARCHITECTURE.md** — locked constraint. Technical invariants are not negotiable.
+
+If either is missing, note it conversationally ("I notice there's no VISION.md yet — you might want to create one to anchor future specs") and proceed. Never block on their absence.
+
+Read `references/spec-types.md` for type guidance, anti-patterns, and status lifecycle.
+
+### 3. Check existing specs
+
+Glob `docs/specs/` to identify existing groups and specs.
+
+- If `$ARGUMENTS` matches an existing spec name, ask: "Update the existing spec, or create a new one?"
+- Identify the target group. If ambiguous, suggest a noun-based group name or ask.
+- Note existing spec IDs in the group — you'll need the next available ID later, but don't assign it yet.
+
+Flag potential cross-spec side effects if the new idea overlaps with existing specs in the same group.
+
+### 4. Detect spec type
+
+Infer from context:
+- Descriptions of broken behavior → **bug**
+- Descriptions of new capabilities → **feature**
+- Descriptions of code quality or structural issues → **refactor**
+
+If ambiguous, ask the user to confirm. Never guess silently.
+
+For bugs specifically, ask if there is an existing debug document to link via `origin:`.
+
+### 5. Gray-area analysis
+
+Analyze the idea against these 6 dimension categories:
+
+1. **Scope boundaries** — What's in, what's out? Where does this end?
+2. **Target user** — Who specifically benefits? What role?
+3. **Edge cases** — What happens at the boundaries? Error states?
+4. **Interaction model** — How does the user interact with this? CLI? UI? API?
+5. **Data shape** — What data flows in and out? What's persisted?
+6. **Acceptance testability** — How would you prove this works? What's measurable?
+
+Pick the 2-3 most uncertain dimensions. Present each with:
+- A brief explanation of why it's uncertain
+- 3-4 numbered options that represent plausible interpretations
+- An escape hatch: "or describe your own"
+
+Let the user choose which dimension to discuss first. This respects their priorities and avoids feeling like an interrogation.
+
+### 6. Interview loop
+
+Ask 1-3 questions at a time. Never a wall of questions.
+
+**Technique: Recursive drill-down.** Vague statements get follow-ups:
+- "Add logging" → "What log level? What destination? What format?"
+- "It should be fast" → "What's the current latency? What's the target? Under what load?"
+
+**Technique: Answer-to-slot mapping.** Each question targets a specific template section. Track which slots are filled:
+- Problem Statement ← what problem, who's affected
+- User Stories ← role, action, benefit
+- Acceptance Criteria ← measurable outcomes
+- Out of Scope ← explicit exclusions
+- Defect Profile ← reproduction steps, actual/expected (bugs)
+- Refactor Rationale ← motivation, current/desired state (refactors)
+
+**Technique: Mockup First.** For specs with visible output (UI, CLI output, file format), sketch an ASCII mockup before writing acceptance criteria. This forces concrete thinking and catches misunderstandings early. Skip for purely internal changes.
+
+**Technique: Anti-pattern flags.** If you notice an anti-pattern forming (see `references/spec-types.md`), raise it conversationally:
+- "This is getting broad — should we split off the search piece into its own spec?"
+- "That criterion sounds hard to test. Can we make it measurable?"
+
+**Technique: Strategic alignment.** If VISION.md exists and the idea seems to diverge from it, raise it as a conversation — never as a blocker:
+- "I notice the vision focuses on X, but this pulls toward Y. Intentional pivot, or should we scope differently?"
+
+Cap at 3-5 questions per topic area. If a topic area still feels vague after 5 questions, note it as an Open Question and move on.
+
+### 7. Exit condition
+
+The spec is writable when you can meaningfully populate the required template sections for the detected type (see `references/spec-types.md` for per-type required sections).
+
+No confidence scores. No numeric thresholds. The question is structural: "Can I fill the template?"
+
+### 8. Generate spec.md
+
+Now assign the ID: Glob `docs/specs/{group}/*/` to find existing IDs. Pick `max(existing IDs) + 1`, zero-padded to 3 digits. If no existing specs in the group, start at `001`.
+
+Read `assets/spec-template.md`. Generate the spec:
+
+- Include only the sections relevant to the detected type. Strip type-conditional markers for other types.
+- Remove the `<!-- ... only -->` / `<!-- end ... only -->` comment markers from the kept sections.
+- Populate `origin:` if source documents were referenced. Otherwise, remove the `origin:` field entirely.
+- Reference vision/roadmap alignment in the overview if strategic docs exist.
+- Fill Open Questions with any unresolved items from the interview.
+- For bugs, ensure acceptance criteria includes "Regression test covers the reported scenario."
+- For refactors, ensure acceptance criteria includes "Existing tests pass without modification."
+
+Write the spec to `docs/specs/{group}/{00X}-{name}/spec.md`.
+
+### 9. Silent self-check
+
+Before presenting, validate the draft against:
+
+1. **Anti-patterns** — Check all 6 from `references/spec-types.md`. Any violation → auto-correct.
+2. **Locked constraints** — If VISION.md or ARCHITECTURE.md exist, verify the spec doesn't contradict them.
+3. **Type-section completeness** — Verify all required sections for the detected type are present and populated.
+
+If the self-check finds issues, fix them inline. Do not tell the user about the self-check — just present a clean draft.
+
+### 10. Present and stop
+
+Show the draft to the user. Status is `draft`.
+
+Ask: "Want to change anything, or should I mark this as approved?"
+
+- If the user requests changes → return to the interview loop (step 6) or edit directly.
+- If the user approves → set `status: approved` in the frontmatter. Use Edit, not Write.
+
+Never auto-approve. Never set `approved` without explicit human confirmation.
+
+### 11. Differential update path
+
+If `$ARGUMENTS` points to an existing spec, or if step 3 identified a name collision and the user chose to update:
+
+1. Read the existing spec fully.
+2. Summarize proposed changes organized by section — what's added, changed, or removed.
+3. Ask: "Update in place, or create a new increment?"
+4. If updating: use Edit, not Write. Preserve sections the user didn't ask to change.
+5. If creating new: follow the normal generation path (step 8) with a new ID.
+
+## Validation Checklist
+
+Before presenting any generated spec, verify:
+
+**Frontmatter**
+- [ ] `title` present and descriptive
+- [ ] `type` is one of: feature, bug, refactor
+- [ ] `group` is noun-based, lowercase
+- [ ] `id` is 3-digit zero-padded, sequential within group
+- [ ] `status` is `draft`
+- [ ] `origin` present only if source documents exist (removed otherwise)
+
+**Content**
+- [ ] Only type-relevant sections included (no feature sections in bug specs)
+- [ ] Acceptance criteria are specific and testable (no "works well")
+- [ ] Out of Scope has at least one exclusion
+- [ ] Overview is 1-2 sentences max
+- [ ] Bug specs include "Regression test covers the reported scenario"
+- [ ] Refactor specs include "Existing tests pass without modification"
+
+**Anti-patterns (any = failure)**
+- [ ] No Kitchen Sink (spec has one clear problem)
+- [ ] No Vague Criteria (all criteria are measurable)
+- [ ] No Solution Masquerading (describes problem, not solution)
+- [ ] No Empty Out of Scope
+- [ ] No Premature Tech (no DB schemas, API endpoints, library choices)
+- [ ] No Wrong Type (sections match the declared type)
