@@ -36,7 +36,7 @@ description: >
   </commentary>
   </example>
 skills: [spec, vision, roadmap, brainstorm]
-tools: [Read, Write, Edit, Glob, Grep]
+tools: [Read, Write, Edit, Glob, Grep, Agent(researcher)]
 model: sonnet
 ---
 

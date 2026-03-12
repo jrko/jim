@@ -384,7 +384,7 @@ Body structure:
 
 7. **End-of-session routing** — Offer to route synthesized ideas into the formal workflow:
    - "Want me to route any of these ideas into the formal workflow?"
-   - "I can create a spec (`/jim:spec`), update the vision (`/jim:vision`), or add to the roadmap (`/jim:roadmap`)."
+   - "I can create a spec (`/jim:spec`), update the vision (`/jim:vision`), add to the roadmap (`/jim:roadmap`), or run a technical investigation (`/jim:research`)."
    - This is an offer, not a push. If the user says no, close the session.
    - If the user says yes to a spec, suggest running `/jim:spec` with the brainstorm file as input context.
 
@@ -453,7 +453,7 @@ Task 6 validates the full set and depends on all prior tasks.
 
 ## Out of Scope
 
-- **PM agent (`agents/pm.md`)** — delivered in 002-pm-core. Already declares `skills: [spec, vision, roadmap, brainstorm]`. No modification needed.
+- **PM agent (`agents/pm.md`)** — delivered in 002-pm-core. Already declares `skills: [spec, vision, roadmap, brainstorm]`. Tools list updated to include `Agent(researcher)` as part of 004-researcher integration.
 - **Spec skill (`skills/spec/SKILL.md`)** — delivered in 002-pm-core.
 - **Architecture skill (`skills/arch/SKILL.md`)** — owned by `@jim:architect`, not the PM.
 - **Prioritization frameworks** (RICE, ICE, Kano) — explicitly excluded by the spec.

@@ -31,6 +31,20 @@ This is not waterfall. Any downstream phase can send you back upstream:
 
 **No ghost tasks:** if a code change is needed that isn't in the plan, the plan must be updated before the code is touched. The artifacts are living documents, not approval gates you pass through once.
 
+### The Research Engine
+
+Research is not a gated phase; it is an agile service that grounds the SDLC in reality.
+
+1. **Pre-Spec (Exploratory):** PM invokes `/jim:research` to explore libraries or codebase
+   feasibility before committing to a spec.
+2. **In-Plan (Autonomous):** If `/jim:plan` is run and no `research.md` exists (or it's
+   insufficient), the Architect automatically spawns the Researcher.
+3. **The Feedback Loop:**
+   - **Research → Spec:** If research reveals a requirement is technically impossible, it
+     signals the PM to update the spec.
+   - **Research → Plan:** If research is updated after a plan exists, it signals the
+     Architect to re-validate the implementation anchors.
+
 ---
 
 ## Command Reference
@@ -39,6 +53,7 @@ This is not waterfall. Any downstream phase can send you back upstream:
 |---------|-------------|-------|--------|
 | `/jim:spec` | Define the work — feature, bug, or refactor | `@jim:pm` | `spec.md` |
 | `/jim:plan` | Research codebase + break into atomic tasks | `@jim:architect` | `plan.md` |
+| `/jim:research` | Investigate codebase, external docs, and technical landscape | `@jim:researcher` | `research.md` |
 | `/jim:build` | TDD red-green-refactor + commit per task | `@jim:coder` | Tests + code |
 | `/jim:review` | Quality and security gate *(not yet implemented)* | `@jim:reviewer` | TBD |
 | `/jim:ship` | PR, deploy, update roadmap *(not yet implemented)* | TBD | Merged PR |
@@ -111,7 +126,7 @@ jim/
 ├── agents/
 │   ├── pm.md                    # → @jim:pm
 │   ├── architect.md             # → @jim:architect
-│   ├── researcher.md            # → @jim:researcher (subagent of architect)
+│   ├── researcher.md            # → @jim:researcher
 │   ├── coder.md                 # → @jim:coder
 │   ├── reviewer.md              # → @jim:reviewer
 │   └── meta.md                  # → @jim:meta
@@ -130,6 +145,9 @@ jim/
 │   │   ├── SKILL.md             # → /jim:plan
 │   │   └── assets/
 │   │       └── plan-template.md
+│   │
+│   ├── research/
+│   │   └── SKILL.md             # → /jim:research
 │   │
 │   ├── build/
 │   │   ├── SKILL.md             # → /jim:build
@@ -190,7 +208,7 @@ jim/
 |-------|------|---------|
 | `@jim:pm` | Product strategy, specs, vision, roadmap | `/jim:spec`, `/jim:vision`, `/jim:roadmap`, `/jim:brainstorm` |
 | `@jim:architect` | Technical planning, architecture | `/jim:plan`, `/jim:arch` |
-| `@jim:researcher` | Codebase investigation (subagent of architect) | Invoked during `/jim:plan` |
+| `@jim:researcher` | Codebase investigation and technical landscape research | `/jim:research`, invoked by PM or architect |
 | `@jim:coder` | TDD implementation, debugging | `/jim:build`, `/jim:debug` |
 | `@jim:reviewer` | Quality gate *(not yet implemented)* | TBD |
 | `@jim:meta` | Plugin development — builds skills and agents | `/jim:meta-skill`, `/jim:meta-agent` |
@@ -390,6 +408,7 @@ Not every change needs the full lifecycle:
 | New feature | `/jim:spec` | — |
 | Bug | `/jim:spec` | — |
 | Refactor | `/jim:spec` | — |
+| Exploratory research | `/jim:research` | Spec, Plan |
 | Strategic change | `/jim:vision` or `/jim:arch` | — |
 | Hotfix (urgent) | `/jim:build` | Spec, Plan |
 | Typo/docs | Direct commit | Everything |

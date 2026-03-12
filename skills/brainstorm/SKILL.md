@@ -56,7 +56,7 @@ When the conversation reaches a natural stopping point — the user says "I thin
 
 Offer to route synthesized ideas into the formal workflow:
 
-> "Want me to route any of these ideas into the formal workflow? I can create a spec (`/jim:spec`), update the vision (`/jim:vision`), or add to the roadmap (`/jim:roadmap`)."
+> "Want me to route any of these ideas into the formal workflow? I can create a spec (`/jim:spec`), update the vision (`/jim:vision`), add to the roadmap (`/jim:roadmap`), or run a technical investigation (`/jim:research`)."
 
 This is an offer, not a push. If the user says no, close the session.
 

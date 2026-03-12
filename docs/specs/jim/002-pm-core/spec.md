@@ -159,7 +159,7 @@ description: >
   roadmap. Use when the user wants to scope work, define requirements,
   brainstorm, or update strategic documents.
 skills: [spec, vision, roadmap, brainstorm]
-tools: [Read, Write, Edit, Glob, Grep]
+tools: [Read, Write, Edit, Glob, Grep, Agent(researcher)]
 model: sonnet
 ---
 ```
@@ -189,7 +189,7 @@ model: sonnet
 - [ ] Agent body is fully self-contained (no assumed inherited context).
 - [ ] Agent body ≤ 800 tokens.
 - [ ] `skills:` field lists all four composed skills: spec, vision, roadmap, brainstorm.
-- [ ] `tools:` field follows least privilege (Read, Write, Edit, Glob, Grep — no Bash).
+- [ ] `tools:` field follows least privilege (Read, Write, Edit, Glob, Grep, Agent(researcher) — no Bash, no direct WebSearch).
 - [ ] `model:` explicitly set to sonnet.
 - [ ] Agent role definition establishes the PM as a collaborative conversational partner, not an autonomous gatekeeper.
 - [ ] No anti-patterns: no personality soup, no permission creep, no instruction shadowing, no duplicate logic.

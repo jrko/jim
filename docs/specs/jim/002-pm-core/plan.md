@@ -156,7 +156,7 @@ description: >
   </commentary>
   </example>
 skills: [spec, vision, roadmap, brainstorm]
-tools: [Read, Write, Edit, Glob, Grep]
+tools: [Read, Write, Edit, Glob, Grep, Agent(researcher)]
 model: sonnet
 ---
 ```
@@ -298,7 +298,7 @@ Replace the 1-line placeholder with the full PM agent definition.
 
 Frontmatter as specified in Interface Contracts above. Key points:
 - `skills: [spec, vision, roadmap, brainstorm]` — all 4 listed even though only `spec` exists now
-- `tools: [Read, Write, Edit, Glob, Grep]` — no Bash, no Agent tool (PM doesn't delegate)
+- `tools: [Read, Write, Edit, Glob, Grep, Agent(researcher)]` — no Bash. `Agent(researcher)` enables PM to delegate technical research during brainstorm or spec creation.
 - `model: sonnet`
 - Description includes 3 `<example>` blocks (positive, type-inferred, negative)
 

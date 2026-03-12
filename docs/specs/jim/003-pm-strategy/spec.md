@@ -92,7 +92,7 @@ For tactical phases or early ideas, a simple list of deliverables is fine. The g
 
 **Filename:** `docs/brainstorms/{YYYYMMDD}-{topic}.md`
 
-**Behavior:** The PM listens, asks light clarifying questions, captures the thinking, and writes it to a file. It does not push toward a spec — that's the user's decision. If the user says "this should be a spec," the PM suggests running `/jim:spec` with the brainstorm as input. At the end of a session, the PM offers to route synthesized ideas into the formal workflow — primarily `/jim:spec`, but also `/jim:vision` or `/jim:roadmap` if relevant. The PM does not push, but offers.
+**Behavior:** The PM listens, asks light clarifying questions, captures the thinking, and writes it to a file. It does not push toward a spec — that's the user's decision. If the user says "this should be a spec," the PM suggests running `/jim:spec` with the brainstorm as input. At the end of a session, the PM offers to route synthesized ideas into the formal workflow — primarily `/jim:spec`, but also `/jim:vision`, `/jim:roadmap`, or `/jim:research` if relevant. The PM does not push, but offers.
 
 ## Collaborative Validation Model
 
@@ -130,7 +130,7 @@ Same model as 002-pm-core. The PM is a conversational partner:
 - [ ] No rigid template — the skill captures ideas in whatever structure emerges from the conversation.
 - [ ] The skill does not push toward creating a spec. If the user wants a spec, it suggests `/jim:spec`.
 - [ ] The skill asks light clarifying questions to flesh out the thinking, without conducting a full PM interview.
-- [ ] At the end of a session, the skill offers to route synthesized ideas into the formal workflow (/jim:spec primarily, or /jim:vision, /jim:roadmap if relevant).
+- [ ] At the end of a session, the skill offers to route synthesized ideas into the formal workflow (/jim:spec primarily, or /jim:vision, /jim:roadmap, /jim:research if relevant).
 
 ### Shared
 - [ ] All three skills follow the collaborative validation model (no automated blocking, explicit human approval, differential updates).
