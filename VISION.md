@@ -4,21 +4,17 @@
 
 Developers rely on disciplined engineering to ship maintainable software. Because AI agents skip the formal SDLC, they bypass the specs and plans that document architectural intent. This creates knowledge silos and expensive rework, eroding trust in the implementation as projects and teams scale.
 
-**The Ideal:** Developers want to maintain architectural integrity and ship reliable, maintainable software through a disciplined engineering process.
-
-**The Reality / Friction:** AI agents do not follow a formal SDLC. By operating without integrated specs, plans, and testing protocols, they fail to document architectural intent and often produce logic that requires expensive rework.
-
-**The Consequence:** This creates knowledge silos where critical project context remains trapped in the developer's head. As teams and codebases scale, the lack of predictable quality erodes trust in the implementation and forces you to manually enforce the discipline the AI ignores.
+* **The Ideal:** Developers want to maintain architectural integrity and ship reliable, maintainable software through a disciplined engineering process.
+* **The Reality / Friction:** AI agents do not follow a formal SDLC. By operating without integrated specs, plans, and testing protocols, they fail to document architectural intent and often produce logic that requires expensive rework.
+* **The Consequence:** This creates knowledge silos where critical project context remains trapped in the developer's head. As teams and codebases scale, the lack of predictable quality erodes trust in the implementation and forces you to manually enforce the discipline the AI ignores.
 
 ## Solution Statement
 
 Jim provides an agentic SDLC workflow for Claude Code via `/jim:spec`, `/jim:plan`, and `/jim:build` skills. This collaboration grounds every task in research, spec-driven planning, and test-first implementation to maintain architectural consistency. By documenting the "how" and "why" of the code as it's built, Jim increases software quality, team confidence, and your overall understanding of the system.
 
-**The Mechanism:** A Claude Code plugin that adds specialized SDLC skills: `/jim:spec`, `/jim:plan`, and `/jim:build`.
-
-**The Workflow:** An agentic process grounded in research, spec-driven planning, and test-first implementation.
-
-**The Resolution:** Maintains architectural consistency and increases quality, confidence, and the team's understanding of the codebase.
+* **The Mechanism:** A Claude Code plugin that adds specialized SDLC skills: `/jim:spec`, `/jim:plan`, and `/jim:build`.
+* **The Workflow:** An agentic process grounded in research, spec-driven planning, and test-first implementation.
+* **The Resolution:** Maintains architectural consistency and increases quality, confidence, and the team's understanding of the codebase.
 
 ## Target Audience
 
