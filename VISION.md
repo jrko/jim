@@ -18,16 +18,13 @@ Jim provides an agentic SDLC workflow for Claude Code via `/jim:spec`, `/jim:pla
 
 ## Target Audience
 
-**Primary:** Developers using Claude Code who want a structured, repeatable workflow for non-trivial work — features, bug fixes, and refactors that span multiple files or require coordination.
-
-**Team context:** Small development teams working on tightly-coupled codebases, especially when developers own specific functional areas.
-
-**Mindset:** Early adopters and cutting-edge practitioners willing to try new tools and methodologies for AI-assisted development. Comfortable with TDD and spec-driven development. Want AI to follow their discipline, not bypass it.
-
-**Not for:**
-- Developers who want fully autonomous, hands-off AI coding
-- One-off scripts or throwaway prototypes where the overhead isn't worth it
-- Teams that need a project management system (Jira, Linear, etc.)
+* **Primary:** Developers using Claude Code who want a structured, repeatable workflow for non-trivial work — features, bug fixes, and refactors that span multiple files or require coordination.
+* **Team context:** Small development teams working on tightly-coupled codebases, especially when developers own specific functional areas.
+* **Mindset:** Early adopters and cutting-edge practitioners willing to try new tools and methodologies for AI-assisted development. Comfortable with TDD and spec-driven development. Want AI to follow their discipline, not bypass it.
+* **Not for:**
+    - Developers who want fully autonomous, hands-off AI coding
+    - One-off scripts or throwaway prototypes where the overhead isn't worth it
+    - Teams that need a project management system (Jira, Linear, etc.)
 
 ## Competitive Landscape
 
