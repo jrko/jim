@@ -10,9 +10,12 @@ should in theory support a small multi-person team working on a decent size mono
 
 designed to track agile requirements changes and adjustments to implementation over time
 
+break functional work up into incremental phases to optimize context usage and focus on the task at hand
+
 scale to larger sized projects with multiple functional areas 
 
 build upon learnings from v1 (what are the learnings from v1? manually running spec -> research -> plan feels cumbersome though it proves valuable can that be automated or streamlined? (v2 tries subagent merging research into plan); agile feedback critically important -- after an implementation is created during manual review we may find we need to adjust the implementation. Adjusting the implementation should adjust the spec that all needs to be done manually it's a pain. Bugfixes are like this too. Sometimes bugfix really results in what should have been a change to the plan to begin with. )
+
 ## NON GOALS
 
 Not a true change management system. 
@@ -31,6 +34,14 @@ sometimes I feel that research should happen before spec sometimes the research 
 would be nice if we had synthesis of research (a research of all research most commonly requested info ex. FAQ's FOR AGENTS!!!)
 
 any postmortem analysis after a feature group is shipped? could be nice for future learnings
+
+Jim's skills and agents spend a lot of time looking for things. Could we add some simple Python scripts to make that easier? For example... I see @jim:pm looking for VISION and ARCHITECTURE docs again and again and again. I suspect we could save a few tokens if Claude code could just call a Python script to return where these are. 
+
+Similarly a script for locating spec folders and creating new spec folders. Maybe estimating token counts. Providing last updated datetime. Look into more tooling to make the skills and agents more effecient. (What are some low hanging fruit?)
+
+Jim is built with convention over configuration. It would be good to support some configuration. Initially this could be for file paths, and allow users to customize Jim's templates. Maybe even augment the agents and skills. 
+
+
 
 ## Upsides
 
