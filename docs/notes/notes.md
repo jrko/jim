@@ -6,6 +6,8 @@ The more work done up front at the spec and research phase the less work needs t
 
 ## GOALS
 
+use jim to build jim (example `/jim:spec @WORKFLOW.md spec out the @jim:architect agent and its skills` <-- this worked!)
+
 should in theory support a small multi-person team working on a decent size monolith project, especially if developers focus on specific functional groupings
 
 designed to track agile requirements changes and adjustments to implementation over time
@@ -20,6 +22,15 @@ build upon learnings from v1 (what are the learnings from v1? manually running s
 
 Not a true change management system. 
 
+Not for hands-off vibe coding
+
+## Open-Ended Questions
+
+How to strike the right balance between 
+- Not a black box that spawns all sorts of agents and skills and as a user of jim you don't know what's going on
+- Generally follow better to beg for forgiveness than ask for permission - don't want to be babysat "can I do this? can I do that?" 
+- Claude Code seems to be leaning more toward the first!
+
 ## Notes for future improvement
 
 /plan mode is awesome can @architect use /plan mode and write the /plan mode output to plan.md? 
@@ -31,7 +42,7 @@ validate the thinking with Gemini pro on the side!
 
 sometimes I feel that research should happen before spec sometimes the research is super important to define what to spec 
 
-would be nice if we had synthesis of research (a research of all research most commonly requested info ex. FAQ's FOR AGENTS!!!)
+would be nice if we had synthesis of all project research (a research of all research most commonly requested info ex. FAQ's FOR AGENTS!!!)
 
 any postmortem analysis after a feature group is shipped? could be nice for future learnings
 
@@ -41,7 +52,11 @@ Similarly a script for locating spec folders and creating new spec folders. Mayb
 
 Jim is built with convention over configuration. It would be good to support some configuration. Initially this could be for file paths, and allow users to customize Jim's templates. Maybe even augment the agents and skills. 
 
+I find that sometimes research is needed before I start spec'ing. @jim:pm will ask me questions and I don't know the answers. @jim:pm should be able to invoke @jim:researcher to start pulling together the info for the research.md doc and @jim:pm should already be using it. 
 
+Can we get jim plugin accessible to gemini cli? Can we get jim pluin accessible to codex? How about __other coding agents__?
+
+How do I make jim extensible so that, for example, I can instruct @jim:researcher in this project to check other repos for best practices? 
 
 ## Upsides
 
@@ -85,6 +100,10 @@ Regarding automated self-validation, the workflow will instead use a highly coll
 
 
 ## Launch Party
+
+Make a release note and publish it to LinkedIn
+
+Make a homepage for jamsuite.com for this project
 
 Make a video with https://www.reddit.com/r/ClaudeAI/comments/1rr47ya/i_delayed_my_product_launch_for_months_because_i/ Remotion.dev ???
 
