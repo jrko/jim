@@ -59,7 +59,6 @@ Default phase. Run before any web research.
 
 **Synthesize findings from Explore results:**
 - Anchor file paths with line ranges (implementation + test locations)
-- Up to 3 high-risk consumers/dependents per anchor (blast radius — the Architect's highest-value data point)
 - At least one existing test file as template for the coder (framework, setup, mocks)
 - Local patterns, utilities, and conventions
 - Existing specs in the same group
@@ -67,7 +66,7 @@ Default phase. Run before any web research.
 **Adjust focus by spec type:**
 - **Feature:** Integration points, existing patterns, conventions to follow.
 - **Bug:** Trace reproduction through codebase, identify fault location, check related bugs in group.
-- **Refactor:** Map current state, document all callers/consumers, identify full blast radius.
+- **Refactor:** Map current state, document all callers/consumers.
 
 ### 5. Phase 1 — External Intelligence
 
@@ -80,8 +79,11 @@ Conditional phase. Triggered only after Phase 0 completes.
 **When triggered:**
 - Search for prior art, library comparisons, external API docs.
 - Follow WebFetch guardrails: only when the spec references external examples, APIs, or knowledge bases, or code contains TODOs mentioning third-party migrations.
+- **WebFetch guardrail:** If a WebFetch or WebSearch call fails or returns a rate-limit error (429), stop immediately and ask the user to fetch that URL manually. Do not continue the task with missing data. Do not defer the ask to the end of the task. The user will paste the content and you can resume.
 - **Library analysis:** Compare requested libraries against the project's dependency files (package.json, go.mod, requirements.txt, etc.) to prevent library sprawl.
 - **20-line rule:** Link, don't paste. URL + key constraints, not full code blocks.
+- **Prior art file table:** For each prior art entry, include a file-level table (File | What It Is | Why It Matters) when the repo is accessible (best-effort).
+- **Prior art tiering:** When 5+ prior art entries exist, organize into Tier 1 (Study Closely) / Tier 2 (Study for Specific Patterns) / Tier 3 (Reference Only). Under 5, use a flat list.
 
 ### 6. Phase 2 — Alignment Validation
 

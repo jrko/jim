@@ -12,7 +12,6 @@ date: "{YYYY-MM-DD}"
 
 <!-- Always present. File paths + line ranges for implementation AND test locations. -->
 <!-- For each anchor: 1-sentence explanation of why it's an anchor. -->
-<!-- Up to 3 high-risk consumers/dependents per anchor (blast radius). -->
 <!-- Include both existing files and new files to be created. -->
 
 ## Local Patterns
@@ -24,6 +23,11 @@ date: "{YYYY-MM-DD}"
 
 <!-- Conditional: only for features with relevant external examples. -->
 <!-- Links + synthesis: what's relevant, why, what to ignore. -->
+<!-- For each entry, include a file-level table when the repo is accessible (best-effort):
+| File | What It Is | Why It Matters |
+|------|------------|----------------|
+-->
+<!-- When 5+ entries: organize into Tier 1 (Study Closely) / Tier 2 (Study for Specific Patterns) / Tier 3 (Reference Only). Under 5: flat list. -->
 
 ## Libraries
 

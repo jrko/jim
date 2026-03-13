@@ -27,6 +27,7 @@ Every phase of the jim SDLC benefits from grounded technical knowledge — the P
 - As the **PM agent**, I receive structured feedback when research reveals that a spec requirement is infeasible or better achieved differently, so that I can update the spec before planning begins.
 - As a **developer**, I can invoke `/jim:research` directly against a spec, brainstorm, debug doc, directory, or arbitrary topic so that I understand the technical landscape before committing to any phase.
 - As a **developer**, I can run `/jim:research` before writing a spec to explore what libraries, patterns, or prior art exist, so that my spec is informed by evidence rather than guesswork.
+- As a **developer**, I can run `/jim:research` as standalone exploratory research on a topic or library to understand the technical landscape without needing a spec.
 
 ## Data Flow
 
@@ -56,14 +57,13 @@ flowchart TD
 - [ ] User-invocable skill at `skills/research/SKILL.md`
 - [ ] Accepts `$ARGUMENTS` as: spec path, brainstorm path, debug doc path, directory path, arbitrary topic string, or empty (prompts user)
 - [ ] Skill frontmatter declares `agent: researcher` (documentation convention)
-- [ ] Can be invoked at any point in the SDLC — before spec (exploratory), between spec and plan (standard), or standalone (ad hoc)
+- [ ] Can be invoked before spec creation (exploratory), between spec and plan (standard), or as standalone exploratory research (topic/library investigation)
 
 ### Phase 0 — Local Archaeology (Default, skippable for greenfield/external-only)
 
 - [ ] **Default behavior**: Agent must complete a local codebase pass (Glob + Grep + Read) before any WebSearch or WebFetch call
 - [ ] Must identify at least one local anchor OR explicitly document "no local implementation exists" with an audit trail of the specific Grep patterns and Glob patterns attempted (e.g., `grep "auth"`, `grep "login"`, `glob **/auth/**`) before proceeding to Phase 1
 - [ ] Discovers: anchor file paths with line ranges, existing test paths and conventions, local patterns and utilities, existing specs in the same group
-- [ ] **Blast radius**: For each anchor, identifies up to 3 high-risk consumers or dependents that could break as a result of changes
 - [ ] **Greenfield auto-detection**: If the target group/directory has no existing code, or the research topic has no codebase analog (e.g., evaluating a library for a new project), Phase 0 produces a brief "greenfield — no local codebase to scan" note and proceeds directly to Phase 1
 - [ ] **Hybrid handling**: For partially greenfield work (new subsystem integrating with existing code), Phase 0 still runs to find integration points, then Phase 1 fills knowledge gaps
 
@@ -87,9 +87,9 @@ flowchart TD
 - [ ] When invoked against a spec: written to the same directory (`docs/specs/{group}/{id}-{name}/research.md`)
 - [ ] When invoked against a non-spec input: researcher suggests an output location and confirms with the user before writing
 - [ ] Includes unified metadata: spec link (relative path), research status (Active / Needs PM Review / Needs Architect Review)
-- [ ] **Anchors** section (always present): file paths + line ranges for implementation AND test locations; includes both existing files and new files to be created
+- [ ] **Anchors** section (always present): file paths + line ranges for implementation AND test locations; includes both existing files and new files to be created. Each anchor has a 1-sentence explanation of relevance.
 - [ ] **Local Patterns** section (always present): existing hooks, utilities, conventions the implementation should follow. When tests exist in the project, must identify at least one existing test file as a template for the coder — including test framework, setup pattern, and mock conventions
-- [ ] **Prior Art** section (conditional): only for features with relevant external examples; includes links + synthesis (what's relevant, why, what to ignore)
+- [ ] **Prior Art** section (conditional): only for features with relevant external examples; includes links + synthesis (what's relevant, why, what to ignore). Each entry should include a file-level table (File | What It Is | Why It Matters) when the repo is accessible (best-effort). When 5+ entries exist, organize into Tier 1 (Study Closely) / Tier 2 (Study for Specific Patterns) / Tier 3 (Reference Only)
 - [ ] **Libraries** section (conditional): only when new libraries are needed or refactors touch dependencies; compares against existing dependency files
 - [ ] **Security & Performance** section (always present): tactical risks and guardrails (auth boundaries, rate limits, n+1 queries, etc.)
 - [ ] **Recommendations** section (always present): options and trade-offs for the architect (not decisions). When a recommendation diverges from a locked constraint in VISION.md or ARCHITECTURE.md, must explicitly note the divergence and the rationale for why the alternative is worth considering
