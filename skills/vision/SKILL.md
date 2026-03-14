@@ -34,9 +34,24 @@ Read VISION.md from the project root.
 - **Exists:** This is a differential update. Read the content. Tell the user: "I see an existing VISION.md. I'll walk through each section and suggest changes based on our conversation." Identify which sections are well-defined vs. which need work.
 - **Does not exist:** Fresh creation. Proceed to interview.
 
-### 4. Section-by-section interview
+### 4. Problem Statement & Solution Statement — wordsmith mode
 
-Walk through the 7 template sections in order. For each section:
+These two sections use a structured format with sub-bullets. The wording matters — expect multiple revision rounds.
+
+**Process for each:**
+
+1. Explain the structured format before interviewing:
+   - Problem Statement: ~50 word summary paragraph, then three bullets: **The Ideal** / **The Reality / Friction** / **The Consequence**
+   - Solution Statement: summary paragraph, then three bullets: **The Mechanism** / **The Function** / **The Result**
+2. Interview to understand the content (1-2 bounded questions, recursive drill-down on vague statements)
+3. Draft the section with the structured sub-bullets
+4. Present the draft and iterate on exact wording with the user
+5. Do not advance to the next section until the user approves the wording
+6. Multiple revision rounds are expected and by design — this is collaborative wordsmithing
+
+### 5. Remaining sections — standard interview
+
+Walk through the remaining 5 template sections in order. For each section:
 
 1. Explain what the section captures (one sentence)
 2. Ask 1-2 bounded questions. Use numbered options where appropriate (3-5 options + "describe your own")
@@ -47,19 +62,19 @@ Walk through the 7 template sections in order. For each section:
 
 | Priority | Sections | Approach |
 |----------|----------|----------|
-| Deep interview | Problem Statement, Target Audience, Non-Goals | These are the critical strategic decisions. Spend time here. |
-| Moderate interview | Solution Statement, Competitive Landscape | Important but often clearer once problem/audience are defined. |
+| Deep interview | Target Audience, Non-Goals | Critical strategic decisions. Spend time here. |
+| Moderate interview | Competitive Landscape | Table-only format (Approach / Pros / Cons). No summary paragraphs beneath the table. |
 | Light interview | Product North Star, Roadmap Trajectory | Draft with reasonable defaults from prior answers, refine with user. |
 
 **Context dump mode:** If the user pastes existing docs, PRDs, or notes, skip redundant questions and extract answers from the provided context. Label any assumptions explicitly: "I'm assuming X from your notes — correct?"
 
-### 5. Generate VISION.md
+### 6. Generate VISION.md
 
 Read `assets/vision-template.md`. Fill each section with interview results. Keep it concise — the goal is clarity of direction, not exhaustive documentation.
 
 Write to `VISION.md` at the project root.
 
-### 6. Silent self-check
+### 7. Silent self-check
 
 Before presenting, validate against these anti-patterns:
 
@@ -69,16 +84,18 @@ Before presenting, validate against these anti-patterns:
 
 Auto-correct violations before presenting.
 
-### 7. Present and stop
+### 8. Present and stop
 
-Show the drafted VISION.md to the user.
+Sections are approved individually during the interview (Problem/Solution via wordsmith mode, others as drafted). This step is the final full-document review.
+
+Show the complete VISION.md to the user.
 
 - **Differential update:** Show a summary of changes by section before applying. Ask: "Want me to apply these changes, or would you like adjustments?"
 - **New creation:** Ask: "Want me to write this, or would you like changes first?"
 
 Use Edit for updates, Write for new files. Never auto-apply.
 
-### 8. Redirect technical specifics
+### 9. Redirect technical specifics
 
 If the user brings up implementation details during the interview, redirect: "That sounds like an architecture decision — want to run `/jim:arch` after we finish the vision?"
 

@@ -44,15 +44,15 @@ No agent file is delivered — `@jim:pm` (from 002-pm-core) already declares the
 
 **Template sections:**
 
-1. **Problem Statement** — The specific user pain point. Strictly user-focused — no solution language, no technical framing.
-2. **Solution Statement** — What we're building and how it provides the core benefit that makes it indispensable.
+1. **Problem Statement** — ~50 word summary paragraph (no solution language, no technical framing), followed by three structured sub-bullets: **The Ideal** (desired state), **The Reality / Friction** (specific pain), **The Consequence** (cost of inaction).
+2. **Solution Statement** — ~50 word summary paragraph of what we're building and the core benefit, followed by three structured sub-bullets: **The Mechanism** (high-level approach), **The Function** (workflow/capability), **The Result** (outcome for the user).
 3. **Target Audience** — Exactly who has the pain described in the problem statement. Include who this is *not* for.
-4. **Competitive Landscape** — How this compares to current habits or tools. List specific competitors with pros/cons for this audience and problem. Where we are better and worse.
+4. **Competitive Landscape** — Table-only format (Approach / Pros / Cons). No summary paragraphs beneath the table. Specific competitors with pros/cons for this audience and problem.
 5. **Product North Star** — The long-term end state. How do we measure success?
 6. **Roadmap Trajectory** — High-level phases of where the product is going (Phase 1 / Phase 2 / Phase 3). Overview only — detailed sequencing lives in ROADMAP.md.
 7. **Non-Goals** — Hard boundaries on what the product will not do. These are locked decisions that `/jim:spec` treats as constraints.
 
-**Interview approach:** The PM walks through each section conversationally, using recursive interview to drill into vague statements. The vision should be concise — the goal is clarity of direction, not exhaustive documentation.
+**Interview approach:** Problem Statement and Solution Statement use "wordsmith mode" — the PM explains the structured format, drafts the section, then iterates on exact wording until the user approves before advancing. Multiple revision rounds are expected. All other sections use standard interview pacing. Sections are approved individually during the interview, with a final full-document review at the end. The vision should be concise — the goal is clarity of direction, not exhaustive documentation.
 
 **Output:** `VISION.md` at the project root (or plugin root for jim-developing-jim).
 
@@ -112,6 +112,10 @@ Same model as 002-pm-core. The PM is a conversational partner:
 - [ ] The skill produces a concise VISION.md — clarity of direction, not exhaustive documentation.
 - [ ] Differential update: if VISION.md already exists, the skill summarizes proposed changes before applying them.
 - [ ] The skill never overwrites VISION.md without explicit human approval.
+- [ ] The vision template uses structured sub-bullets for Problem Statement (**The Ideal** / **The Reality / Friction** / **The Consequence**) and Solution Statement (**The Mechanism** / **The Function** / **The Result**).
+- [ ] The Competitive Landscape section uses table-only format (Approach / Pros / Cons) with no summary paragraphs beneath the table.
+- [ ] Problem Statement and Solution Statement use wordsmith mode — draft, iterate on wording, approve before advancing.
+- [ ] Sections are approved individually during the interview, with a final full-document review at the end.
 
 ### /jim:roadmap
 - [ ] `skills/roadmap/SKILL.md` exists with correct frontmatter (name, description, agent: pm).

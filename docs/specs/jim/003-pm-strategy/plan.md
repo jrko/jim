@@ -164,16 +164,24 @@ Structural skeleton with these sections:
 # {Project Name} — Vision
 
 ## Problem Statement
-{The specific user pain. No solution language, no technical framing.}
+{~50 words max. The specific user pain. No solution language, no technical framing.}
+* **The Ideal:** {Desired state.}
+* **The Reality / Friction:** {Specific pain or gap.}
+* **The Consequence:** {Cost of inaction.}
 
 ## Solution Statement
 {What we're building and the core benefit.}
+* **The Mechanism:** {High-level approach.}
+* **The Function:** {Workflow or capability.}
+* **The Result:** {Outcome for the user.}
 
 ## Target Audience
 {Who has this pain. Include who this is NOT for.}
 
 ## Competitive Landscape
-{Current habits or tools. Specific competitors with pros/cons.}
+<!-- Table only. No summary paragraphs beneath the table. -->
+| Approach | Pros | Cons |
+|----------|------|------|
 
 ## Product North Star
 {Long-term end state. How we measure success.}
@@ -217,6 +225,9 @@ Contents:
 - Project name placeholder in the title
 - All 7 sections as `##` headers: Problem Statement, Solution Statement, Target Audience, Competitive Landscape, Product North Star, Roadmap Trajectory, Non-Goals
 - Each section has a 1-2 sentence description of what belongs there (in placeholder syntax, e.g., `{The specific user pain...}`)
+- Problem Statement uses structured sub-bullets: **The Ideal** / **The Reality / Friction** / **The Consequence**, with a ~50 word summary paragraph
+- Solution Statement uses structured sub-bullets: **The Mechanism** / **The Function** / **The Result**, with a summary paragraph
+- Competitive Landscape uses table-only format (Approach / Pros / Cons) with an HTML comment: no summary paragraphs beneath the table
 - No tutorial content, no examples, no guidance — that lives in the SKILL.md
 - Problem Statement and Non-Goals are the two most critical sections — mark them with brief emphasis (e.g., "This is the foundation all specs trace back to")
 
@@ -263,29 +274,35 @@ Body structure:
    - **Exists:** This is a differential update. Read the existing content. Tell the user: "I see an existing VISION.md. I'll walk through each section and suggest changes based on our conversation. I'll summarize what's changing before applying." Identify which sections are already well-defined vs. which need work.
    - **Does not exist:** Fresh creation. Proceed to interview.
 
-5. **Section-by-section interview** — Walk through the 7 template sections in order. For each section:
+5. **Problem Statement & Solution Statement — wordsmith mode** — These two sections use structured sub-bullet formats. The wording matters:
+   - Explain the structured format before interviewing (Problem: The Ideal / The Reality / The Consequence; Solution: The Mechanism / The Function / The Result)
+   - Interview to understand the content, then draft the section with structured sub-bullets
+   - Present the draft and iterate on exact wording with the user
+   - Do not advance until the user approves the wording — multiple revision rounds are expected and by design
+
+6. **Remaining sections — standard interview** — Walk through the remaining 5 template sections in order. For each section:
    - Explain what the section captures (one sentence)
    - Ask 1-2 bounded questions. Use numbered options where appropriate (3-5 options + "describe your own")
    - Recursive drill-down on vague statements. If the user says something generic like "for developers" → ask "which developers specifically? Frontend? Backend? DevOps? Junior? Senior?"
    - Once a clear answer emerges, draft the section content and move to the next
 
    **Section priorities:**
-   - **Deep interview:** Problem Statement, Target Audience, Non-Goals — these are the critical strategic decisions
-   - **Moderate interview:** Solution Statement, Competitive Landscape — important but often clearer once problem/audience are defined
+   - **Deep interview:** Target Audience, Non-Goals — critical strategic decisions
+   - **Moderate interview:** Competitive Landscape — table-only format (Approach / Pros / Cons), no summary paragraphs
    - **Light interview:** Product North Star, Roadmap Trajectory — can be drafted with reasonable defaults from prior answers, refined by user
 
    If the user provides a context dump (pastes existing docs, PRDs, notes), skip redundant questions and extract answers from the provided context. Label any assumptions explicitly.
 
-6. **Generate VISION.md** — Read `assets/vision-template.md`. Fill each section with the interview results. Keep it concise — the goal is clarity of direction, not exhaustive documentation.
+7. **Generate VISION.md** — Read `assets/vision-template.md`. Fill each section with the interview results. Keep it concise — the goal is clarity of direction, not exhaustive documentation.
 
-7. **Silent self-check** — Before presenting, validate against these anti-patterns:
+8. **Silent self-check** — Before presenting, validate against these anti-patterns:
    - **"For everyone" targeting** — Target Audience is too broad or doesn't exclude anyone. Fix: narrow the audience, add explicit exclusions.
    - **Solution-first framing** — Problem Statement contains solution language ("we need to build X"). Fix: reframe around the user pain.
    - **Technical creep** — Any section contains implementation details (API specs, DB schemas, architecture). Fix: move to a note suggesting `/jim:arch`.
 
    Auto-correct violations before presenting.
 
-8. **Present and stop** — Show the drafted VISION.md to the user. If differential update, show a summary of changes by section before applying. Ask: "Want me to apply this, or would you like changes?" Use Edit for updates, Write for new files. Never auto-apply.
+9. **Present and stop** — Sections are approved individually during the interview (Problem/Solution via wordsmith mode, others as drafted). This step is the final full-document review. Show the drafted VISION.md to the user. If differential update, show a summary of changes by section before applying. Ask: "Want me to apply this, or would you like changes?" Use Edit for updates, Write for new files. Never auto-apply.
 
 Constraints:
 - ≤500 lines total
