@@ -76,6 +76,15 @@ I've reference research from prior iterations in new iterations, especially as p
 + as coder I need to understand what's in the other iterations in some way to best manage the iterative development. 
 
 
+## Guidance for End Users (Best Practices)
+
++ Jim is designed to keep the human in the loop. It's designed as a collaborative tool.
++ Don't expect Jim to do all the work and especially don't expect Jim to do all the work perfectly. It's supposed to help you deliver higher quality software faster. It is not a replacement for team members.
++ The more time you invest in the up-front early parts of the SDLC the easier/more reliable/faster the later parts go. Example: invest the most time in spec.md and research.md and plan.md and the resulting code will happen quickly and need less review.
++ Jim is designed to support agile process. If you find something wrong with the implementation, use /plan mode and go back to the spec, plan and make sure the implementation matches expectations. 
++ If you go back and change something that was implemented in a prior spec, make sure to update the spec, research, and plan along with the implementation changes. This prevents Jim from unintentionally undoing the changes you make in the future. 
+
+
 ## Differences with other frameworks
 
 ### GSD
