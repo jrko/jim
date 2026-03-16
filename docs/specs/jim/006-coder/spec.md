@@ -3,7 +3,7 @@ title: "Coder Agent and Skills"
 type: feature
 group: jim
 id: "006"
-status: draft
+status: approved
 origin:
   - docs/prior-art/V1SDLC/v1-agent-coder.md
   - docs/prior-art/V1SDLC/v1-coder-skill.md
