@@ -79,7 +79,7 @@ That's it — Jim's slash commands and agents are now available in your session.
 
 ## How to develop for Jim
 
-See `[WORKFLOW.md](./WORKFLOW.md)` for the full SDLC process.
+See [`WORKFLOW.md`](./WORKFLOW.md) for the full SDLC process.
 
-Jim builds itself using its own workflow. Jim's specs live in `[docs/specs/jim/](docs/specs/jim/)`.
+Jim builds itself using its own workflow. Jim's specs live in [`docs/specs/jim/`](docs/specs/jim/).
 
