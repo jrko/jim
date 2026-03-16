@@ -1,6 +1,6 @@
-# Contributing to [Package Name]
+# Contributing to Jim
 
-Thank you for considering contributing to [Package Name]! We appreciate all kinds of contributions, from bug reports to pull requests.
+Thank you for considering contributing to Jim! We appreciate all kinds of contributions, from bug reports to pull requests.
 
 ## Ground Rules
 
@@ -27,42 +27,39 @@ As a small team with multiple priorities, we may not always be able to respond i
 ### Pull Requests
 
 * Create a new branch from main
-* Follow PEP 8 style guidelines
+* Follow existing patterns and conventions
 * Add tests for new functionality
 * Update documentation if necessary
 * Reference any related issues
 
 ## Setup Instructions
 
-We encourage using VS Code and the .devcontainer for development of this package.
-
 1. Clone the repository:
 
     ```bash
-    $ git clone git@github.com:JamSuite/jamsuite-logger.git
-    $ cd jamsuite-logger
-    $ code .
+    git clone git@github.com:JamSuite/jim.git
+    cd jim
     ```
 
-2. If not using VS Code .devcontainer, Make sure you have uv installed and install development requirements:
+2. Use Jim as a Claude Code plugin:
 
     ```bash
-    pip install --upgrade uv
-    uv venv --clear .venv
-    uv sync --active --all-groups
+    claude --plugin-dir /path/to/jim
     ```
 
-<!--
-3. Run tests:
-   ```bash
-pytest
-```
--->
+## Contribution Workflow
+
+Jim uses its own SDLC workflow for development (yes, Jim is self-hosting). The typical flow is:
+
+1. **Spec** — Define the work: `/jim:spec`
+2. **Plan** — Design the implementation: `/jim:plan`
+3. **Build** — Implement via TDD: `/jim:build`
+
+See [WORKFLOW.md](WORKFLOW.md) for the detailed process.
 
 ## Code Review Process
 
 1. Submit your pull request
-<!-- 2. Wait for automated checks to complete -->
 2. Address any reviewer feedback
 3. Once approved, maintainers will merge your changes
 
