@@ -1,6 +1,6 @@
 {
   "name": "jim",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "An agentic SDLC plugin. Spec-driven development with specialized agents and namespaced skills. Talk to Jim like a person: /jim:spec, /jim:plan, /jim:build.",
   "author": {
     "name": "Jim"
