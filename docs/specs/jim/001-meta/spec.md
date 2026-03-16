@@ -148,16 +148,23 @@ model: sonnet              # default; opus only if justified
 
 ```mermaid
 flowchart TD
-    U[User: /jim:meta-skill or /jim:meta-agent] --> L{Approved spec in\ndocs/specs/jim/?}
-    L -- No --> PM[@jim:pm\ncreate spec] --> STOP1[STOP: wait for approval]
-    L -- Yes --> R{research.md\nquality check}
-    R -- Fail --> RES[@jim:researcher\ngather research] --> STOP3[STOP: wait for research]
-    R -- Pass --> P{plan.md\nexists?}
-    P -- No --> ARCH[@jim:architect\ncreate plan] --> STOP2[STOP: wait for approval]
-    P -- Yes --> B[Build artifact]
-    B --> V{Structural\nvalidation}
-    V -- Fail --> FIX[Fix inline] --> V
-    V -- Pass --> STOP4[STOP: present to user]
+    U["User: /jim:meta-skill or /jim:meta-agent"] --> L{"Approved spec in
+docs/specs/jim/?"}
+    L -- No --> PM["@jim:pm
+create spec"] --> STOP1["STOP: wait for approval"]
+    L -- Yes --> R{"research.md
+quality check"}
+    R -- Fail --> RES["@jim:researcher
+gather research"] --> STOP3["STOP: wait for research"]
+    R -- Pass --> P{"plan.md
+exists?"}
+    P -- No --> ARCH["@jim:architect
+create plan"] --> STOP2["STOP: wait for approval"]
+    P -- Yes --> B["Build artifact"]
+    B --> V{"Structural
+validation"}
+    V -- Fail --> FIX["Fix inline"] --> V
+    V -- Pass --> STOP4["STOP: present to user"]
 ```
 
 ## Out of Scope
