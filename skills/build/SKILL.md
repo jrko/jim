@@ -64,6 +64,7 @@ For each unchecked `[ ]` task in `plan.md`, in order:
 - If any tidy move breaks tests: revert that move immediately. Do not fix broken tests during tidy — that is a behavioral change and belongs in a new task.
 
 **Commit**
+- Run `./pre-commit.sh` via Bash before committing. If it fails: show the error output, fix the issues, re-run all tests, and re-run `./pre-commit.sh` until it passes. Do NOT commit until `./pre-commit.sh` is green.
 - Follow Tidy First: one commit per logical unit, structural OR behavioral, never mixed.
 - Use conventional prefixes: `test:` (Red), `feat:` / `fix:` (Green), `refactor:` (Tidy).
 - See `references/tdd-guide.md` — Commit Discipline section.
@@ -89,9 +90,8 @@ Then read the next unchecked task and repeat.
 
 After all tasks are marked `[x]`:
 
-1. Run `./pre-commit.sh` via Bash. Show the full output.
-2. Report results to the user and ask: "Should I mark the plan status as `complete`?"
-3. STOP. Wait for the human to confirm. Do not proceed to the next SDLC phase, do not auto-invoke review. Update the plan frontmatter to `status: complete` only after explicit confirmation.
+1. Report to the user and ask: "Should I mark the plan status as `complete`?"
+2. STOP. Wait for the human to confirm. Do not proceed to the next SDLC phase, do not auto-invoke review. Update the plan frontmatter to `status: complete` only after explicit confirmation.
 
 ## Scope Discipline
 
