@@ -23,19 +23,19 @@ Use `$ARGUMENTS` as a hint for what the user wants to add or update. If empty, s
 
 ### 2. Read context
 
-Read VISION.md from the project root if it exists — for strategic alignment.
+Read `docs/jim/VISION.md` if it exists — for strategic alignment.
 
 If missing, note: "No VISION.md yet — consider running `/jim:vision` first to establish product direction. I'll proceed without it." Do not block.
 
 ### 3. Search for linkable specs
 
-Glob `docs/specs/**/*.md` to find existing specs. Grep frontmatter `title:` fields to build a list of linkable candidates. Hold this list — when the user mentions a deliverable that matches a known spec, offer the link.
+Glob `docs/jim/specs/**/*.md` to find existing specs. Grep frontmatter `title:` fields to build a list of linkable candidates. Hold this list — when the user mentions a deliverable that matches a known spec, offer the link.
 
 Do not Read full spec contents — Glob and Grep only. This prevents context overflow in repos with many specs.
 
 ### 4. Check for existing ROADMAP.md
 
-Read ROADMAP.md from the project root.
+Read `docs/jim/ROADMAP.md`.
 
 - **Exists:** Differential update. Read existing content. Summarize the current state to the user. Ask what they want to change — add items, move items between buckets, update version anchors, refine objectives.
 - **Does not exist:** Fresh creation. Proceed to interview.
@@ -55,7 +55,7 @@ For each item the user describes, determine the appropriate detail level:
 | User describes clear objectives and success criteria | Goal-oriented: Objective / Deliverables / Success Metrics |
 | User lists tactical items or early ideas | Simple bullet list |
 
-When a deliverable matches a known spec from step 3, offer: "I found a spec for that — want me to link it? `[003-pm-strategy](docs/specs/jim/003-pm-strategy/spec.md)`"
+When a deliverable matches a known spec from step 3, offer: "I found a spec for that — want me to link it? `[003-pm-strategy](docs/jim/specs/003-pm-strategy/spec.md)`"
 
 ### 6. Conciseness enforcement
 
@@ -68,7 +68,7 @@ The roadmap is a strategic communication tool, not a backlog. Push back when it 
 
 Read `assets/roadmap-template.md`. Fill buckets with interview results. Set "Last updated" to today's date. Keep it concise.
 
-Write to `ROADMAP.md` at the project root.
+Write to `docs/jim/ROADMAP.md`.
 
 ### 8. Silent self-check
 

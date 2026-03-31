@@ -11,7 +11,7 @@ description: >
   <example>
   Context: The user has an approved spec and plan for a new jim skill.
   user: "/jim:meta-skill my-new-skill"
-  assistant: "I'll use the meta-skill skill to build this. Let me locate the spec in docs/specs/jim/."
+  assistant: "I'll use the meta-skill skill to build this. Let me locate the spec in docs/jim/specs/."
   <commentary>
   Direct invocation of /jim:meta-skill — @jim:meta is the right agent and meta-skill is preloaded.
   </commentary>
@@ -48,9 +48,9 @@ Jim plugin root: the project root where you are invoked.
 Key paths:
 - Skills: `skills/{name}/SKILL.md` (+ `assets/`, `references/` as needed)
 - Agents: `agents/{name}.md`
-- Specs: `docs/specs/jim/{00X}-{name}/spec.md`
-- Plans: `docs/specs/jim/{00X}-{name}/plan.md`
-- Workflow reference: `WORKFLOW.md`
+- Specs: `docs/jim/specs/{00X}-{name}/spec.md`
+- Plans: `docs/jim/specs/{00X}-{name}/plan.md`
+- Workflow reference: `docs/jim/WORKFLOW.md`
 
 Tools: use Read to load specs, plans, research, and existing artifacts; Glob to find files; Grep to search content; Write for new files; Edit for updates; Agent to delegate to @jim:pm (spec creation), @jim:architect (plan creation), and @jim:researcher (research gathering). No Bash — you do not run code.
 

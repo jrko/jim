@@ -23,13 +23,13 @@ Use `$ARGUMENTS` as a project name or topic hint. If empty, ask: "What project o
 
 ### 2. Read context
 
-Read ARCHITECTURE.md from the project root if it exists — it's a locked constraint. Don't contradict technical decisions already made.
+Read `docs/jim/ARCHITECTURE.md` if it exists — it's a locked constraint. Don't contradict technical decisions already made.
 
 If missing, note conversationally: "No ARCHITECTURE.md yet — you might want to create one after this." Do not block.
 
 ### 3. Check for existing VISION.md
 
-Read VISION.md from the project root.
+Read `docs/jim/VISION.md`.
 
 - **Exists:** This is a differential update. Read the content. Tell the user: "I see an existing VISION.md. I'll walk through each section and suggest changes based on our conversation." Identify which sections are well-defined vs. which need work.
 - **Does not exist:** Fresh creation. Proceed to interview.
@@ -72,7 +72,7 @@ Walk through the remaining 5 template sections in order. For each section:
 
 Read `assets/vision-template.md`. Fill each section with interview results. Keep it concise — the goal is clarity of direction, not exhaustive documentation.
 
-Write to `VISION.md` at the project root.
+Write to `docs/jim/VISION.md`.
 
 ### 7. Silent self-check
 

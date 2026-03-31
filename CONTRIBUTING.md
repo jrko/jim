@@ -55,7 +55,7 @@ Jim uses its own SDLC workflow for development (yes, Jim is self-hosting). The t
 2. **Plan** — Design the implementation: `/jim:plan`
 3. **Build** — Implement via TDD: `/jim:build`
 
-See [WORKFLOW.md](WORKFLOW.md) for the detailed process.
+See [WORKFLOW.md](docs/jim/WORKFLOW.md) for the detailed process.
 
 ## Code Review Process
 

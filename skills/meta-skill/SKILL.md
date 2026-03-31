@@ -19,9 +19,9 @@ Create or update a jim plugin skill (`skills/{name}/SKILL.md`) from an approved 
 
 ### 1. Pass three gates before building
 
-Use `$ARGUMENTS` as a hint for the skill name. Search `docs/specs/jim/` for a matching approved spec (`status: approved` in frontmatter), or ask the user which spec to build from.
+Use `$ARGUMENTS` as a hint for the skill name. Search `docs/jim/specs/` for a matching approved spec (`status: approved` in frontmatter), or ask the user which spec to build from.
 
-**Gate 1 — Spec:** Locate an approved spec in `docs/specs/jim/`. If no approved spec exists, spawn `@jim:pm` via the Agent tool to create one. If the pm agent is not available, tell the user to run `/jim:spec` instead.
+**Gate 1 — Spec:** Locate an approved spec in `docs/jim/specs/`. If no approved spec exists, spawn `@jim:pm` via the Agent tool to create one. If the pm agent is not available, tell the user to run `/jim:spec` instead.
 
 **Gate 2 — Research Quality:** Read `research.md` from the spec directory. Evaluate it against this 7-point spot-check:
 
@@ -98,7 +98,7 @@ Work through this checklist before presenting the artifact. Fix failures inline 
 **Anti-patterns — any of these is a failure:**
 - [ ] No personality soup ("I am here to help you...")
 - [ ] No permission creep (tools beyond what the skill actually needs)
-- [ ] No instruction shadowing (repeating rules already in WORKFLOW.md)
+- [ ] No instruction shadowing (repeating rules already in `docs/jim/WORKFLOW.md`)
 - [ ] No duplicate logic (same instructions in 3+ places → extract to a shared skill)
 
 ### 5. Present to user

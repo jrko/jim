@@ -32,10 +32,10 @@ Use `$ARGUMENTS` to determine the research target and mode:
 
 ### 2. Determine output location
 
-- **Spec path input:** Output to `docs/specs/{group}/{id}-{name}/research.md` (same directory as the spec).
+- **Spec path input:** Output to `docs/jim/specs/{group}/{id}-{name}/research.md` (same directory as the spec).
 - **Everything else:** Suggest a location and confirm with the user before writing:
   - If a related spec exists, suggest its directory.
-  - Otherwise suggest `docs/research/{YYYYMMDD}-{topic}.md`.
+  - Otherwise suggest `docs/jim/research/{YYYYMMDD}-{topic}.md`.
 
 ### 3. Check for existing research
 
@@ -89,7 +89,7 @@ Conditional phase. Triggered only after Phase 0 completes.
 
 Mandatory phase — always runs.
 
-1. Read VISION.md and ARCHITECTURE.md if they exist. Treat them as locked constraints.
+1. Read `docs/jim/VISION.md` and `docs/jim/ARCHITECTURE.md` if they exist. Treat them as locked constraints.
 2. Produce an explicit alignment statement: "This approach aligns with [strategic goal] and follows the [architectural pattern]" — or flag divergence conversationally.
 3. If strategic docs are missing, note their absence. Don't block on it.
 4. If research recommendations contradict a locked constraint, raise it as a Peer Feedback item for the PM.

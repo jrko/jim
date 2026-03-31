@@ -11,7 +11,7 @@ argument-hint: "[idea-or-name]"
 
 # /jim:spec
 
-Turn a rough idea into a structured spec (`docs/specs/{group}/{00X}-{name}/spec.md`) through collaborative interview.
+Turn a rough idea into a structured spec (`docs/jim/specs/{group}/{00X}-{name}/spec.md`) through collaborative interview.
 
 *(The `agent: pm` field in this frontmatter is a jim documentation convention, not a Claude Code routing mechanism.)*
 
@@ -31,8 +31,8 @@ Use `$ARGUMENTS` as the idea or name hint.
 
 Read these files from the project root if they exist:
 
-- **VISION.md** — locked constraint. Do not re-litigate strategic decisions.
-- **ARCHITECTURE.md** — locked constraint. Technical invariants are not negotiable.
+- **`docs/jim/VISION.md`** — locked constraint. Do not re-litigate strategic decisions.
+- **`docs/jim/ARCHITECTURE.md`** — locked constraint. Technical invariants are not negotiable.
 
 If either is missing, note it conversationally ("I notice there's no VISION.md yet — you might want to create one to anchor future specs") and proceed. Never block on their absence.
 
@@ -40,7 +40,7 @@ Read `references/spec-types.md` for type guidance, anti-patterns, and status lif
 
 ### 3. Check existing specs
 
-Glob `docs/specs/` to identify existing groups and specs.
+Glob `docs/jim/specs/` to identify existing groups and specs.
 
 - If `$ARGUMENTS` matches an existing spec name, ask: "Update the existing spec, or create a new one?"
 - Identify the target group. If ambiguous, suggest a noun-based group name or ask.
@@ -99,7 +99,7 @@ Ask 1-3 questions at a time. Never a wall of questions.
 - "This is getting broad — should we split off the search piece into its own spec?"
 - "That criterion sounds hard to test. Can we make it measurable?"
 
-**Technique: Strategic alignment.** If VISION.md exists and the idea seems to diverge from it, raise it as a conversation — never as a blocker:
+**Technique: Strategic alignment.** If `docs/jim/VISION.md` exists and the idea seems to diverge from it, raise it as a conversation — never as a blocker:
 - "I notice the vision focuses on X, but this pulls toward Y. Intentional pivot, or should we scope differently?"
 
 Cap at 3-5 questions per topic area. If a topic area still feels vague after 5 questions, note it as an Open Question and move on.
@@ -112,7 +112,7 @@ No confidence scores. No numeric thresholds. The question is structural: "Can I 
 
 ### 8. Generate spec.md
 
-Now assign the ID: Glob `docs/specs/{group}/*/` to find existing IDs. Pick `max(existing IDs) + 1`, zero-padded to 3 digits. If no existing specs in the group, start at `001`.
+Now assign the ID: Glob `docs/jim/specs/{group}/*/` to find existing IDs. Pick `max(existing IDs) + 1`, zero-padded to 3 digits. If no existing specs in the group, start at `001`.
 
 Read `assets/spec-template.md`. Generate the spec:
 
@@ -124,14 +124,14 @@ Read `assets/spec-template.md`. Generate the spec:
 - For bugs, ensure acceptance criteria includes "Regression test covers the reported scenario."
 - For refactors, ensure acceptance criteria includes "Existing tests pass without modification."
 
-Write the spec to `docs/specs/{group}/{00X}-{name}/spec.md`.
+Write the spec to `docs/jim/specs/{group}/{00X}-{name}/spec.md`.
 
 ### 9. Silent self-check
 
 Before presenting, validate the draft against:
 
 1. **Anti-patterns** — Check all 6 from `references/spec-types.md`. Any violation → auto-correct.
-2. **Locked constraints** — If VISION.md or ARCHITECTURE.md exist, verify the spec doesn't contradict them.
+2. **Locked constraints** — If `docs/jim/VISION.md` or `docs/jim/ARCHITECTURE.md` exist, verify the spec doesn't contradict them.
 3. **Type-section completeness** — Verify all required sections for the detected type are present and populated.
 
 If the self-check finds issues, fix them inline. Do not tell the user about the self-check — just present a clean draft.
