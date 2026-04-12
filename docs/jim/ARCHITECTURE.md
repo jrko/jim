@@ -1,6 +1,6 @@
 # Architecture — Jim
 
-*Last updated: 2026-03-16*
+*Last updated: 2026-03-31*
 
 > This document is generated and maintained by `/jim:arch`. Edit via the skill to preserve consistency.
 
@@ -29,6 +29,7 @@ jim/
 │   ├── vision/              # /jim:vision — product vision and strategy
 │   ├── roadmap/             # /jim:roadmap — execution milestones
 │   ├── arch/                # /jim:arch — architecture document generation
+│   ├── backlog/             # /jim:backlog — deferred work consolidation
 │   ├── brainstorm/          # /jim:brainstorm — freeform ideation capture
 │   ├── meta-skill/          # /jim:meta-skill — create/update jim skills
 │   └── meta-agent/          # /jim:meta-agent — create/update jim agents
@@ -57,6 +58,7 @@ flowchart TD
         VIS["/jim:vision"]
         ROAD["/jim:roadmap"]
         ARCH["/jim:arch"]
+        BACKLOG["/jim:backlog"]
         BRAIN["/jim:brainstorm"]
     end
 
@@ -89,15 +91,16 @@ flowchart TD
         PDOC["plan.md"]
         RESDOC["research.md"]
         CODE["Tests + Code"]
+        BLOGDOC["BACKLOG.md"]
         BDOC["brainstorm.md"]
         DDOC["debug report"]
     end
 
-    U --> VIS & ROAD & ARCH & BRAIN
+    U --> VIS & ROAD & ARCH & BACKLOG & BRAIN
     U --> SPEC & RES & PLAN & BUILD & DEBUG
     U --> MS & MA
 
-    VIS & ROAD & BRAIN --> PM
+    VIS & ROAD & BACKLOG & BRAIN --> PM
     ARCH --> ARCHITECT
     SPEC --> PM
     RES --> RESEARCHER
@@ -105,7 +108,7 @@ flowchart TD
     BUILD & DEBUG --> CODER
     MS & MA --> META
 
-    PM --> VDOC & RDOC & SDOC & BDOC
+    PM --> VDOC & RDOC & SDOC & BLOGDOC & BDOC
     ARCHITECT --> ADOC & PDOC
     RESEARCHER --> RESDOC
     CODER --> CODE & DDOC
@@ -131,7 +134,7 @@ Agents are markdown files (`agents/*.md`) that define personas with frontmatter 
 Skills are SKILL.md files inside `skills/{name}/` directories, optionally accompanied by `assets/` (templates) and `references/` (methodology docs).
 
 - **Purpose:** Provide the detailed process instructions that agents follow when a `/jim:{verb}` command is invoked
-- **Location:** `skills/` — 11 skill directories (spec, plan, research, build, debug, vision, roadmap, arch, brainstorm, meta-skill, meta-agent)
+- **Location:** `skills/` — 12 skill directories (spec, plan, research, build, debug, vision, roadmap, arch, backlog, brainstorm, meta-skill, meta-agent)
 - **Interfaces:** Frontmatter fields: `name`, `description`, `agent` (which agent runs this skill), `argument-hint`. Body contains step-by-step process, argument routing, validation checklists.
 - **Dependencies:** Skills reference their `assets/` templates and `references/` docs. Skills are bound to agents via the `agent` frontmatter field (documentation convention, not runtime routing).
 - **Key Constraints:** SKILL.md stays under 500 lines (progressive disclosure). Templates live in `assets/`, methodology in `references/`.
@@ -155,7 +158,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 ### Spec Archive
 
 - **Purpose:** Living development artifacts — specs, research, and plans organized by group and sequential ID
-- **Location:** `docs/jim/specs/{group}/{00X}-{name}/` — currently `docs/jim/specs/jim/001-meta/` through `006-coder/`
+- **Location:** `docs/jim/specs/{group}/{00X}-{name}/` — currently `docs/jim/specs/jim/001-meta/` through `008-backlog/`
 - **Interfaces:** Each spec directory contains up to three files: `spec.md`, `research.md`, `plan.md`
 - **Dependencies:** Produced by PM (spec), researcher (research), and architect (plan) agents
 - **Key Constraints:** IDs are 3-digit zero-padded, sequential within each group. Groups are noun-based directories. Specs must be `approved` before plans can be created.
@@ -166,6 +169,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 | :--- | :--- | :--- | :--- | :--- |
 | Spec Archive | Markdown files | `docs/jim/specs/` | Persistent development artifacts — specs, research, plans | PM, Architect, Researcher |
 | Strategic Docs | Markdown files | `docs/jim/` (`VISION.md`, `ROADMAP.md`, `ARCHITECTURE.md`) | Project-level strategy and constraints | PM, Architect |
+| Backlog | Markdown file | `docs/jim/BACKLOG.md` | Consolidated deferred work — out-of-scope items, cross-cutting themes | PM |
 | Brainstorms | Markdown files | `docs/jim/brainstorms/` | Freeform ideation capture | PM |
 | Debug Reports | Markdown files | `docs/jim/debug/` | Structured failure diagnosis | Coder |
 

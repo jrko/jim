@@ -61,6 +61,7 @@ Research is not a gated phase; it is an agile service that grounds the SDLC in r
 | `/jim:roadmap` | Create/update execution milestones and phase sequence | `@jim:pm` | `ROADMAP.md` |
 | `/jim:arch` | Create/update technical architecture | `@jim:architect` | `ARCHITECTURE.md` |
 | `/jim:debug` | Diagnose failures, produce report for spec/plan cycle | `@jim:coder` | `debug/{YYYYMMDD}-{topic}.md` |
+| `/jim:backlog` | Scan deferred work, consolidate, and produce BACKLOG.md | `@jim:pm` | `BACKLOG.md` |
 | `/jim:brainstorm` | Freeform ideation — exploratory notes | `@jim:pm` | `brainstorms/{YYYYMMDD}-{topic}.md` |
 | `/jim:meta-skill` | Create/update a jim plugin skill from spec | `@jim:meta` | `jim/skills/{name}/SKILL.md` |
 | `/jim:meta-agent` | Create/update a jim plugin agent from spec | `@jim:meta` | `jim/agents/{name}.md` |
@@ -79,6 +80,7 @@ Research is not a gated phase; it is an agile service that grounds the SDLC in r
 | Spec | `docs/jim/specs/{group}/{00X}-{name}/spec.md` | Work definition — requirements, acceptance criteria, spec type (feature/bug/refactor) | `/jim:spec` |
 | Plan | `docs/jim/specs/{group}/{00X}-{name}/plan.md` | Implementation path — codebase research, atomic tasks, dependencies | `/jim:plan` |
 | Debug Report | `docs/jim/debug/{YYYYMMDD}-{topic}.md` | Diagnosis — error analysis, root cause, references to affected specs | `/jim:debug` |
+| Backlog | `docs/jim/BACKLOG.md` | Consolidated deferred work — out-of-scope items, unresolved ideas, cross-cutting themes | `/jim:backlog` |
 | Brainstorm | `docs/jim/brainstorms/{YYYYMMDD}-{topic}.md` | Exploratory notes — ideas, risks, options, may feed into specs | `/jim:brainstorm` |
 
 ### Plugin Artifacts (Jim developing Jim)
@@ -165,6 +167,11 @@ jim/
 │   │   └── assets/
 │   │       └── architecture-template.md
 │   │
+│   ├── backlog/
+│   │   ├── SKILL.md             # → /jim:backlog
+│   │   └── assets/
+│   │       └── backlog-template.md
+│   │
 │   │  # ── Utilities ──
 │   ├── debug/
 │   │   ├── SKILL.md             # → /jim:debug
@@ -202,7 +209,7 @@ jim/
 
 | Agent | Role | Used By |
 |-------|------|---------|
-| `@jim:pm` | Product strategy, specs, vision, roadmap | `/jim:spec`, `/jim:vision`, `/jim:roadmap`, `/jim:brainstorm` |
+| `@jim:pm` | Product strategy, specs, vision, roadmap, backlog | `/jim:spec`, `/jim:vision`, `/jim:roadmap`, `/jim:backlog`, `/jim:brainstorm` |
 | `@jim:architect` | Technical planning, architecture | `/jim:plan`, `/jim:arch` |
 | `@jim:researcher` | Codebase investigation and technical landscape research | `/jim:research`, invoked by PM or architect |
 | `@jim:coder` | TDD implementation, debugging | `/jim:build`, `/jim:debug` |
@@ -223,6 +230,7 @@ skills:
   - vision
   - roadmap
   - brainstorm
+  - backlog
 ---
 ```
 

@@ -35,7 +35,7 @@ description: >
   @jim:pm scopes work, it doesn't build. Route to the right agent.
   </commentary>
   </example>
-skills: [spec, vision, roadmap, brainstorm]
+skills: [spec, vision, roadmap, brainstorm, backlog]
 tools: [Read, Write, Edit, Glob, Grep, Agent(researcher)]
 model: sonnet
 ---
