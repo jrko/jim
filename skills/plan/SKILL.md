@@ -105,6 +105,12 @@ Show the completed plan. Summarize what was created or changed. If any `[NEEDS C
 
 > "There are [N] open clarification items I flagged — see the Requirements Coverage Summary. Resolve these before handing the plan to the coder."
 
+Offer a security review before approval:
+
+> "Want to run a security review before approving? (`/jim:sec`)"
+
+If the user accepts, run `/jim:sec` against the spec directory. Incorporate any findings into the draft before proceeding to approval.
+
 Status stays `draft` until the user explicitly approves. Ask: "Any changes, or should I mark this approved?"
 
 Do not proceed to the next phase.
