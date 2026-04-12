@@ -6,6 +6,14 @@
 
 ---
 
+## Ad-hoc
+
+<!-- Items added here are preserved across /jim:backlog runs.     -->
+<!-- Use `### Title` headings followed by a free-form description. -->
+<!-- Add items manually or via `/jim:backlog add <description>`.   -->
+
+---
+
 ## Themes
 
 {theme clusters — each as ### heading with 1-2 sentence summary and related items list}

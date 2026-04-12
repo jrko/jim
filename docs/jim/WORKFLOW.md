@@ -61,7 +61,7 @@ Research is not a gated phase; it is an agile service that grounds the SDLC in r
 | `/jim:roadmap` | Create/update execution milestones and phase sequence | `@jim:pm` | `ROADMAP.md` |
 | `/jim:arch` | Create/update technical architecture | `@jim:architect` | `ARCHITECTURE.md` |
 | `/jim:debug` | Diagnose failures, produce report for spec/plan cycle | `@jim:coder` | `debug/{YYYYMMDD}-{topic}.md` |
-| `/jim:backlog` | Scan deferred work, consolidate, and produce BACKLOG.md | `@jim:pm` | `BACKLOG.md` |
+| `/jim:backlog` | Scan deferred work, consolidate, and produce BACKLOG.md; use `add <desc>` to append an ad-hoc item without a full rescan | `@jim:pm` | `BACKLOG.md` |
 | `/jim:brainstorm` | Freeform ideation — exploratory notes | `@jim:pm` | `brainstorms/{YYYYMMDD}-{topic}.md` |
 | `/jim:meta-skill` | Create/update a jim plugin skill from spec | `@jim:meta` | `jim/skills/{name}/SKILL.md` |
 | `/jim:meta-agent` | Create/update a jim plugin agent from spec | `@jim:meta` | `jim/agents/{name}.md` |

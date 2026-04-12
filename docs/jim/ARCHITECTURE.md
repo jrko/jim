@@ -1,6 +1,6 @@
 # Architecture — Jim
 
-*Last updated: 2026-03-31*
+*Last updated: 2026-04-11*
 
 > This document is generated and maintained by `/jim:arch`. Edit via the skill to preserve consistency.
 
@@ -169,7 +169,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 | :--- | :--- | :--- | :--- | :--- |
 | Spec Archive | Markdown files | `docs/jim/specs/` | Persistent development artifacts — specs, research, plans | PM, Architect, Researcher |
 | Strategic Docs | Markdown files | `docs/jim/` (`VISION.md`, `ROADMAP.md`, `ARCHITECTURE.md`) | Project-level strategy and constraints | PM, Architect |
-| Backlog | Markdown file | `docs/jim/BACKLOG.md` | Consolidated deferred work — out-of-scope items, cross-cutting themes | PM |
+| Backlog | Markdown file | `docs/jim/BACKLOG.md` | Consolidated deferred work — sourced items, user-authored ad-hoc items, cross-cutting themes | PM |
 | Brainstorms | Markdown files | `docs/jim/brainstorms/` | Freeform ideation capture | PM |
 | Debug Reports | Markdown files | `docs/jim/debug/` | Structured failure diagnosis | Coder |
 
