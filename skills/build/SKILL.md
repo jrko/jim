@@ -90,8 +90,9 @@ Then read the next unchecked task and repeat.
 
 After all tasks are marked `[x]`:
 
-1. Report to the user and ask: "Should I mark the plan status as `complete`?"
-2. STOP. Wait for the human to confirm. Do not proceed to the next SDLC phase, do not auto-invoke review. Update the plan frontmatter to `status: complete` only after explicit confirmation.
+1. Check if `ARCHITECTURE.md` exists at the project root. If it does, invoke `/jim:arch` to run a differential update — the architect will scan the codebase, compare against the existing document, and present any changes for your approval. If `ARCHITECTURE.md` does not exist, skip this step.
+2. Report to the user and ask: "Should I mark the plan status as `complete`?"
+3. STOP. Wait for the human to confirm. Do not proceed to the next SDLC phase, do not auto-invoke review. Update the plan frontmatter to `status: complete` only after explicit confirmation.
 
 ## Scope Discipline
 
