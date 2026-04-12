@@ -2,7 +2,7 @@
 name: brainstorm
 description: >
   Capture freeform ideation and exploratory thinking to
-  docs/brainstorms/{YYYYMMDD}-{topic}.md. Use when the user invokes
+  docs/jim/brainstorms/{YYYYMMDD}-{topic}.md. Use when the user invokes
   /jim:brainstorm, wants to think through ideas, or explore options without
   committing to a spec. Do not use when the user wants a structured spec
   (/jim:spec) or strategic document (/jim:vision, /jim:roadmap).
@@ -24,11 +24,11 @@ Use `$ARGUMENTS` as the topic for the brainstorm file. If empty, ask: "What do y
 
 ### 2. Read context (light)
 
-Quickly read VISION.md and ROADMAP.md if they exist. Don't discuss them — hold them as context so end-of-session routing is informed.
+Quickly read `docs/jim/VISION.md` and `docs/jim/ROADMAP.md` if they exist. Don't discuss them — hold them as context so end-of-session routing is informed.
 
 ### 3. Create the brainstorm file
 
-Create `docs/brainstorms/{YYYYMMDD}-{topic}.md`. Use today's date and a topic slug (lowercase, hyphens, no spaces). Create the `docs/brainstorms/` directory if it doesn't exist.
+Create `docs/jim/brainstorms/{YYYYMMDD}-{topic}.md`. Use today's date and a topic slug (lowercase, hyphens, no spaces). Create the `docs/jim/brainstorms/` directory if it doesn't exist.
 
 Write the initial content:
 

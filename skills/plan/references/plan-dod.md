@@ -18,7 +18,7 @@ Self-check reference for the architect agent and the `/jim:plan` skill. Every pl
 
 5. **Design Decisions Documented:** Every non-obvious design choice has a Chosen/Why/Rejected block. Absence of design decisions is a red flag — if every choice was obvious, say so explicitly.
 
-6. **Constitution Check Present:** Either lists ARCHITECTURE.md constraints honored by this plan, or notes that ARCHITECTURE.md is absent. Never silently skip this section.
+6. **Constitution Check Present:** Either lists `docs/jim/ARCHITECTURE.md` constraints honored by this plan, or notes that `docs/jim/ARCHITECTURE.md` is absent. Never silently skip this section.
 
 7. **File Manifest Complete:** Lists every file that will be created or modified. No surprise files in the task breakdown that aren't in the manifest.
 
@@ -63,5 +63,5 @@ Self-check reference for the architect agent and the `/jim:plan` skill. Every pl
 | Every task has `**Verify:**` | Task Breakdown | Yes |
 | Requirements Coverage table | Requirements Coverage Summary | Yes |
 | `[NEEDS CLARIFICATION]` for ambiguous ACs | Requirements Coverage Summary | No — but must be raised |
-| ARCHITECTURE.md check | Constitution Check | Yes |
+| `docs/jim/ARCHITECTURE.md` check | Constitution Check | Yes |
 | No sensitive path writes | Task Breakdown | Yes |

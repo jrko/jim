@@ -29,7 +29,7 @@
 {The long-term end state. What does success look like? How do we measure it?}
 
 ## Roadmap Trajectory
-{High-level phases — Phase 1 / Phase 2 / Phase 3. Overview only — detailed sequencing lives in ROADMAP.md.}
+{High-level phases — Phase 1 / Phase 2 / Phase 3. Overview only — detailed sequencing lives in docs/jim/ROADMAP.md.}
 
 ## Non-Goals
 <!-- These are locked decisions that /jim:spec treats as constraints. -->

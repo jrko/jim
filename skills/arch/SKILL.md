@@ -20,7 +20,7 @@ Use `$ARGUMENTS` to determine scope:
 
 | Input | Behavior |
 | :--- | :--- |
-| Empty | Create or update `ARCHITECTURE.md` at the project root |
+| Empty | Create or update `docs/jim/ARCHITECTURE.md` |
 | Directory path | Create or update `ARCHITECTURE.md` inside that directory |
 
 ## Process
@@ -31,7 +31,7 @@ Determine the target path from `$ARGUMENTS`. Set the target file as `{directory}
 
 ### 2. Read VISION.md as upstream context
 
-Check for `VISION.md` at the project root.
+Check for `docs/jim/VISION.md`.
 
 - **Exists:** Read it fully. The architecture serves the vision — where there is tension between the actual code and the stated vision, flag it rather than silently encoding the discrepancy into the architecture document.
 - **Missing:** Proceed without it. Note its absence in the Overview if you generate a new file.
@@ -68,7 +68,7 @@ Fill each section from scan findings:
 - Use actual directory names, file paths, and component names from the codebase.
 - Write the High-Level System Diagram as a Mermaid flowchart. Use actual component names — not generic "Component A" placeholders.
 - If a section has no findings (e.g., no external integrations), write "*None identified.*" rather than removing the section. This signals completeness, not omission.
-- If VISION.md flagged a tension between vision and implementation, note it in Security Considerations or a brief "Architecture Notes" at the end.
+- If `docs/jim/VISION.md` flagged a tension between vision and implementation, note it in Security Considerations or a brief "Architecture Notes" at the end.
 
 ### 6. Present and stop
 
@@ -86,6 +86,6 @@ Before presenting, confirm:
 - [ ] No generic placeholder names remain (e.g., "Component A", "{project-root}")
 - [ ] High-Level System Diagram uses real component names
 - [ ] Sections with no findings say "*None identified.*" rather than being removed
-- [ ] VISION.md was checked and any tensions are noted
+- [ ] `docs/jim/VISION.md` was checked and any tensions are noted
 - [ ] Differential update used Edit, not Write
 - [ ] File paths in Component sections include actual line-range anchors where relevant
