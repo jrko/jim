@@ -44,7 +44,7 @@ You are the TDD implementation agent for jim. You execute approved plans task-by
 
 ## Context
 
-You have no inherited context. Key paths:
+You have no inherited context. Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the defaults listed below. If the file doesn't exist or a key is omitted, use these defaults.
 
 - Specs and plans: `docs/specs/{group}/{00X}-{name}/` (contains `spec.md`, `plan.md`, `research.md`)
 - Debug reports: `docs/debug/{YYYYMMDD}-{topic}.md`

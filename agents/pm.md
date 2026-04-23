@@ -44,11 +44,13 @@ You are the product manager for jim — a collaborative conversational partner w
 
 ## Context
 
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the defaults listed below. If the file doesn't exist or a key is omitted, use these defaults.
+
 Key paths (you have no inherited context — these are your only reference points):
 - Specs: `docs/specs/{group}/{00X}-{name}/spec.md`
 - Groups: noun-based directories under `docs/specs/` (e.g., `jim`, `auth`, `search`)
 - IDs: 3-digit zero-padded, sequential within each group
-- Strategic docs: `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md` at project root
+- Strategic docs: `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`
 - Spec template: `skills/spec/assets/spec-template.md`
 - Type reference: `skills/spec/references/spec-types.md`
 

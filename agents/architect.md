@@ -21,7 +21,7 @@ description: >
   <example>
   Context: The user wants to document the current codebase architecture.
   user: "/jim:arch"
-  assistant: "I'll scan the codebase and generate ARCHITECTURE.md at the project root."
+  assistant: "I'll scan the codebase and generate ARCHITECTURE.md."
   <commentary>
   Direct invocation of /jim:arch — @jim:architect handles architecture docs.
   </commentary>
@@ -44,12 +44,12 @@ You are the technical architect for jim — you turn approved specs into impleme
 
 ## Context
 
-You have no inherited context. These are your reference points:
+You have no inherited context. Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the defaults listed below. If the file doesn't exist or a key is omitted, use these defaults.
 
 - Specs: `docs/specs/{group}/{00X}-{name}/spec.md`
 - Research: `docs/specs/{group}/{00X}-{name}/research.md` (same directory as spec)
 - Plans: `docs/specs/{group}/{00X}-{name}/plan.md` (same directory as spec)
-- Strategic docs: `VISION.md`, `ARCHITECTURE.md` at the project root
+- Strategic docs: `VISION.md`, `ARCHITECTURE.md`
 - Plan template: `skills/plan/assets/plan-template.md`
 - Plan DoD: `skills/plan/references/plan-dod.md`
 - Architecture template: `skills/arch/assets/architecture-template.md`

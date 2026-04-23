@@ -54,6 +54,7 @@ Research is not a gated phase; it is an agile service that grounds the SDLC in r
 | `/jim:spec` | Define the work — feature, bug, or refactor | `@jim:pm` | `spec.md` |
 | `/jim:plan` | Research codebase + break into atomic tasks | `@jim:architect` | `plan.md` |
 | `/jim:research` | Investigate codebase, external docs, and technical landscape | `@jim:researcher` | `research.md` |
+| `/jim:sec` | Security review of a spec, plan, or arbitrary target | `@jim:security` | `security.md` |
 | `/jim:build` | TDD red-green-refactor + commit per task | `@jim:coder` | Tests + code |
 | `/jim:review` | Quality and security gate *(not yet implemented)* | `@jim:reviewer` | TBD |
 | `/jim:ship` | PR, deploy, update roadmap *(not yet implemented)* | TBD | Merged PR |
@@ -63,6 +64,7 @@ Research is not a gated phase; it is an agile service that grounds the SDLC in r
 | `/jim:debug` | Diagnose failures, produce report for spec/plan cycle | `@jim:coder` | `debug/{YYYYMMDD}-{topic}.md` |
 | `/jim:backlog` | Scan deferred work, consolidate, and produce BACKLOG.md; use `add <desc>` to append an ad-hoc item without a full rescan | `@jim:pm` | `BACKLOG.md` |
 | `/jim:brainstorm` | Freeform ideation — exploratory notes | `@jim:pm` | `brainstorms/{YYYYMMDD}-{topic}.md` |
+| `/jim:config` | Scaffold or update project configuration | `@jim:meta` | `.jim/config.md` |
 | `/jim:meta-skill` | Create/update a jim plugin skill from spec | `@jim:meta` | `jim/skills/{name}/SKILL.md` |
 | `/jim:meta-agent` | Create/update a jim plugin agent from spec | `@jim:meta` | `jim/agents/{name}.md` |
 
@@ -74,25 +76,20 @@ Research is not a gated phase; it is an agile service that grounds the SDLC in r
 
 | Artifact | Location | What It Is | Managed By |
 |----------|----------|------------|------------|
-| Vision | `VISION.md` (project root) | Big picture — problem statement, value prop, target audience, competitive landscape | `/jim:vision` |
-| Architecture | `ARCHITECTURE.md` (project root) | Technical foundation — codemap, system diagram, tech stack, data structures, architectural invariants | `/jim:arch` |
-| Roadmap | `ROADMAP.md` (project root) | Execution sequence — milestones, phase breakdowns, links to numbered specs with status | `/jim:roadmap` |
+| Vision | `VISION.md` | Big picture — problem statement, value prop, target audience, competitive landscape | `/jim:vision` |
+| Architecture | `ARCHITECTURE.md` | Technical foundation — codemap, system diagram, tech stack, data structures, architectural invariants | `/jim:arch` |
+| Roadmap | `ROADMAP.md` | Execution sequence — milestones, phase breakdowns, links to numbered specs with status | `/jim:roadmap` |
 | Spec | `docs/specs/{group}/{00X}-{name}/spec.md` | Work definition — requirements, acceptance criteria, spec type (feature/bug/refactor) | `/jim:spec` |
 | Plan | `docs/specs/{group}/{00X}-{name}/plan.md` | Implementation path — codebase research, atomic tasks, dependencies | `/jim:plan` |
+| Security Review | `docs/specs/{group}/{00X}-{name}/security.md` | Design-time security analysis — threats, findings, recommended routes | `/jim:sec` |
 | Debug Report | `docs/debug/{YYYYMMDD}-{topic}.md` | Diagnosis — error analysis, root cause, references to affected specs | `/jim:debug` |
 | Backlog | `BACKLOG.md` | Consolidated deferred work — out-of-scope items, unresolved ideas, cross-cutting themes | `/jim:backlog` |
 | Brainstorm | `docs/brainstorms/{YYYYMMDD}-{topic}.md` | Exploratory notes — ideas, risks, options, may feed into specs | `/jim:brainstorm` |
+| Config | `.jim/config.md` | Project-level configuration — paths, workflow gates, spec ID format | `/jim:config` |
 
 ### Plugin Artifacts (Jim developing Jim)
 
-| Artifact | Location | What It Is | Managed By |
-|----------|----------|------------|------------|
-| Plugin Vision | `jim/VISION.md` | Why Jim exists, what problem it solves | `/jim:vision` (from within jim/) |
-| Plugin Architecture | `jim/ARCHITECTURE.md` | Plugin structure, agent-skill composition, naming conventions | `/jim:arch` (from within jim/) |
-| Plugin Roadmap | `jim/ROADMAP.md` | Which skills/agents to build in what order | `/jim:roadmap` (from within jim/) |
-| Plugin Workflow | `jim/docs/workflow.md` | This file — the SDLC process itself | Manual or `/jim:meta-skill` |
-| Skill | `jim/skills/{name}/SKILL.md` | A jim plugin skill — instructions, templates, references | `/jim:meta-skill` |
-| Agent | `jim/agents/{name}.md` | A jim plugin agent — persona, tools, skill composition | `/jim:meta-agent` |
+> **Not yet implemented.** Jim does not currently support updating itself from within a host project. To develop jim, work directly in the jim repository. Jim's own docs follow the same structure as any project.
 
 ---
 
@@ -121,14 +118,11 @@ jim/
 ├── .claude-plugin/
 │   └── plugin.json              # { "name": "jim", "version": "1.0.0" }
 │
-├── VISION.md                    # Why Jim exists (Jim's own strategic docs)
-├── ARCHITECTURE.md              # How Jim is structured
-├── ROADMAP.md                   # What to build next for Jim
-│
 ├── agents/
 │   ├── pm.md                    # → @jim:pm
 │   ├── architect.md             # → @jim:architect
 │   ├── researcher.md            # → @jim:researcher
+│   ├── security.md              # → @jim:security
 │   ├── coder.md                 # → @jim:coder
 │   ├── reviewer.md              # → @jim:reviewer
 │   └── meta.md                  # → @jim:meta
@@ -150,6 +144,11 @@ jim/
 │   │
 │   ├── research/
 │   │   └── SKILL.md             # → /jim:research
+│   │
+│   ├── sec/
+│   │   ├── SKILL.md             # → /jim:sec
+│   │   └── assets/
+│   │       └── security-template.md
 │   │
 │   ├── build/
 │   │   ├── SKILL.md             # → /jim:build
@@ -193,6 +192,11 @@ jim/
 │   │   └── SKILL.md             # → /jim:brainstorm
 │   │
 │   │  # ── Meta (Jim building Jim) ──
+│   ├── config/
+│   │   ├── SKILL.md             # → /jim:config
+│   │   └── assets/
+│   │       └── config-template.md
+│   │
 │   ├── meta-skill/
 │   │   ├── SKILL.md             # → /jim:meta-skill
 │   │   └── references/
@@ -204,8 +208,15 @@ jim/
 │           └── agent-standards.md
 │
 ├── docs/
-│   └── workflow.md              # This file — the SDLC process itself
+│   ├── specs/               # Spec directories grouped by domain (e.g., jim/001-meta)
+│   ├── brainstorms/         # Freeform ideation (YYYYMMDD-topic.md)
+│   ├── prior-art/           # Reference material from other projects
+│   └── notes/               # Development notes
 │
+├── VISION.md                # Why Jim exists
+├── ARCHITECTURE.md          # How Jim is structured
+├── ROADMAP.md               # What to build next for Jim
+├── WORKFLOW.md              # This file — the SDLC process itself
 └── README.md
 ```
 
@@ -216,9 +227,10 @@ jim/
 | `@jim:pm` | Product strategy, specs, vision, roadmap, backlog | `/jim:spec`, `/jim:vision`, `/jim:roadmap`, `/jim:backlog`, `/jim:brainstorm` |
 | `@jim:architect` | Technical planning, architecture | `/jim:plan`, `/jim:arch` |
 | `@jim:researcher` | Codebase investigation and technical landscape research | `/jim:research`, invoked by PM or architect |
+| `@jim:security` | Design-time security analysis and threat review | `/jim:sec` |
 | `@jim:coder` | TDD implementation, debugging | `/jim:build`, `/jim:debug` |
 | `@jim:reviewer` | Quality gate *(not yet implemented)* | TBD |
-| `@jim:meta` | Plugin development — builds skills and agents | `/jim:meta-skill`, `/jim:meta-agent` |
+| `@jim:meta` | Plugin development — builds skills, agents, and config | `/jim:meta-skill`, `/jim:meta-agent`, `/jim:config` |
 
 ### Agent ↔ Skill Composition
 
@@ -403,7 +415,7 @@ Jim can develop itself through its own SDLC. Skills and agents for the plugin ar
 /jim:meta-agent    → build the agent from spec + plan
 ```
 
-Jim's own specs live in `docs/specs/jim/` as a group. Jim's strategic docs (`VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`) live at the plugin root.
+Jim's own specs live in `docs/specs/jim/` as a group. Jim's strategic docs (`VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`) live at the project root.
 
 ---
 
@@ -436,3 +448,18 @@ Not every change needs the full lifecycle:
 5. **Verification Loops:** Every code change is verified by test, linter, or type checker.
 
 6. **Progressive Disclosure:** SKILL.md stays under 500 lines. Templates in `assets/`, reference docs in `references/`.
+
+7. **Configurable Gates:** `.jim/config.md` can enforce prerequisites before a phase runs. `workflow.require-research` and `workflow.require-security` are off by default — enable them to make `/jim:plan` or `/jim:build` stop when the prerequisite artifact is missing. `workflow.require-plan-approval` is on by default — `/jim:build` stops unless the plan is approved.
+
+---
+
+## Configuration and Overlay
+
+Jim is configurable per-project via `.jim/config.md`. All skills and agents read the file at the start of every invocation; omitted keys use defaults, and the file is optional.
+
+- **Paths** — redirect where jim reads strategic docs and writes specs, brainstorms, debug reports
+- **Spec ID format** — padding width and optional prefix (e.g., `FE-001`)
+- **Workflow gates** — enforce research, security review, or plan approval as prerequisites
+- **Overlay** — place custom templates under `.jim/skills/{name}/assets/` or `references/` to override built-in files (file presence wins, no config key required)
+
+Run `/jim:config` to scaffold or update the config interactively. See [`CONFIG.md`](CONFIG.md) for the full schema.

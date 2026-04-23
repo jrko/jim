@@ -31,7 +31,11 @@ Use `$ARGUMENTS` to determine the review target and mode:
 
 ## Process
 
-### 1. Determine mode and read target
+### 1. Read config
+
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Determine mode and read target
 
 **Spec-scoped mode:**
 1. Read `spec.md` from the target directory.
@@ -43,9 +47,9 @@ Use `$ARGUMENTS` to determine the review target and mode:
 1. Read the target file or Glob the target directory for relevant files.
 2. Focus on files likely to have security implications: auth, config, API definitions, data models, infrastructure.
 
-### 2. Read architectural context
+### 3. Read architectural context
 
-Read `ARCHITECTURE.md` if it exists. Note existing:
+Read `ARCHITECTURE.md` (default, configurable via `.jim/config.md`) if it exists. Note existing:
 - Trust boundaries and component relationships
 - Data flows and storage patterns
 - Authentication/authorization patterns
@@ -53,9 +57,9 @@ Read `ARCHITECTURE.md` if it exists. Note existing:
 
 If absent, note it and proceed without architectural grounding.
 
-Read `VISION.md` if it exists — for strategic context only.
+Read `VISION.md` (default, configurable via `.jim/config.md`) if it exists — for strategic context only.
 
-### 3. Check for existing security.md (spec-scoped only)
+### 4. Check for existing security.md (spec-scoped only)
 
 If `security.md` exists in the target directory, this is a differential update:
 
@@ -64,7 +68,7 @@ If `security.md` exists in the target directory, this is a differential update:
 3. Ask: "Want me to update the existing review, or start fresh?"
 4. If updating, use Edit to preserve sections the user didn't ask to change.
 
-### 4. Freeform expert review
+### 5. Freeform expert review
 
 Analyze the target as an experienced security engineer. Focus on:
 
@@ -89,7 +93,7 @@ Analyze the target as an experienced security engineer. Focus on:
 
 Look for non-obvious, context-specific issues first. This is the creative, expert-judgment phase.
 
-### 5. STRIDE completeness sweep
+### 6. STRIDE completeness sweep
 
 After the freeform review, systematically evaluate each STRIDE category:
 
@@ -106,7 +110,7 @@ After the freeform review, systematically evaluate each STRIDE category:
 
 If the STRIDE sweep surfaces issues not caught in freeform review, add them as findings.
 
-### 6. Spawn researcher if needed
+### 7. Spawn researcher if needed
 
 If the analysis identifies questions that require deeper investigation:
 - "Is this encryption library still considered safe?"
@@ -115,7 +119,7 @@ If the analysis identifies questions that require deeper investigation:
 
 Spawn `@jim:researcher` via the Agent tool with a targeted prompt. Wait for results and incorporate into findings.
 
-### 7. Generate findings
+### 8. Generate findings
 
 For each issue identified, create a finding with all four required fields:
 
@@ -126,14 +130,14 @@ For each issue identified, create a finding with all four required fields:
 
 Order findings by severity — critical first.
 
-### 8. Self-check
+### 9. Self-check
 
-Read `references/security-dod.md` and validate the review against every applicable checklist item. Fix any gaps before proceeding.
+First check `.jim/skills/sec/references/security-dod.md` — if it exists, use it instead of the built-in. Read `references/security-dod.md` and validate the review against every applicable checklist item. Fix any gaps before proceeding.
 
-### 9. Generate output
+### 10. Generate output
 
 **Spec-scoped mode:**
-1. Read `assets/security-template.md` for the output structure.
+1. First check `.jim/skills/sec/assets/security-template.md` — if it exists, use it instead of the built-in. Read `assets/security-template.md` for the output structure.
 2. Populate all sections from the template.
 3. Set frontmatter `spec:` to the relative path of the source spec.
 4. Set frontmatter `status:`:
@@ -148,7 +152,7 @@ Read `references/security-dod.md` and validate the review against every applicab
 2. Include the STRIDE coverage table.
 3. Do not write a file.
 
-### 10. Present and route
+### 11. Present and route
 
 Show the findings to the user.
 

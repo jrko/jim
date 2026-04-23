@@ -1,6 +1,6 @@
 # Architecture — Jim
 
-*Last updated: 2026-04-12 (010-sec build)*
+*Last updated: 2026-04-18 (011-config build)*
 
 > This document is generated and maintained by `/jim:arch`. Edit via the skill to preserve consistency.
 
@@ -33,13 +33,15 @@ jim/
 │   ├── backlog/             # /jim:backlog — deferred work consolidation
 │   ├── brainstorm/          # /jim:brainstorm — freeform ideation capture
 │   ├── sec/                 # /jim:sec — security analysis and threat review
+│   ├── config/              # /jim:config — project configuration scaffolding
 │   ├── meta-skill/          # /jim:meta-skill — create/update jim skills
 │   └── meta-agent/          # /jim:meta-agent — create/update jim agents
 ├── docs/
-│   ├── specs/               # Spec groups with numbered spec directories
-│   │   └── jim/             # Specs for jim's own development (001–006)
-│   ├── prior-art/           # Reference material from other projects (gitignored downloads)
+│   ├── specs/               # Spec directories grouped by domain (e.g., jim/001-meta)
+│   ├── brainstorms/         # Freeform ideation (YYYYMMDD-topic.md)
+│   ├── prior-art/           # Reference material from other projects
 │   └── notes/               # Personal development notes
+├── ARCHITECTURE.md          # This file
 ├── VISION.md                # Product vision — problem, solution, audience, north star
 ├── ROADMAP.md               # Execution sequence
 ├── WORKFLOW.md              # The SDLC process definition — commands, artifacts, philosophy
@@ -75,6 +77,7 @@ flowchart TD
     subgraph "Meta Skills"
         MS["/jim:meta-skill"]
         MA["/jim:meta-agent"]
+        CONF["/jim:config"]
     end
 
     subgraph Agents
@@ -98,11 +101,12 @@ flowchart TD
         BLOGDOC["BACKLOG.md"]
         BDOC["brainstorm.md"]
         DDOC["debug report"]
+        CONFDOC[".jim/config.md"]
     end
 
     U --> VIS & ROAD & ARCH & BACKLOG & BRAIN
     U --> SPEC & RES & PLAN & SEC & BUILD & DEBUG
-    U --> MS & MA
+    U --> MS & MA & CONF
 
     VIS & ROAD & BACKLOG & BRAIN --> PM
     ARCH --> ARCHITECT
@@ -111,13 +115,14 @@ flowchart TD
     PLAN --> ARCHITECT
     SEC --> SECURITY
     BUILD & DEBUG --> CODER
-    MS & MA --> META
+    MS & MA & CONF --> META
 
     PM --> VDOC & RDOC & SDOC & BLOGDOC & BDOC
     ARCHITECT --> ADOC & PDOC
     RESEARCHER --> RESDOC
     SECURITY --> SECDOC
     CODER --> CODE & DDOC
+    META --> CONFDOC
 
     ARCHITECT -.->|spawns| RESEARCHER
     SECURITY -.->|spawns| RESEARCHER
@@ -131,9 +136,9 @@ flowchart TD
 Agents are markdown files (`agents/*.md`) that define personas with frontmatter metadata. Each agent declares its name, description, skill bindings, tool permissions, and model preference.
 
 - **Purpose:** Define the persona, responsibilities, and boundaries for each specialized role in the SDLC
-- **Location:** `agents/` — `pm.md` (L1–75), `architect.md` (L1–81), `researcher.md` (L1–84), `security.md` (L1–75), `coder.md` (L1–84), `meta.md` (L1–64)
+- **Location:** `agents/` — `pm.md` (L1–76), `architect.md` (L1–80), `researcher.md` (L1–83), `security.md` (L1–75), `coder.md` (L1–83), `meta.md` (L1–66)
 - **Interfaces:** Frontmatter fields: `name`, `description`, `skills` (list), `tools` (list), `model` (string). Body contains persona instructions, context paths, core principles, process delegation, and constraints.
-- **Dependencies:** Each agent references its bound skills in `skills/`. Agents may spawn other agents via the `Agent()` tool declaration (e.g., architect, PM, and security can spawn researcher; meta can spawn PM, architect, researcher).
+- **Dependencies:** Each agent references its bound skills in `skills/`. Agents may spawn other agents via the `Agent()` tool declaration (e.g., architect, PM, and security can spawn researcher; meta can spawn PM, architect, researcher). All agents read `.jim/config.md` at spawn for configurable paths, with hardcoded defaults as fallback.
 - **Key Constraints:** Agents do not cross domain boundaries — PM does not write code, coder does not modify specs, researcher does not make design decisions. All agents stop after producing an artifact and wait for human approval.
 
 ### Skills
@@ -141,9 +146,9 @@ Agents are markdown files (`agents/*.md`) that define personas with frontmatter 
 Skills are SKILL.md files inside `skills/{name}/` directories, optionally accompanied by `assets/` (templates) and `references/` (methodology docs).
 
 - **Purpose:** Provide the detailed process instructions that agents follow when a `/jim:{verb}` command is invoked
-- **Location:** `skills/` — 13 skill directories (spec, plan, research, sec, build, debug, vision, roadmap, arch, backlog, brainstorm, meta-skill, meta-agent)
+- **Location:** `skills/` — 14 skill directories (spec, plan, research, sec, build, debug, vision, roadmap, arch, backlog, brainstorm, config, meta-skill, meta-agent)
 - **Interfaces:** Frontmatter fields: `name`, `description`, `agent` (which agent runs this skill), `argument-hint`. Body contains step-by-step process, argument routing, validation checklists.
-- **Dependencies:** Skills reference their `assets/` templates and `references/` docs. Skills are bound to agents via the `agent` frontmatter field (documentation convention, not runtime routing).
+- **Dependencies:** Skills reference their `assets/` templates and `references/` docs. Skills are bound to agents via the `agent` frontmatter field (documentation convention, not runtime routing). All skills read `.jim/config.md` for configurable paths and workflow settings. Skills with assets/references check `.jim/skills/{name}/` overlay paths before falling back to built-in files.
 - **Key Constraints:** SKILL.md stays under 500 lines (progressive disclosure). Templates live in `assets/`, methodology in `references/`.
 
 ### Plugin Manifest
@@ -165,7 +170,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 ### Spec Archive
 
 - **Purpose:** Living development artifacts — specs, research, and plans organized by group and sequential ID
-- **Location:** `docs/specs/{group}/{00X}-{name}/` — currently `docs/specs/jim/001-meta/` through `010-sec/`
+- **Location:** `docs/specs/{group}/{00X}-{name}/` — currently `docs/specs/jim/001-meta/` through `011-config/`
 - **Interfaces:** Each spec directory contains up to four files: `spec.md`, `research.md`, `plan.md`, `security.md`
 - **Dependencies:** Produced by PM (spec), researcher (research), and architect (plan) agents
 - **Key Constraints:** IDs are 3-digit zero-padded, sequential within each group. Groups are noun-based directories. Specs must be `approved` before plans can be created.
@@ -179,6 +184,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 | Backlog | Markdown file | `BACKLOG.md` | Consolidated deferred work — sourced items, user-authored ad-hoc items, cross-cutting themes | PM |
 | Brainstorms | Markdown files | `docs/brainstorms/` | Freeform ideation capture | PM |
 | Debug Reports | Markdown files | `docs/debug/` | Structured failure diagnosis | Coder |
+| Config and Overlay | Markdown files | `.jim/config.md`, `.jim/skills/{name}/` | Project-level configuration (paths, workflow gates, spec ID format) and asset/reference overrides | Meta (via `/jim:config`); all skills and agents read |
 
 ## External Integrations
 
@@ -191,7 +197,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 
 - **Runtime:** Claude Code plugin — no standalone runtime. Requires Claude Code CLI with plugin support.
 - **Entry point:** `.claude-plugin/plugin.json` — Claude Code discovers and loads the plugin from this manifest
-- **Configuration:** `.claude/settings.local.json` for permission allowlists. No other configuration files.
+- **Configuration:** `.claude/settings.local.json` for permission allowlists. `.jim/config.md` for project-level configuration (paths, workflow gates, spec ID format). `.jim/skills/` for asset/reference overlays. All optional — zero-config defaults match upstream layout.
 - **Distribution:** Git repository. Users install by cloning/adding the repo as a Claude Code plugin.
 - **Environment requirements:** Claude Code CLI. No build step, no dependencies, no package manager — pure markdown.
 
@@ -246,6 +252,15 @@ Conventions that govern how jim's agents, skills, and tools interact with Claude
 - **Agent body ≤ 800 tokens.** Keep agent definitions tight — delegate detail to preloaded skills.
 - **`references/` files > 300 lines should have a ToC** at the top to help Claude find relevant sections without loading everything.
 
+### Configuration and Overlay
+
+- **Config resolution:** All skills read `.jim/config.md` from the project root as step 1 of their process. YAML frontmatter keys override hardcoded defaults. Omitted keys or a missing file means all defaults apply.
+- **Configurable paths:** `path.*` keys redirect where skills read strategic docs (VISION.md, ARCHITECTURE.md, etc.) and write artifacts (specs, brainstorms, debug reports). All paths are relative to project root.
+- **Workflow gates:** `workflow.require-research`, `workflow.require-security`, `workflow.require-plan-approval` control phase-entry enforcement in plan and build skills.
+- **Spec ID format:** `specs.id-padding` and `specs.id-prefix` control ID generation in the spec skill.
+- **Asset/reference overlay:** Skills check `.jim/skills/{skill-name}/assets/{file}` and `.jim/skills/{skill-name}/references/{file}` before reading built-in files. File presence wins — no config key needed.
+- **Agent overlay:** Handled natively by Claude Code via `.claude/agents/` (project-level agents override plugin agents by priority). Not a jim-specific mechanism.
+
 ### Anti-Patterns
 
 These are documented failure modes from prior art research (`docs/specs/jim/001-meta/research.md`):
@@ -267,3 +282,5 @@ These are documented failure modes from prior art research (`docs/specs/jim/001-
 | Differential update | Reading an existing artifact before modifying it — never overwrite blindly |
 | Progressive disclosure | Keeping SKILL.md concise (<500 lines) by delegating detail to `assets/` and `references/` |
 | Meta | Jim developing Jim — using `@jim:meta` agent with `/jim:meta-skill` and `/jim:meta-agent` to build plugin components |
+| Config | Project-level configuration in `.jim/config.md` — paths, workflow gates, spec ID format |
+| Overlay | User-provided asset/reference files in `.jim/skills/{name}/` that override built-in plugin files |

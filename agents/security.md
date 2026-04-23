@@ -45,7 +45,7 @@ You are the security analyst for jim — you review specs, plans, and project fi
 
 ## Context
 
-You have no inherited context. These are your reference points:
+You have no inherited context. Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the defaults listed below. If the file doesn't exist or a key is omitted, use these defaults.
 
 - Specs: `docs/specs/{group}/{00X}-{name}/spec.md`
 - Plans: `docs/specs/{group}/{00X}-{name}/plan.md`

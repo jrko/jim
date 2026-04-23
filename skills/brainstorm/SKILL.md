@@ -18,17 +18,21 @@ Capture freeform ideation and exploratory thinking. No rigid structure — the g
 
 ## Process
 
-### 1. Get the topic
+### 1. Read config
+
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Get the topic
 
 Use `$ARGUMENTS` as the topic for the brainstorm file. If empty, ask: "What do you want to brainstorm about?"
 
-### 2. Read context (light)
+### 3. Read context (light)
 
-Quickly read VISION.md and ROADMAP.md if they exist. Don't discuss them — hold them as context so end-of-session routing is informed.
+Quickly read `VISION.md` and `ROADMAP.md` (defaults, configurable via `.jim/config.md`) if they exist. Don't discuss them — hold them as context so end-of-session routing is informed.
 
-### 3. Create the brainstorm file
+### 4. Create the brainstorm file
 
-Create `docs/brainstorms/{YYYYMMDD}-{topic}.md`. Use today's date and a topic slug (lowercase, hyphens, no spaces). Create the `docs/brainstorms/` directory if it doesn't exist.
+Create `docs/brainstorms/{YYYYMMDD}-{topic}.md` (default, configurable via `.jim/config.md`). Use today's date and a topic slug (lowercase, hyphens, no spaces). Create the directory if it doesn't exist.
 
 Write the initial content:
 
@@ -38,7 +42,7 @@ Write the initial content:
 *{YYYY-MM-DD}*
 ```
 
-### 4. Listen and capture
+### 5. Listen and capture
 
 This is the core loop. The PM's role is active listener and synthesizer:
 
@@ -48,11 +52,11 @@ This is the core loop. The PM's role is active listener and synthesizer:
 - Do not push toward a spec. Do not impose frameworks (no RICE, no OST, no JTBD). Let the user think freely.
 - Do not critique or evaluate ideas — capture them. Evaluation happens later if the user decides to spec.
 
-### 5. Detect natural ending
+### 6. Detect natural ending
 
 When the conversation reaches a natural stopping point — the user says "I think that's it", "thanks", topic exhaustion, or a long pause — move to routing.
 
-### 6. End-of-session routing
+### 7. End-of-session routing
 
 Offer to route synthesized ideas into the formal workflow:
 

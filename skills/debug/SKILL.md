@@ -26,15 +26,19 @@ Use `$ARGUMENTS` to determine what to diagnose:
 
 ## Process
 
-### 1. Gather failure context
+### 1. Read config
+
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Gather failure context
 
 Read the error, description, or file provided. If the failure references a spec or plan, find and read those files for context — they clarify the intended behavior.
 
 Look for related files:
-- Check `docs/debug/` for prior debug reports on the same topic.
+- Check `docs/debug/` (default, configurable via `.jim/config.md`) for prior debug reports on the same topic.
 - Glob and Grep the codebase for the failing component, test file, or error message.
 
-### 2. Diagnose the failure
+### 3. Diagnose the failure
 
 Analyze in this order:
 
@@ -43,14 +47,14 @@ Analyze in this order:
 3. **Hypothesize:** Form one primary root cause hypothesis, supported by evidence from the code or error output. Note alternative hypotheses if they are credible.
 4. **Check spec/plan linkage:** If the failure is in code that was implemented from a plan, identify which task in the plan produced the failing code. If the failure suggests the spec requirement itself is wrong or incomplete, note this explicitly — it affects the recommendation.
 
-### 3. Generate the debug report
+### 4. Generate the debug report
 
-Determine the report filename: `docs/debug/{YYYYMMDD}-{topic}.md`
+Determine the report filename: `docs/debug/{YYYYMMDD}-{topic}.md` (default, configurable via `.jim/config.md`)
 
 - `{YYYYMMDD}` — today's date
 - `{topic}` — 2-4 word kebab-case description of the failure (e.g., `auth-token-expiry`, `build-verify-timeout`)
 
-Read `assets/debug-template.md` and fill every section:
+First check `.jim/skills/debug/assets/debug-template.md` — if it exists, use it instead of the built-in. Read `assets/debug-template.md` and fill every section:
 
 - **Error Analysis** — the error, observed behavior, expected behavior
 - **Reproduction Steps** — exact steps; include a shell command if one reproduces the failure
@@ -58,12 +62,12 @@ Read `assets/debug-template.md` and fill every section:
 - **Affected Specs/Plans** — any spec or plan linked to the failure (enables `origin:` field in future bug specs)
 - **Recommended Next Step** — choose one: direct fix (Option A), plan update (Option B), or spec update via `/jim:spec` (Option C). If the diagnosis reveals a fundamental flaw in the original requirements, Option C is the right choice — advise using `/jim:spec` to open a bug spec capturing the correct behavior.
 
-Write the report to `docs/debug/{YYYYMMDD}-{topic}.md`. Create the `docs/debug/` directory if it does not exist.
+Write the report to `docs/debug/{YYYYMMDD}-{topic}.md` (default, configurable via `.jim/config.md`). Create the directory if it does not exist.
 
-### 4. Present and stop
+### 5. Present and stop
 
 Show the completed report. Tell the user:
-- The report is at `docs/debug/{YYYYMMDD}-{topic}.md`.
+- The report is at `docs/debug/{YYYYMMDD}-{topic}.md` (or the configured path).
 - It can be referenced via the `origin:` field in a future bug spec.
 - The recommended next step and why.
 

@@ -45,11 +45,11 @@ You are the researcher for jim — a codebase investigator and technical landsca
 
 ## Context
 
-You have no inherited context. These are your reference points:
+You have no inherited context. Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the defaults listed below. If the file doesn't exist or a key is omitted, use these defaults.
 
 - Specs: `docs/specs/{group}/{00X}-{name}/spec.md`
 - Research output: `research.md` in the spec directory, or a standalone location confirmed with the user
-- Strategic docs: `VISION.md`, `ARCHITECTURE.md` at project root (locked constraints when they exist)
+- Strategic docs: `VISION.md`, `ARCHITECTURE.md` (locked constraints when they exist)
 - Research template: `skills/research/assets/research-template.md`
 - Definition of Done: `skills/research/references/research-dod.md`
 

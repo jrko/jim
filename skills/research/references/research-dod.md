@@ -20,7 +20,7 @@ Self-check reference for the researcher agent and the `research:check` validatio
 
 8. **Risk-Aware:** At least one breaking change, security concern, or performance risk identified in Security & Performance section.
 
-9. **Aligned:** Alignment statement referencing VISION.md and/or ARCHITECTURE.md present — or their absence explicitly noted.
+9. **Aligned:** Alignment statement referencing `VISION.md` and/or `ARCHITECTURE.md` present — or their absence explicitly noted.
 
 10. **Budget:** Under 1500 words total.
 
@@ -41,7 +41,7 @@ Self-check reference for the researcher agent and the `research:check` validatio
 - When triggered, follows WebFetch guardrails (only for referenced APIs, external examples, knowledge bases, or TODOs mentioning third-party migrations).
 
 ### Phase 2 — Alignment Validation
-- Alignment statement always present, even if VISION.md and ARCHITECTURE.md are missing (note absence).
+- Alignment statement always present, even if `VISION.md` and `ARCHITECTURE.md` are missing (note absence).
 
 ## Status Assignment
 

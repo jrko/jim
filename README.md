@@ -40,11 +40,14 @@ Jim can also develop itself — skills and agents for the plugin are specs like 
 | `/jim:spec` | Define a feature, bug, or refactor |
 | `/jim:plan` | Research codebase + create atomic task plan |
 | `/jim:build` | TDD red-green-refactor, one task at a time |
+| `/jim:sec` | Security review of a spec, plan, or arbitrary target |
 | `/jim:vision` | Create/update project vision |
 | `/jim:arch` | Create/update technical architecture |
 | `/jim:roadmap` | Create/update execution roadmap |
+| `/jim:backlog` | Consolidate deferred work into `BACKLOG.md` |
 | `/jim:debug` | Diagnose failures, produce debug report |
 | `/jim:brainstorm` | Freeform ideation and exploratory notes |
+| `/jim:config` | Scaffold or update `.jim/config.md` for your project |
 | `/jim:meta-skill` | Build a jim plugin skill from spec |
 | `/jim:meta-agent` | Build a jim plugin agent from spec |
 
@@ -52,10 +55,12 @@ Jim can also develop itself — skills and agents for the plugin are specs like 
 
 | Agent | Role |
 |-------|------|
-| `@jim:pm` | Specs, vision, roadmap, brainstorms |
+| `@jim:pm` | Specs, vision, roadmap, brainstorms, backlog |
 | `@jim:architect` | Plans, architecture |
+| `@jim:researcher` | Codebase and landscape investigation |
+| `@jim:security` | Security analysis and threat review |
 | `@jim:coder` | TDD builds, debugging |
-| `@jim:meta` | Plugin development — builds skills and agents |
+| `@jim:meta` | Plugin development — builds skills, agents, and config |
 
 ## How to install
 
@@ -77,9 +82,15 @@ Jim can also develop itself — skills and agents for the plugin are specs like 
 
 That's it — Jim's slash commands and agents are now available in your session.
 
+### Configure for your project (optional)
+
+Jim works zero-config — sensible defaults apply when no config is present. If your project uses different paths or you want to enforce workflow gates, run `/jim:config` to scaffold `.jim/config.md` interactively. Rerun any time to update.
+
+See [`CONFIG.md`](CONFIG.md) for the full schema — paths, spec ID format, workflow gates, and overlay directory.
+
 ## How to develop for Jim
 
-See [`WORKFLOW.md`](./WORKFLOW.md) for the full SDLC process.
+See [`WORKFLOW.md`](WORKFLOW.md) for the full SDLC process.
 
-Jim builds itself using its own workflow. Jim's specs live in [`docs/specs/jim/`](docs/specs/jim/).
+Jim builds itself using its own workflow. Jim's specs live in [`docs/specs/`](docs/specs/).
 

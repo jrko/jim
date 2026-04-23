@@ -18,7 +18,11 @@ Investigate codebase, external docs, and technical landscape to produce a ground
 
 ## Process
 
-### 1. Route input
+### 1. Read config
+
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Route input
 
 Use `$ARGUMENTS` to determine the research target and mode:
 
@@ -30,14 +34,14 @@ Use `$ARGUMENTS` to determine the research target and mode:
 | Directory path | Check for README.md or spec.md in the directory first for context, then scan. Suggest output location. |
 | String | Treat as topic for exploratory research. Suggest output location. |
 
-### 2. Determine output location
+### 3. Determine output location
 
-- **Spec path input:** Output to `docs/specs/{group}/{id}-{name}/research.md` (same directory as the spec).
+- **Spec path input:** Output to `docs/specs/{group}/{id}-{name}/research.md` (default, configurable via `.jim/config.md`) (same directory as the spec).
 - **Everything else:** Suggest a location and confirm with the user before writing:
   - If a related spec exists, suggest its directory.
-  - Otherwise suggest `docs/research/{YYYYMMDD}-{topic}.md`.
+  - Otherwise suggest `docs/research/{YYYYMMDD}-{topic}.md` (default, configurable via `.jim/config.md`).
 
-### 3. Check for existing research
+### 4. Check for existing research
 
 If research.md already exists at the target path, this is a differential update:
 
@@ -46,7 +50,7 @@ If research.md already exists at the target path, this is a differential update:
 3. Ask: "Want me to update the existing research, or start fresh?"
 4. If updating, use Edit to preserve sections the user didn't ask to change.
 
-### 4. Phase 0 — Local Archaeology
+### 5. Phase 0 — Local Archaeology
 
 Default phase. Run before any web research.
 
@@ -68,7 +72,7 @@ Default phase. Run before any web research.
 - **Bug:** Trace reproduction through codebase, identify fault location, check related bugs in group.
 - **Refactor:** Map current state, document all callers/consumers.
 
-### 5. Phase 1 — External Intelligence
+### 6. Phase 1 — External Intelligence
 
 Conditional phase. Triggered only after Phase 0 completes.
 
@@ -85,24 +89,24 @@ Conditional phase. Triggered only after Phase 0 completes.
 - **Prior art file table:** For each prior art entry, include a file-level table (File | What It Is | Why It Matters) when the repo is accessible (best-effort).
 - **Prior art tiering:** When 5+ prior art entries exist, organize into Tier 1 (Study Closely) / Tier 2 (Study for Specific Patterns) / Tier 3 (Reference Only). Under 5, use a flat list.
 
-### 6. Phase 2 — Alignment Validation
+### 7. Phase 2 — Alignment Validation
 
 Mandatory phase — always runs.
 
-1. Read VISION.md and ARCHITECTURE.md if they exist. Treat them as locked constraints.
+1. Read `VISION.md` and `ARCHITECTURE.md` (defaults, configurable via `.jim/config.md`) if they exist. Treat them as locked constraints.
 2. Produce an explicit alignment statement: "This approach aligns with [strategic goal] and follows the [architectural pattern]" — or flag divergence conversationally.
 3. If strategic docs are missing, note their absence. Don't block on it.
 4. If research recommendations contradict a locked constraint, raise it as a Peer Feedback item for the PM.
 
-### 7. Check for plan invalidation
+### 8. Check for plan invalidation
 
 If a plan.md exists in the same spec directory:
 - Compare research findings against plan assumptions.
 - If findings would invalidate plan sections, add to Peer Feedback: which plan sections may need revision and why.
 
-### 8. Generate research.md
+### 9. Generate research.md
 
-1. Read `assets/research-template.md` for the output structure.
+1. First check `.jim/skills/research/assets/research-template.md` — if it exists, use it instead of the built-in. Read `assets/research-template.md` for the output structure.
 2. Fill sections based on phase results.
 3. Include conditional sections (Prior Art, Libraries, Peer Feedback) only when they have content. Remove empty conditional sections.
 4. Set frontmatter `spec:` to the relative path of the source spec, or `"standalone"` for non-spec research.
@@ -111,11 +115,11 @@ If a plan.md exists in the same spec directory:
    - `Needs PM Review` — Peer Feedback contains spec feasibility signals.
    - `Needs Architect Review` — Peer Feedback contains plan invalidation signals.
 
-### 9. Self-check
+### 10. Self-check
 
-Before presenting, read `references/research-dod.md` and validate the research against every applicable checklist item. Fix any gaps before proceeding. This is the same checklist used by `research:check`.
+Before presenting, first check `.jim/skills/research/references/research-dod.md` — if it exists, use it instead of the built-in. Read `references/research-dod.md` and validate the research against every applicable checklist item. Fix any gaps before proceeding. This is the same checklist used by `research:check`.
 
-### 10. Present and stop
+### 11. Present and stop
 
 Show the research.md to the user. If a Peer Feedback section exists, surface the key signals conversationally:
 

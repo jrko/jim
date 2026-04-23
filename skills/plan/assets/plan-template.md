@@ -31,11 +31,11 @@ status: draft
 
 ## Constitution Check
 
-*Gate: does this plan conflict with ARCHITECTURE.md? If no ARCHITECTURE.md exists, note its absence and proceed.*
+*Gate: does this plan conflict with `ARCHITECTURE.md`? If no `ARCHITECTURE.md` exists, note its absence and proceed.*
 
-**ARCHITECTURE.md status:** {Present — constraints noted below | Absent — no locked constraints}
+**`ARCHITECTURE.md` status:** {Present — constraints noted below | Absent — no locked constraints}
 
-| Constraint from ARCHITECTURE.md | Honored? | Notes |
+| Constraint from `ARCHITECTURE.md` | Honored? | Notes |
 | :--- | :--- | :--- |
 | {e.g., "All writes go through the service layer"} | Yes / No | {If No, document the rationale for the exception} |
 
