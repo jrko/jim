@@ -140,6 +140,12 @@ If the self-check finds issues, fix them inline. Do not tell the user about the 
 
 Show the draft to the user. Status is `draft`.
 
+Offer a security review before approval:
+
+> "Want to run a security review before approving? (`/jim:sec`)"
+
+If the user accepts, run `/jim:sec` against the spec directory. Incorporate any findings into the draft before proceeding to approval.
+
 Ask: "Want to change anything, or should I mark this as approved?"
 
 - If the user requests changes → return to the interview loop (step 6) or edit directly.

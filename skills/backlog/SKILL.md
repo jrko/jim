@@ -61,6 +61,11 @@ Use Glob and Grep to find deferred items in sources with predictable headings.
 - Grep for `## Out of Scope` sections
 - Read the Out of Scope section content from each matching file
 
+**Security reviews:**
+- Glob `docs/specs/**/security.md`
+- Grep for findings with `**Route:** Backlog`
+- Read the matching finding blocks (title, severity, description, suggestion)
+
 **Roadmap:**
 - Read `ROADMAP.md` if it exists
 - Extract the `## Later` section — items acknowledged but not committed

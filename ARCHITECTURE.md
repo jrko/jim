@@ -1,6 +1,6 @@
 # Architecture — Jim
 
-*Last updated: 2026-04-11*
+*Last updated: 2026-04-12 (010-sec build)*
 
 > This document is generated and maintained by `/jim:arch`. Edit via the skill to preserve consistency.
 
@@ -19,7 +19,8 @@ jim/
 │   ├── architect.md         # @jim:architect — technical architect
 │   ├── researcher.md        # @jim:researcher — codebase investigator
 │   ├── coder.md             # @jim:coder — TDD implementer
-│   └── meta.md              # @jim:meta — plugin developer (builds jim itself)
+│   ├── meta.md              # @jim:meta — plugin developer (builds jim itself)
+│   └── security.md          # @jim:security — security analyst
 ├── skills/                  # Skill definitions — one directory per skill
 │   ├── spec/                # /jim:spec — collaborative spec creation
 │   ├── plan/                # /jim:plan — implementation planning
@@ -31,6 +32,7 @@ jim/
 │   ├── arch/                # /jim:arch — architecture document generation
 │   ├── backlog/             # /jim:backlog — deferred work consolidation
 │   ├── brainstorm/          # /jim:brainstorm — freeform ideation capture
+│   ├── sec/                 # /jim:sec — security analysis and threat review
 │   ├── meta-skill/          # /jim:meta-skill — create/update jim skills
 │   └── meta-agent/          # /jim:meta-agent — create/update jim agents
 ├── docs/
@@ -65,6 +67,7 @@ flowchart TD
         SPEC["/jim:spec"]
         RES["/jim:research"]
         PLAN["/jim:plan"]
+        SEC["/jim:sec"]
         BUILD["/jim:build"]
         DEBUG["/jim:debug"]
     end
@@ -78,6 +81,7 @@ flowchart TD
         PM["@jim:pm"]
         ARCHITECT["@jim:architect"]
         RESEARCHER["@jim:researcher"]
+        SECURITY["@jim:security"]
         CODER["@jim:coder"]
         META["@jim:meta"]
     end
@@ -90,13 +94,14 @@ flowchart TD
         PDOC["plan.md"]
         RESDOC["research.md"]
         CODE["Tests + Code"]
+        SECDOC["security.md"]
         BLOGDOC["BACKLOG.md"]
         BDOC["brainstorm.md"]
         DDOC["debug report"]
     end
 
     U --> VIS & ROAD & ARCH & BACKLOG & BRAIN
-    U --> SPEC & RES & PLAN & BUILD & DEBUG
+    U --> SPEC & RES & PLAN & SEC & BUILD & DEBUG
     U --> MS & MA
 
     VIS & ROAD & BACKLOG & BRAIN --> PM
@@ -104,15 +109,18 @@ flowchart TD
     SPEC --> PM
     RES --> RESEARCHER
     PLAN --> ARCHITECT
+    SEC --> SECURITY
     BUILD & DEBUG --> CODER
     MS & MA --> META
 
     PM --> VDOC & RDOC & SDOC & BLOGDOC & BDOC
     ARCHITECT --> ADOC & PDOC
     RESEARCHER --> RESDOC
+    SECURITY --> SECDOC
     CODER --> CODE & DDOC
 
     ARCHITECT -.->|spawns| RESEARCHER
+    SECURITY -.->|spawns| RESEARCHER
     META -.->|delegates| PM & ARCHITECT & RESEARCHER
 ```
 
@@ -123,9 +131,9 @@ flowchart TD
 Agents are markdown files (`agents/*.md`) that define personas with frontmatter metadata. Each agent declares its name, description, skill bindings, tool permissions, and model preference.
 
 - **Purpose:** Define the persona, responsibilities, and boundaries for each specialized role in the SDLC
-- **Location:** `agents/` — `pm.md` (L1–75), `architect.md` (L1–81), `researcher.md` (L1–84), `coder.md` (L1–84), `meta.md` (L1–64)
+- **Location:** `agents/` — `pm.md` (L1–75), `architect.md` (L1–81), `researcher.md` (L1–84), `security.md` (L1–75), `coder.md` (L1–84), `meta.md` (L1–64)
 - **Interfaces:** Frontmatter fields: `name`, `description`, `skills` (list), `tools` (list), `model` (string). Body contains persona instructions, context paths, core principles, process delegation, and constraints.
-- **Dependencies:** Each agent references its bound skills in `skills/`. Agents may spawn other agents via the `Agent()` tool declaration (e.g., architect and PM can spawn researcher; meta can spawn PM, architect, researcher).
+- **Dependencies:** Each agent references its bound skills in `skills/`. Agents may spawn other agents via the `Agent()` tool declaration (e.g., architect, PM, and security can spawn researcher; meta can spawn PM, architect, researcher).
 - **Key Constraints:** Agents do not cross domain boundaries — PM does not write code, coder does not modify specs, researcher does not make design decisions. All agents stop after producing an artifact and wait for human approval.
 
 ### Skills
@@ -133,7 +141,7 @@ Agents are markdown files (`agents/*.md`) that define personas with frontmatter 
 Skills are SKILL.md files inside `skills/{name}/` directories, optionally accompanied by `assets/` (templates) and `references/` (methodology docs).
 
 - **Purpose:** Provide the detailed process instructions that agents follow when a `/jim:{verb}` command is invoked
-- **Location:** `skills/` — 12 skill directories (spec, plan, research, build, debug, vision, roadmap, arch, backlog, brainstorm, meta-skill, meta-agent)
+- **Location:** `skills/` — 13 skill directories (spec, plan, research, sec, build, debug, vision, roadmap, arch, backlog, brainstorm, meta-skill, meta-agent)
 - **Interfaces:** Frontmatter fields: `name`, `description`, `agent` (which agent runs this skill), `argument-hint`. Body contains step-by-step process, argument routing, validation checklists.
 - **Dependencies:** Skills reference their `assets/` templates and `references/` docs. Skills are bound to agents via the `agent` frontmatter field (documentation convention, not runtime routing).
 - **Key Constraints:** SKILL.md stays under 500 lines (progressive disclosure). Templates live in `assets/`, methodology in `references/`.
@@ -157,8 +165,8 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 ### Spec Archive
 
 - **Purpose:** Living development artifacts — specs, research, and plans organized by group and sequential ID
-- **Location:** `docs/specs/{group}/{00X}-{name}/` — currently `docs/specs/jim/001-meta/` through `009-backlog-adhoc/`
-- **Interfaces:** Each spec directory contains up to three files: `spec.md`, `research.md`, `plan.md`
+- **Location:** `docs/specs/{group}/{00X}-{name}/` — currently `docs/specs/jim/001-meta/` through `010-sec/`
+- **Interfaces:** Each spec directory contains up to four files: `spec.md`, `research.md`, `plan.md`, `security.md`
 - **Dependencies:** Produced by PM (spec), researcher (research), and architect (plan) agents
 - **Key Constraints:** IDs are 3-digit zero-padded, sequential within each group. Groups are noun-based directories. Specs must be `approved` before plans can be created.
 
@@ -166,7 +174,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 
 | Store | Type | Location | Purpose | Owned By |
 | :--- | :--- | :--- | :--- | :--- |
-| Spec Archive | Markdown files | `docs/specs/` | Persistent development artifacts — specs, research, plans | PM, Architect, Researcher |
+| Spec Archive | Markdown files | `docs/specs/` | Persistent development artifacts — specs, research, plans, security reviews | PM, Architect, Researcher, Security |
 | Strategic Docs | Markdown files | Project root (`VISION.md`, `ROADMAP.md`, `ARCHITECTURE.md`) | Project-level strategy and constraints | PM, Architect |
 | Backlog | Markdown file | `BACKLOG.md` | Consolidated deferred work — sourced items, user-authored ad-hoc items, cross-cutting themes | PM |
 | Brainstorms | Markdown files | `docs/brainstorms/` | Freeform ideation capture | PM |
