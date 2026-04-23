@@ -1,0 +1,134 @@
+# Brainstorm: Backlog Skill
+
+*2026-03-31*
+
+## Core Idea
+
+A `/jim:backlog` skill that scans docs/ for specs, plans, research, brainstorms, and notes and surfaces all deferred/out-of-scope work in a predictable format. Ends with cross-cutting themes.
+
+## Sources to scan
+
+- `specs/*/spec.md` — "Out of Scope" sections
+- `specs/*/plan.md` — "Out of Scope" sections (sometimes different from spec)
+- `specs/*/research.md` — deferred ideas, "not adopting" notes
+- `ROADMAP.md` — "Later" bucket (acknowledged but not committed)
+- `VISION.md` — "Non-Goals" (hard boundaries, not really backlog — but worth cross-referencing)
+- `brainstorms/` — ideas that never became specs
+- `notes/` — freeform notes that may contain deferred ideas
+- `brainstorms/` — ideas that never became specs or that contain uncaptured items
+
+## Decisions
+
+### Output: persistent BACKLOG.md file
+- Produces `BACKLOG.md` — a living document, not console output
+- Post-build feedback loop updates it (like ARCHITECTURE.md pattern)
+- File is a complete replacement each run, not incremental append — avoids drift between source docs and backlog state
+- But: items should be written so diffs over time are meaningful (stable ordering, predictable format)
+
+### Current items only — no historical noise
+- This is the most important design goal
+- The skill must cross-reference later specs to detect items that have since been delivered
+- Example: 002-pm-core's out-of-scope says "strategic skills in 003" — 003 is complete, so that item is resolved, not backlog
+- Heuristic: if an out-of-scope item names a spec number or skill that now exists, it's resolved
+
+### Vision alignment
+- VISION.md Non-Goals are not backlog items — they're hard constraints
+- But backlog items should be cross-referenced against Non-Goals
+- If a deferred idea conflicts with a Non-Goal, flag it (or exclude it with a note)
+- Adds a "Vision Alignment" check to each item or to the themes section
+
+### Provenance
+- Every backlog item links back to its source(s): `001-meta/spec.md`, `004-researcher/research.md`, etc.
+- When multiple sources touch the same subject, they're combined into one item with multiple provenance links
+
+### Consolidation over sprawl
+- If multiple out-of-scope mentions across different specs describe the same underlying work, combine them into one backlog item
+- Each combined item should synthesize the unique perspectives from each source — not just list them
+- Goal: the backlog surfaces actionable work items, not a raw dump of every "out of scope" bullet
+- Brainstorm files are scanned too — uncaptured ideas get folded into existing items or added as new ones
+
+### Cross-cutting themes
+- End of BACKLOG.md includes a themes section that groups related items
+- Themes surface patterns like "multiple specs defer eval/testing capabilities" or "several items point toward configuration support"
+
+## Open questions
+
+- **Ordering:** How should items be ordered? By theme? By frequency of mention? By strategic alignment?
+- **Item format:** What does a single backlog item look like? Thinking something like:
+  ```
+  ### {Title}
+  {Synthesized description — what and why}
+  **Sources:** spec-001, spec-004, brainstorm-X
+  **Vision alignment:** Compatible / Conflicts with Non-Goal X / Neutral
+  ```
+### Relevance over priority
+- No explicit priority ranking — that's the roadmap's job
+- But items naturally vary in relevance based on how much of the system they touch
+- Items that affect broad surface area or architecture (e.g., "messaging/queuing system needed across multiple services") should read as more significant than narrow tweaks (e.g., "minor formatting option for a single feature")
+- The skill achieves this through consolidation and source count — broadly relevant items naturally accumulate more mentions and richer descriptions
+- Ordering should reflect this: items with wider architectural impact and more sources float toward the top
+
+### Themes: insight, not prescription
+- Themes section summarizes what the cluster represents and why it keeps coming up
+- Does NOT suggest what to do about it — no "consider prioritizing X" or "this should be Phase 3"
+- The reader draws their own conclusions from the insight
+
+## Item format
+
+```markdown
+### {Title}
+
+{Synthesized description — what the deferred work is, why it was deferred, and what value it would deliver. Combines perspectives from all sources into a coherent narrative.}
+
+**Sources:** `001-meta/spec.md`, `004-researcher/research.md`, `20260315-some-brainstorm.md`
+**Vision conflict:** Conflicts with Non-Goal: {X}   ← only shown when applicable
+```
+
+## Themes format
+
+```markdown
+## Themes
+
+### {Theme Name}
+
+{1-2 sentence summary of what this cluster represents and why it recurs. Insight, not prescription.}
+
+**Related items:** {Item Title 1}, {Item Title 2}, {Item Title 3}
+```
+
+## BACKLOG.md overall structure
+
+```markdown
+# Backlog
+
+*Generated by `/jim:backlog` — {date}*
+
+{Items ordered by relevance — broader architectural impact first, narrow tweaks last}
+
+### Item 1 ...
+### Item 2 ...
+
+---
+
+## Themes
+
+### Theme A ...
+### Theme B ...
+```
+
+### Capture everything, trust consolidation
+- No granularity threshold — scan all sources, capture all deferred/out-of-scope items
+- Consolidation handles the rest: tiny items get absorbed into related larger items or sit at the bottom where low relevance is self-evident
+- Each run is a fresh synthesis — the LLM applies the skill's guidelines but owns the judgment on grouping, ordering, and narrative
+- Determinism across runs is not a goal — good synthesis is
+
+### Human-in-the-loop approval
+- Skill presents proposed consolidation with reasoning before writing BACKLOG.md
+- User reviews grouping, ordering, and narrative before it's committed to file
+
+### Post-build feedback loop
+- Part of this spec, not a follow-on
+- After `/jim:build` completes, BACKLOG.md is updated (same pattern as ARCHITECTURE.md)
+
+### Agent ownership
+- PM agent owns the skill — it's about scoping and synthesis of product-level concerns

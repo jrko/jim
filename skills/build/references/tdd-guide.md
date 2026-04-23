@@ -1,6 +1,6 @@
 # TDD and Tidy First Reference Guide
 
-Evolved from `docs/jim/prior-art/V1SDLC/v1-coder-skill.md`. This guide covers the methodology behind `/jim:build`. Read it when you need detail on a specific practice — the skill covers the process, this covers the reasoning.
+Evolved from `docs/prior-art/V1SDLC/v1-coder-skill.md`. This guide covers the methodology behind `/jim:build`. Read it when you need detail on a specific practice — the skill covers the process, this covers the reasoning.
 
 ## Table of Contents
 

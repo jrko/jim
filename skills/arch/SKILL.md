@@ -20,30 +20,34 @@ Use `$ARGUMENTS` to determine scope:
 
 | Input | Behavior |
 | :--- | :--- |
-| Empty | Create or update `docs/jim/ARCHITECTURE.md` |
+| Empty | Create or update `ARCHITECTURE.md` |
 | Directory path | Create or update `ARCHITECTURE.md` inside that directory |
 
 ## Process
 
-### 1. Establish scope
+### 1. Read config
+
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Establish scope
 
 Determine the target path from `$ARGUMENTS`. Set the target file as `{directory}/ARCHITECTURE.md`.
 
-### 2. Read VISION.md as upstream context
+### 3. Read VISION.md as upstream context
 
-Check for `docs/jim/VISION.md`.
+Check for `VISION.md` (default, configurable via `.jim/config.md`) at the project root.
 
 - **Exists:** Read it fully. The architecture serves the vision — where there is tension between the actual code and the stated vision, flag it rather than silently encoding the discrepancy into the architecture document.
 - **Missing:** Proceed without it. Note its absence in the Overview if you generate a new file.
 
-### 3. Check for existing ARCHITECTURE.md
+### 4. Check for existing ARCHITECTURE.md
 
 Look for `ARCHITECTURE.md` at the target path.
 
 - **Exists:** This is a differential update. Read the existing document fully. Summarize proposed changes to the user — which sections will be updated, which will be preserved — before writing anything. Use Edit, not Write.
-- **Missing:** Generate a new document from `assets/architecture-template.md`.
+- **Missing:** Generate a new document from `assets/architecture-template.md` (first check `.jim/skills/arch/assets/architecture-template.md` — if it exists, use it instead of the built-in).
 
-### 4. Scan the codebase
+### 5. Scan the codebase
 
 Do not fill the template from assumptions. Read actual code.
 
@@ -59,18 +63,18 @@ Use Glob and Grep to populate each section:
 
 For each finding, record the file path and relevant line range. The architecture document is grounded in evidence, not inference.
 
-### 5. Generate or update the document
+### 6. Generate or update the document
 
-Read `assets/architecture-template.md` for the section structure.
+First check `.jim/skills/arch/assets/architecture-template.md` — if it exists, use it instead of the built-in. Read `assets/architecture-template.md` for the section structure.
 
 Fill each section from scan findings:
 
 - Use actual directory names, file paths, and component names from the codebase.
 - Write the High-Level System Diagram as a Mermaid flowchart. Use actual component names — not generic "Component A" placeholders.
 - If a section has no findings (e.g., no external integrations), write "*None identified.*" rather than removing the section. This signals completeness, not omission.
-- If `docs/jim/VISION.md` flagged a tension between vision and implementation, note it in Security Considerations or a brief "Architecture Notes" at the end.
+- If `VISION.md` flagged a tension between vision and implementation, note it in Security Considerations or a brief "Architecture Notes" at the end.
 
-### 6. Present and stop
+### 7. Present and stop
 
 Show the completed document (or summarize changes for a differential update). List which sections changed and which sections had no findings.
 
@@ -86,6 +90,6 @@ Before presenting, confirm:
 - [ ] No generic placeholder names remain (e.g., "Component A", "{project-root}")
 - [ ] High-Level System Diagram uses real component names
 - [ ] Sections with no findings say "*None identified.*" rather than being removed
-- [ ] `docs/jim/VISION.md` was checked and any tensions are noted
+- [ ] `VISION.md` was checked and any tensions are noted
 - [ ] Differential update used Edit, not Write
 - [ ] File paths in Component sections include actual line-range anchors where relevant

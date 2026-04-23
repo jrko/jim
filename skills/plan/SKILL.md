@@ -26,7 +26,11 @@ Use `$ARGUMENTS` to determine the spec path:
 
 ## Process
 
-### 1. Read and gate the spec
+### 1. Read config
+
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Read and gate the spec
 
 Read the spec at the provided path. Check frontmatter `status:`.
 
@@ -35,11 +39,11 @@ Read the spec at the provided path. Check frontmatter `status:`.
 
 Note the spec's `type` (feature, bug, refactor), `title`, `id`, and `group` for later.
 
-### 2. Handle research
+### 3. Handle research
 
 Check for `research.md` in the same directory as the spec.
 
-**Missing:** Auto-spawn `@jim:researcher` via the Agent tool, passing the spec path. Wait for research to complete, then read the resulting research.md and continue.
+**Missing:** If config sets `workflow.require-research: true`, stop and inform the user: "Research is required before planning can proceed. Run `/jim:research` first." Otherwise (default: `false`), auto-spawn `@jim:researcher` via the Agent tool, passing the spec path. Wait for research to complete, then read the resulting research.md and continue.
 
 **Exists — check for staleness:** Compare the `date:` field in research.md frontmatter to the spec. If the spec has been updated since research was gathered, tell the user: "Research may be stale — the spec was modified after research was completed. Re-research now, or proceed with existing findings?" Wait for the user's decision before continuing.
 
@@ -47,23 +51,23 @@ Check for `research.md` in the same directory as the spec.
 
 **Peer Feedback in research:** If research.md contains a Peer Feedback section with plan invalidation signals, address each one explicitly in the plan — accept, reject with rationale, or flag for the user to decide.
 
-### 3. Check ARCHITECTURE.md
+### 4. Check ARCHITECTURE.md
 
-Look for `docs/jim/ARCHITECTURE.md` (and for `ARCHITECTURE.md` at the target directory if planning a subdirectory).
+Look for `ARCHITECTURE.md` (default, configurable via `.jim/config.md`) at the project root (and for `ARCHITECTURE.md` at the target directory if planning a subdirectory).
 
 - **Exists:** Read it. Treat every architectural invariant as a locked constraint. No design decision may violate these without explicit user approval.
 - **Missing:** Note the absence in the Constitution Check section of the plan. Proceed without constraints.
 
-### 4. Check for an existing plan
+### 5. Check for an existing plan
 
 Look for `plan.md` in the same directory as the spec.
 
 - **Exists:** This is a differential update. Read the existing plan fully. Summarize proposed changes to the user — what sections will change, what will be preserved — before writing anything. Use Edit, not Write.
-- **Missing:** Generate a new plan from `assets/plan-template.md`.
+- **Missing:** Generate a new plan from `assets/plan-template.md` (first check `.jim/skills/plan/assets/plan-template.md` — if it exists, use it instead of the built-in).
 
-### 5. Design
+### 6. Design
 
-Read `assets/plan-template.md` before designing. Follow its structure.
+First check `.jim/skills/plan/assets/plan-template.md` — if it exists, use it instead of the built-in. Read `assets/plan-template.md` before designing. Follow its structure.
 
 **Design decisions first.** For every non-obvious choice, write a Chosen/Why/Rejected block. If a choice was obvious, still document it briefly — the coder has no context you don't give them.
 
@@ -77,14 +81,14 @@ Read `assets/plan-template.md` before designing. Follow its structure.
 
 **Research gaps:** If the research lacks integration anchors needed for a key design decision, note it explicitly in Open Questions and mark the related task as `[NEEDS CLARIFICATION]`. You may also re-invoke the researcher for targeted follow-up if the gap is blocking.
 
-### 6. Write the plan
+### 7. Write the plan
 
 Populate all sections from the template:
 
 1. **Frontmatter** — `spec:` (relative path), `type:` (from spec), `status: draft`
 2. **Overview** — 1-2 sentences on the technical approach
 3. **Design Decisions** — Chosen/Why/Rejected for every non-obvious choice
-4. **Constitution Check** — `docs/jim/ARCHITECTURE.md` constraints listed and confirmed honored, or absence noted
+4. **Constitution Check** — `ARCHITECTURE.md` constraints listed and confirmed honored, or absence noted
 5. **File Manifest** — every file to be created or modified, with exact paths
 6. **Interface Contracts** — types, interfaces, API shapes — defined before tasks
 7. **Data Flow** — Mermaid diagram for non-trivial flows; sequence diagram for multi-agent interactions
@@ -93,13 +97,13 @@ Populate all sections from the template:
 10. **Out of Scope** — explicit deferrals
 11. **Open Questions** — unresolved items
 
-Write to `docs/jim/specs/{group}/{id}-{name}/plan.md`. Status stays `draft`.
+Write to `docs/specs/{group}/{id}-{name}/plan.md` (default, configurable via `.jim/config.md`). Status stays `draft`.
 
-### 7. Self-check
+### 8. Self-check
 
-Before presenting, read `references/plan-dod.md` and validate the plan against every checklist item. Fix any failures inline. Do not present a plan that fails the DoD.
+Before presenting, first check `.jim/skills/plan/references/plan-dod.md` — if it exists, use it instead of the built-in. Read `references/plan-dod.md` and validate the plan against every checklist item. Fix any failures inline. Do not present a plan that fails the DoD.
 
-### 8. Present and stop
+### 9. Present and stop
 
 Show the completed plan. Summarize what was created or changed. If any `[NEEDS CLARIFICATION]` markers exist, surface them explicitly:
 
@@ -121,7 +125,7 @@ Before presenting, confirm:
 
 - [ ] Spec was `status: approved` before planning began
 - [ ] research.md was read (or researcher was spawned and completed)
-- [ ] `docs/jim/ARCHITECTURE.md` was checked (present or absence noted)
+- [ ] `ARCHITECTURE.md` was checked (present or absence noted)
 - [ ] File manifest lists every file that will be created or modified
 - [ ] Interface contracts are defined before the task breakdown
 - [ ] Every task has a shell-executable `**Verify:**` command

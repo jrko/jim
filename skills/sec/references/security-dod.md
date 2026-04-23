@@ -14,7 +14,7 @@ Self-check reference for the security agent and the `/jim:sec` skill. Every secu
 
 4. **Correct routing:** Critical and Notable findings route to Spec or Plan. Advisory findings route to Backlog. Routing matches the nature of the finding — requirements gaps route to Spec, design flaws route to Plan.
 
-5. **No duplicates:** Findings do not duplicate security considerations already documented in `docs/jim/ARCHITECTURE.md`. If a finding reinforces an existing constraint, reference it rather than restating it.
+5. **No duplicates:** Findings do not duplicate security considerations already documented in `ARCHITECTURE.md`. If a finding reinforces an existing constraint, reference it rather than restating it.
 
 ### Analysis Coverage
 
@@ -22,7 +22,7 @@ Self-check reference for the security agent and the `/jim:sec` skill. Every secu
 
 7. **STRIDE sweep completed:** All six STRIDE categories are listed in the coverage table. Each is marked as relevant, not relevant, or N/A with justification. Irrelevant categories are explicitly skipped — not silently omitted.
 
-8. **Architecture-grounded:** If `docs/jim/ARCHITECTURE.md` exists, it was read and findings are grounded in the project's existing trust boundaries, data flows, and security patterns.
+8. **Architecture-grounded:** If `ARCHITECTURE.md` exists, it was read and findings are grounded in the project's existing trust boundaries, data flows, and security patterns.
 
 9. **Lens-appropriate:** Spec-phase analysis focuses on requirements gaps (missing controls, unaddressed boundaries, data classification). Plan-phase analysis focuses on design flaws (flawed mitigations, privilege issues, crypto choices). Both lenses applied when both artifacts exist.
 

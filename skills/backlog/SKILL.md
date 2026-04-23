@@ -1,7 +1,7 @@
 ---
 name: backlog
 description: >
-  Scan docs/jim/ for deferred and out-of-scope work, consolidate related items,
+  Scan specs, plans, research, brainstorms, and notes for deferred and out-of-scope work, consolidate related items,
   and produce a living BACKLOG.md; use `add <description>` to append an ad-hoc
   item without a full rescan. Use when the user invokes /jim:backlog, wants to
   see what work has been deferred across specs, or needs a consolidated view of
@@ -13,7 +13,7 @@ argument-hint: "[add <description>]"
 
 # /jim:backlog
 
-Scan `docs/jim/` for deferred and out-of-scope work across specs, plans, research, brainstorms, and notes. Consolidate related items, check vision alignment, and produce `docs/jim/BACKLOG.md`.
+Scan for deferred and out-of-scope work across specs, plans, research, brainstorms, and notes. Consolidate related items, check vision alignment, and produce `BACKLOG.md` (default, configurable via `.jim/config.md`).
 
 *(The `agent: pm` field in this frontmatter is a jim documentation convention, not a Claude Code routing mechanism.)*
 
@@ -31,13 +31,17 @@ Inspect `$ARGUMENTS` before entering a mode.
 
 This mode runs when no arguments are passed (or non-`add` arguments are passed). It performs a full source scan, preserves the existing Ad-hoc section, and writes a complete replacement `BACKLOG.md`.
 
-### 1. Read strategic context
+### 1. Read config
 
-Read `docs/jim/VISION.md` if it exists. Extract the **Non-Goals** section — these are hard boundaries used for conflict checking against backlog items.
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Read strategic context
+
+Read `VISION.md` (default, configurable via `.jim/config.md`) if it exists. Extract the **Non-Goals** section — these are hard boundaries used for conflict checking against backlog items.
 
 If missing, note it conversationally and proceed without vision conflict checking.
 
-### 2. Read and extract Ad-hoc block
+### 3. Read and extract Ad-hoc block
 
 Read the existing `BACKLOG.md` if it exists. Locate the `## Ad-hoc` heading and extract everything between it and the next `## ` heading (typically `## Themes`), or to end of file if no subsequent `## ` heading exists. Parse `### Title` sub-blocks within that range as individual ad-hoc items.
 
@@ -52,35 +56,35 @@ Read the existing `BACKLOG.md` if it exists. Locate the `## Ad-hoc` heading and 
 
 If `BACKLOG.md` does not exist, proceed with an empty ad-hoc item set.
 
-### 3. Scan structured sources
+### 4. Scan structured sources
 
 Use Glob and Grep to find deferred items in sources with predictable headings.
 
 **Specs and plans:**
-- Glob `docs/jim/specs/*/spec.md` and `docs/jim/specs/*/plan.md`
+- Glob `docs/specs/**/spec.md` and `docs/specs/**/plan.md` (default, configurable via `.jim/config.md`)
 - Grep for `## Out of Scope` sections
 - Read the Out of Scope section content from each matching file
 
 **Security reviews:**
-- Glob `docs/jim/specs/*/security.md`
+- Glob `docs/specs/**/security.md` (default, configurable via `.jim/config.md`)
 - Grep for findings with `**Route:** Backlog`
 - Read the matching finding blocks (title, severity, description, suggestion)
 
 **Roadmap:**
-- Read `docs/jim/ROADMAP.md` if it exists
+- Read `ROADMAP.md` (default, configurable via `.jim/config.md`) if it exists
 - Extract the `## Later` section — items acknowledged but not committed
 
-### 4. Scan unstructured sources
+### 5. Scan unstructured sources
 
 Read these files in full — deferred items are embedded in prose without standard headings.
 
-- Glob `docs/jim/specs/*/research.md` — look for deferred ideas, "not adopting" notes, "out of scope for" mentions
-- Glob `docs/jim/brainstorms/*.md` — look for ideas that were never routed to specs
-- Glob `docs/jim/notes/*.md` — look for freeform deferred ideas
+- Glob `docs/specs/**/research.md` (default, configurable via `.jim/config.md`) — look for deferred ideas, "not adopting" notes, "out of scope for" mentions
+- Glob `docs/brainstorms/*.md` (default, configurable via `.jim/config.md`) — look for ideas that were never routed to specs
+- Glob `docs/notes/*.md` (default, configurable via `.jim/config.md`) — look for freeform deferred ideas
 
 Use judgment to identify deferred items in prose. There is no regex pattern that catches everything — read for intent.
 
-### 5. Filter resolved items
+### 6. Filter resolved items
 
 Cross-reference extracted items against later specs to remove items that have since been delivered:
 
@@ -90,15 +94,15 @@ Cross-reference extracted items against later specs to remove items that have si
 
 Err on the side of inclusion. If uncertain whether an item has been resolved, keep it in the backlog.
 
-### 6. Check vision alignment
+### 7. Check vision alignment
 
-For each remaining sourced item AND each ad-hoc item extracted in step 2, check against VISION.md Non-Goals:
+For each remaining sourced item AND each ad-hoc item extracted in step 3, check against VISION.md Non-Goals:
 
 - If an item conflicts with a Non-Goal, flag it. The conflict line will appear in the output as a `**Vision conflict:**` line inside that item's block.
 - If an item is compatible or neutral, no vision line is needed — compatible is the default assumption.
 - Ad-hoc items receive the same vision conflict treatment as sourced items.
 
-### 7. Consolidate related items
+### 8. Consolidate related items
 
 This is the core synthesis step. Multiple out-of-scope mentions across different specs may describe the same underlying work.
 
@@ -109,21 +113,21 @@ This is the core synthesis step. Multiple out-of-scope mentions across different
 
 The goal is actionable work items, not a raw dump of every "out of scope" bullet.
 
-### 8. Duplicate detection
+### 9. Duplicate detection
 
-Compare each ad-hoc item (extracted in step 2) against the consolidated sourced items from step 7. Flag any item where:
+Compare each ad-hoc item (extracted in step 3) against the consolidated sourced items from step 8. Flag any item where:
 - The title matches a sourced item title (case-insensitive), or
 - The description is a near-match using LLM judgment (same underlying concern, even if phrased differently)
 
-Flagged duplicates are surfaced as warnings in the approval prompt (step 10) with three resolution options: keep, remove, or merge the ad-hoc item.
+Flagged duplicates are surfaced as warnings in the approval prompt (step 12) with three resolution options: keep, remove, or merge the ad-hoc item.
 
-### 9. Order by relevance
+### 10. Order by relevance
 
 Order consolidated items with broader architectural impact first, narrow tweaks last.
 
 Items that affect more of the system's surface area, accumulate more source mentions, or have richer descriptions naturally belong higher. No explicit scoring — apply judgment.
 
-### 10. Generate themes
+### 11. Generate themes
 
 Group related items into cross-cutting themes. Include ad-hoc items as candidates alongside sourced items — an ad-hoc item may belong to one or more themes.
 
@@ -134,7 +138,7 @@ Each theme gets:
 
 Themes provide **insight only** — no prescriptive recommendations. Do not suggest "consider prioritizing X" or "this should be Phase 3." The reader draws their own conclusions.
 
-### 11. Present approval prompt
+### 12. Present approval prompt
 
 Present the proposed backlog to the user before writing. The prompt should include:
 
@@ -142,20 +146,20 @@ Present the proposed backlog to the user before writing. The prompt should inclu
 - Raw item count and consolidated item count
 - "Carrying forward N ad-hoc items from existing BACKLOG.md" (use 0 if none)
 - Each consolidated item with title, one-line summary, and source list
-- Any duplicate warnings from step 8 — each flagged item listed with: keep, remove, or merge options
+- Any duplicate warnings from step 9 — each flagged item listed with: keep, remove, or merge options
 - Identified themes with related item references
 
-Ask: "Write this to docs/jim/BACKLOG.md?"
+Ask: "Write this to `BACKLOG.md`?" (default, configurable via `.jim/config.md`)
 
 If the user requests changes, return to the consolidation step and adjust.
 
-### 12. Write BACKLOG.md
+### 13. Write BACKLOG.md
 
-After approval, read `assets/backlog-template.md` for the output structure.
+After approval, first check `.jim/skills/backlog/assets/backlog-template.md` — if it exists, use it instead of the built-in. Read `assets/backlog-template.md` for the output structure.
 
-Write `docs/jim/BACKLOG.md` as a complete replacement. Use Write, not Edit — each run produces a fresh document.
+Write `BACKLOG.md` (default, configurable via `.jim/config.md`) as a complete replacement. Use Write, not Edit — each run produces a fresh document.
 
-**Ad-hoc section:** Re-emit the `## Ad-hoc` section in its reserved position — between the sourced items area and `## Themes`. If the extracted block (from step 2) contained `### Title` items, re-emit them verbatim. If the block was empty (no `### ` items), emit the placeholder comment from the template unchanged. Whitespace normalization is permitted, but no user-authored item title or description may be lost.
+**Ad-hoc section:** Re-emit the `## Ad-hoc` section in its reserved position — between the sourced items area and `## Themes`. If the extracted block (from step 3) contained `### Title` items, re-emit them verbatim. If the block was empty (no `### ` items), emit the placeholder comment from the template unchanged. Whitespace normalization is permitted, but no user-authored item title or description may be lost.
 
 **Item format:**
 
@@ -183,15 +187,15 @@ The `**Vision conflict:**` line is only present when a conflict exists.
 **Related items:** {Item Title 1}, {Item Title 2}
 ```
 
-### 13. First-run guidance
+### 14. First-run guidance
 
-If this is the first run (no existing `docs/jim/BACKLOG.md` before this invocation), inform the user:
+If this is the first run (no existing `BACKLOG.md` before this invocation), inform the user:
 
-> "This creates docs/jim/BACKLOG.md. Once this file exists, it will be automatically regenerated after each `/jim:build` completion. You can delete the file at any time to opt out of post-build updates."
+> "This creates BACKLOG.md. Once this file exists, it will be automatically regenerated after each `/jim:build` completion. You can delete the file at any time to opt out of post-build updates."
 
-### 14. Differential context
+### 15. Differential context
 
-If `docs/jim/BACKLOG.md` already exists, read it before scanning. After generating the new version, briefly note what changed — new items added, items removed (resolved), items consolidated differently. This helps the user understand the delta without diffing manually.
+If `BACKLOG.md` already exists, read it before scanning. After generating the new version, briefly note what changed — new items added, items removed (resolved), items consolidated differently. This helps the user understand the delta without diffing manually.
 
 ## Process — Append Mode
 
@@ -254,7 +258,7 @@ On confirmation, locate the `## Ad-hoc` section in `BACKLOG.md` (or the minimal 
 
 ### 7. Write BACKLOG.md
 
-Write the updated content to `docs/jim/BACKLOG.md` using Write.
+Write the updated content to `docs/BACKLOG.md` using Write.
 
 ### 8. Report
 

@@ -17,11 +17,15 @@ Create or update a jim plugin skill (`skills/{name}/SKILL.md`) from an approved 
 
 ## Process
 
-### 1. Pass three gates before building
+### 1. Read config
 
-Use `$ARGUMENTS` as a hint for the skill name. Search `docs/jim/specs/` for a matching approved spec (`status: approved` in frontmatter), or ask the user which spec to build from.
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
 
-**Gate 1 — Spec:** Locate an approved spec in `docs/jim/specs/`. If no approved spec exists, spawn `@jim:pm` via the Agent tool to create one. If the pm agent is not available, tell the user to run `/jim:spec` instead.
+### 2. Pass three gates before building
+
+Use `$ARGUMENTS` as a hint for the skill name. Search `docs/specs/` (default, configurable via `.jim/config.md`) for a matching approved spec (`status: approved` in frontmatter), or ask the user which spec to build from.
+
+**Gate 1 — Spec:** Locate an approved spec in `docs/specs/` (default, configurable via `.jim/config.md`). If no approved spec exists, spawn `@jim:pm` via the Agent tool to create one. If the pm agent is not available, tell the user to run `/jim:spec` instead.
 
 **Gate 2 — Research Quality:** Read `research.md` from the spec directory. Evaluate it against this 7-point spot-check:
 
@@ -39,14 +43,14 @@ If research.md is missing or fails ANY check, spawn `@jim:researcher` via the Ag
 
 After all three gates pass, read spec + plan + research fully. Note the skill name, purpose, acceptance criteria, file manifest, task breakdown, and platform findings before writing anything. The research contains domain knowledge (e.g., Claude Code capabilities, prior art) that directly informs how to build the artifact — do not skip it.
 
-### 2. Check for an existing artifact
+### 3. Check for an existing artifact
 
 Check whether `skills/{name}/SKILL.md` already exists.
 
 - **Exists:** Read it. This is a differential update — summarize the proposed changes to the user before applying them. Use Edit, not Write.
 - **Does not exist:** Create the `skills/{name}/` directory and write a new SKILL.md.
 
-### 3. Build the SKILL.md
+### 4. Build the SKILL.md
 
 Write (or update) `skills/{name}/SKILL.md` following the structure below.
 
@@ -81,7 +85,7 @@ argument-hint: "[...]"    # optional: shown in autocomplete
 - Templates and output files → `assets/`
 - Long reference docs → `references/` (include a table of contents if >300 lines)
 
-### 4. Validate
+### 5. Validate
 
 Work through this checklist before presenting the artifact. Fix failures inline and re-validate.
 
@@ -98,9 +102,9 @@ Work through this checklist before presenting the artifact. Fix failures inline 
 **Anti-patterns — any of these is a failure:**
 - [ ] No personality soup ("I am here to help you...")
 - [ ] No permission creep (tools beyond what the skill actually needs)
-- [ ] No instruction shadowing (repeating rules already in `docs/jim/WORKFLOW.md`)
+- [ ] No instruction shadowing (repeating rules already in `WORKFLOW.md`)
 - [ ] No duplicate logic (same instructions in 3+ places → extract to a shared skill)
 
-### 5. Present to user
+### 6. Present to user
 
 Show the completed artifact. List what was created or changed. Stop and wait for review — do not proceed to the next phase.

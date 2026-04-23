@@ -17,24 +17,28 @@ Create or update the project's VISION.md through a section-by-section collaborat
 
 ## Process
 
-### 1. Seed the conversation
+### 1. Read config
+
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Seed the conversation
 
 Use `$ARGUMENTS` as a project name or topic hint. If empty, ask: "What project or product do you want to define a vision for?"
 
-### 2. Read context
+### 3. Read context
 
-Read `docs/jim/ARCHITECTURE.md` if it exists — it's a locked constraint. Don't contradict technical decisions already made.
+Read `ARCHITECTURE.md` (default, configurable via `.jim/config.md`) if it exists — it's a locked constraint. Don't contradict technical decisions already made.
 
 If missing, note conversationally: "No ARCHITECTURE.md yet — you might want to create one after this." Do not block.
 
-### 3. Check for existing VISION.md
+### 4. Check for existing VISION.md
 
-Read `docs/jim/VISION.md`.
+Read `VISION.md` (default, configurable via `.jim/config.md`).
 
 - **Exists:** This is a differential update. Read the content. Tell the user: "I see an existing VISION.md. I'll walk through each section and suggest changes based on our conversation." Identify which sections are well-defined vs. which need work.
 - **Does not exist:** Fresh creation. Proceed to interview.
 
-### 4. Problem Statement & Solution Statement — wordsmith mode
+### 5. Problem Statement & Solution Statement — wordsmith mode
 
 These two sections use a structured format with sub-bullets. The wording matters — expect multiple revision rounds.
 
@@ -49,7 +53,7 @@ These two sections use a structured format with sub-bullets. The wording matters
 5. Do not advance to the next section until the user approves the wording
 6. Multiple revision rounds are expected and by design — this is collaborative wordsmithing
 
-### 5. Remaining sections — standard interview
+### 6. Remaining sections — standard interview
 
 Walk through the remaining 5 template sections in order. For each section:
 
@@ -68,13 +72,13 @@ Walk through the remaining 5 template sections in order. For each section:
 
 **Context dump mode:** If the user pastes existing docs, PRDs, or notes, skip redundant questions and extract answers from the provided context. Label any assumptions explicitly: "I'm assuming X from your notes — correct?"
 
-### 6. Generate VISION.md
+### 7. Generate VISION.md
 
-Read `assets/vision-template.md`. Fill each section with interview results. Keep it concise — the goal is clarity of direction, not exhaustive documentation.
+First check `.jim/skills/vision/assets/vision-template.md` — if it exists, use it instead of the built-in. Read `assets/vision-template.md`. Fill each section with interview results. Keep it concise — the goal is clarity of direction, not exhaustive documentation.
 
-Write to `docs/jim/VISION.md`.
+Write to `VISION.md` (default, configurable via `.jim/config.md`).
 
-### 7. Silent self-check
+### 8. Silent self-check
 
 Before presenting, validate against these anti-patterns:
 
@@ -84,7 +88,7 @@ Before presenting, validate against these anti-patterns:
 
 Auto-correct violations before presenting.
 
-### 8. Present and stop
+### 9. Present and stop
 
 Sections are approved individually during the interview (Problem/Solution via wordsmith mode, others as drafted). This step is the final full-document review.
 
@@ -95,7 +99,7 @@ Show the complete VISION.md to the user.
 
 Use Edit for updates, Write for new files. Never auto-apply.
 
-### 9. Redirect technical specifics
+### 10. Redirect technical specifics
 
 If the user brings up implementation details during the interview, redirect: "That sounds like an architecture decision — want to run `/jim:arch` after we finish the vision?"
 

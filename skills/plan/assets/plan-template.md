@@ -1,6 +1,6 @@
 ---
 title: "{Title}"
-spec: "docs/jim/specs/{group}/{id}-{name}/spec.md"
+spec: "docs/specs/{group}/{id}-{name}/spec.md"
 type: feature | bug | refactor
 status: draft
 ---
@@ -31,15 +31,15 @@ status: draft
 
 ## Constitution Check
 
-*Gate: does this plan conflict with `docs/jim/ARCHITECTURE.md`? If no `docs/jim/ARCHITECTURE.md` exists, note its absence and proceed.*
+*Gate: does this plan conflict with `ARCHITECTURE.md`? If no `ARCHITECTURE.md` exists, note its absence and proceed.*
 
-**`docs/jim/ARCHITECTURE.md` status:** {Present — constraints noted below | Absent — no locked constraints}
+**`ARCHITECTURE.md` status:** {Present — constraints noted below | Absent — no locked constraints}
 
-| Constraint from `docs/jim/ARCHITECTURE.md` | Honored? | Notes |
+| Constraint from `ARCHITECTURE.md` | Honored? | Notes |
 | :--- | :--- | :--- |
 | {e.g., "All writes go through the service layer"} | Yes / No | {If No, document the rationale for the exception} |
 
-<!-- Remove this table if docs/jim/ARCHITECTURE.md is absent. -->
+<!-- Remove this table if ARCHITECTURE.md is absent. -->
 
 ## File Manifest
 

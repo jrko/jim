@@ -13,7 +13,7 @@ argument-hint: "[spec-directory-path]"
 
 Execute an approved plan task-by-task using Red-Green-Refactor and Tidy First commit discipline. One task at a time, tests before code, no extras beyond the plan.
 
-See `references/tdd-guide.md` for detailed methodology (TDD cycle, implementation gears, Tidy First, type-specific TDD, commit discipline, troubleshooting).
+First check `.jim/skills/build/references/tdd-guide.md` — if it exists, use it instead of the built-in. See `references/tdd-guide.md` for detailed methodology (TDD cycle, implementation gears, Tidy First, type-specific TDD, commit discipline, troubleshooting).
 
 ## Argument Routing
 
@@ -27,22 +27,28 @@ Use `$ARGUMENTS` to determine the spec directory:
 
 ## Process
 
-### 1. Gate the plan
+### 1. Read config
+
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Gate the plan
 
 Read `plan.md` from the spec directory. Check frontmatter `status:`.
 
-- `status: draft` — Stop. Tell the user: "This plan is still in draft. Approve it first, then re-run /jim:build."
+- `status: draft` — If config sets `workflow.require-plan-approval: false`, proceed despite draft status. Otherwise (default: `true`), stop. Tell the user: "This plan is still in draft. Approve it first, then re-run /jim:build."
 - `status: approved` or `status: complete` with unchecked tasks — Continue.
 
 If `plan.md` is missing, stop and tell the user: "No plan.md found in [path]. Run /jim:plan first."
 
-### 2. Load context
+If config sets `workflow.require-security: true`, check for `security.md` in the spec directory. If missing, stop and inform the user: "Security review is required before building. Run `/jim:sec` first." Otherwise (default: `false`), proceed without checking.
+
+### 3. Load context
 
 Read `spec.md` and `research.md` from the same directory. These provide the intent and constraints behind each task — the plan tells you *what*, the spec and research tell you *why*. Note the spec type (`feature`, `bug`, or `refactor`) — it governs Red phase behavior.
 
 If the plan is ambiguous (a task's intent is unclear or its Verify command is malformed), STOP. Report the ambiguous task and what's unclear. Wait for the human to update the plan before continuing.
 
-### 3. Execute the TDD loop
+### 4. Execute the TDD loop
 
 For each unchecked `[ ]` task in `plan.md`, in order:
 
@@ -67,7 +73,7 @@ For each unchecked `[ ]` task in `plan.md`, in order:
 - Run `./pre-commit.sh` via Bash before committing. If it fails: show the error output, fix the issues, re-run all tests, and re-run `./pre-commit.sh` until it passes. Do NOT commit until `./pre-commit.sh` is green.
 - Follow Tidy First: one commit per logical unit, structural OR behavioral, never mixed.
 - Use conventional prefixes: `test:` (Red), `feat:` / `fix:` (Green), `refactor:` (Tidy).
-- See `references/tdd-guide.md` — Commit Discipline section.
+- First check `.jim/skills/build/references/tdd-guide.md` — if it exists, use it instead of the built-in. See `references/tdd-guide.md` — Commit Discipline section.
 
 **Verify**
 - Run the task's `**Verify:**` command from the plan via Bash. Show the output.
@@ -78,7 +84,7 @@ For each unchecked `[ ]` task in `plan.md`, in order:
 
 Then read the next unchecked task and repeat.
 
-### 4. Type-specific behavior
+### 5. Type-specific behavior
 
 **Feature:** Standard Red-Green-Refactor. Red writes a new test for new behavior.
 
@@ -86,12 +92,12 @@ Then read the next unchecked task and repeat.
 
 **Refactor:** No Red phase. Existing tests must pass before AND after each structural change. One move at a time; re-run all tests between moves. If any move breaks tests, revert immediately.
 
-### 5. Completion gate
+### 6. Completion gate
 
 After all tasks are marked `[x]`:
 
-1. Check if `docs/jim/ARCHITECTURE.md` exists. If it does, invoke `/jim:arch` to run a differential update — the architect will scan the codebase, compare against the existing document, and present any changes for your approval. If `docs/jim/ARCHITECTURE.md` does not exist, skip this step.
-2. Check if `docs/jim/BACKLOG.md` exists. If it does, invoke `/jim:backlog` to regenerate it — the PM will scan for deferred work, consolidate items, and present the updated backlog for your approval. If `docs/jim/BACKLOG.md` does not exist, skip this step.
+1. Check if `ARCHITECTURE.md` exists (default, configurable via `.jim/config.md`). If it does, invoke `/jim:arch` to run a differential update — the architect will scan the codebase, compare against the existing document, and present any changes for your approval. If it does not exist, skip this step.
+2. Check if `BACKLOG.md` exists (default, configurable via `.jim/config.md`). If it does, invoke `/jim:backlog` to regenerate it — the PM will scan for deferred work, consolidate items, and present the updated backlog for your approval. If it does not exist, skip this step.
 3. Report to the user and ask: "Should I mark the plan status as `complete`?"
 4. STOP. Wait for the human to confirm. Do not proceed to the next SDLC phase, do not auto-invoke review. Update the plan frontmatter to `status: complete` only after explicit confirmation.
 

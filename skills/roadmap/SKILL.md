@@ -17,30 +17,34 @@ Create or update the project's ROADMAP.md — a concise Now/Next/Later execution
 
 ## Process
 
-### 1. Seed the conversation
+### 1. Read config
+
+Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+
+### 2. Seed the conversation
 
 Use `$ARGUMENTS` as a hint for what the user wants to add or update. If empty, start from scratch or review the existing roadmap.
 
-### 2. Read context
+### 3. Read context
 
-Read `docs/jim/VISION.md` if it exists — for strategic alignment.
+Read `VISION.md` (default, configurable via `.jim/config.md`) if it exists — for strategic alignment.
 
 If missing, note: "No VISION.md yet — consider running `/jim:vision` first to establish product direction. I'll proceed without it." Do not block.
 
-### 3. Search for linkable specs
+### 4. Search for linkable specs
 
-Glob `docs/jim/specs/**/*.md` to find existing specs. Grep frontmatter `title:` fields to build a list of linkable candidates. Hold this list — when the user mentions a deliverable that matches a known spec, offer the link.
+Glob `docs/specs/**/*.md` (default, configurable via `.jim/config.md`) to find existing specs. Grep frontmatter `title:` fields to build a list of linkable candidates. Hold this list — when the user mentions a deliverable that matches a known spec, offer the link.
 
 Do not Read full spec contents — Glob and Grep only. This prevents context overflow in repos with many specs.
 
-### 4. Check for existing ROADMAP.md
+### 5. Check for existing ROADMAP.md
 
-Read `docs/jim/ROADMAP.md`.
+Read `ROADMAP.md` (default, configurable via `.jim/config.md`).
 
 - **Exists:** Differential update. Read existing content. Summarize the current state to the user. Ask what they want to change — add items, move items between buckets, update version anchors, refine objectives.
 - **Does not exist:** Fresh creation. Proceed to interview.
 
-### 5. Interview
+### 6. Interview
 
 Walk through the three time-horizon buckets:
 
@@ -55,22 +59,22 @@ For each item the user describes, determine the appropriate detail level:
 | User describes clear objectives and success criteria | Goal-oriented: Objective / Deliverables / Success Metrics |
 | User lists tactical items or early ideas | Simple bullet list |
 
-When a deliverable matches a known spec from step 3, offer: "I found a spec for that — want me to link it? `[003-pm-strategy](docs/jim/specs/003-pm-strategy/spec.md)`"
+When a deliverable matches a known spec from step 4, offer: "I found a spec for that — want me to link it? `[003-pm-strategy](docs/specs/jim/003-pm-strategy/spec.md)`"
 
-### 6. Conciseness enforcement
+### 7. Conciseness enforcement
 
 The roadmap is a strategic communication tool, not a backlog. Push back when it gets too detailed:
 
 - More than 5-7 items per bucket → "This is getting long — want to consolidate, or create specs for the detailed items with `/jim:spec`?"
 - Any item description exceeds 3-4 lines → "This is getting detailed — want to create a spec for this? The roadmap works best as a big-picture view."
 
-### 7. Generate ROADMAP.md
+### 8. Generate ROADMAP.md
 
-Read `assets/roadmap-template.md`. Fill buckets with interview results. Set "Last updated" to today's date. Keep it concise.
+First check `.jim/skills/roadmap/assets/roadmap-template.md` — if it exists, use it instead of the built-in. Read `assets/roadmap-template.md`. Fill buckets with interview results. Set "Last updated" to today's date. Keep it concise.
 
-Write to `docs/jim/ROADMAP.md`.
+Write to `ROADMAP.md` (default, configurable via `.jim/config.md`).
 
-### 8. Silent self-check
+### 9. Silent self-check
 
 Before presenting, validate against these anti-patterns:
 
@@ -80,7 +84,7 @@ Before presenting, validate against these anti-patterns:
 
 Auto-correct violations before presenting.
 
-### 9. Present and stop
+### 10. Present and stop
 
 Show the drafted ROADMAP.md to the user.
 

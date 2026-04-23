@@ -142,8 +142,8 @@ The `origin:` frontmatter field links a spec to its upstream source documents â€
 
 ```yaml
 origin:
-  - docs/jim/brainstorms/notification-ideas.md
-  - docs/jim/debug/cart-total-bug.md
+  - docs/brainstorms/notification-ideas.md
+  - docs/debug/cart-total-bug.md
 ```
 
 **When to omit:** If the spec originated from a direct conversation with no prior artifact, omit the `origin:` field entirely (remove the placeholder).

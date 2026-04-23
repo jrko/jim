@@ -41,7 +41,7 @@ date: "{YYYY-MM-DD}"
 ## Recommendations
 
 <!-- Always present. Options and trade-offs for the architect (not decisions). -->
-<!-- When a recommendation diverges from a locked constraint in docs/jim/VISION.md or docs/jim/ARCHITECTURE.md, explicitly note the divergence and the rationale. -->
+<!-- When a recommendation diverges from a locked constraint in VISION.md or ARCHITECTURE.md, explicitly note the divergence and the rationale. -->
 
 ## Peer Feedback
 
