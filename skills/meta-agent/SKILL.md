@@ -124,7 +124,7 @@ Work through this checklist before presenting the artifact. Fix failures inline 
 **Anti-patterns — any of these is a failure:**
 - [ ] No personality soup ("I am an AI assistant here to help...")
 - [ ] No permission creep (Write/Bash for a read-only agent)
-- [ ] No instruction shadowing (repeating rules already in `WORKFLOW.md`)
+- [ ] No instruction shadowing (repeating rules already in `{path.workflow}`)
 - [ ] No duplicate logic (same instructions in 3+ agents → extract to a shared skill)
 
 ### 6. Present to user

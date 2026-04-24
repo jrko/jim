@@ -11,7 +11,7 @@ agent: pm
 
 # /jim:vision
 
-Create or update the project's VISION.md through a section-by-section collaborative interview.
+Create or update the project's vision document at `{path.vision}` through a section-by-section collaborative interview.
 
 *(The `agent: pm` field in this frontmatter is a jim documentation convention, not a Claude Code routing mechanism.)*
 

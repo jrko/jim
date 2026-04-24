@@ -51,7 +51,7 @@ Check for `research.md` in the same directory as the spec.
 
 **Peer Feedback in research:** If research.md contains a Peer Feedback section with plan invalidation signals, address each one explicitly in the plan — accept, reject with rationale, or flag for the user to decide.
 
-### 4. Check ARCHITECTURE.md
+### 4. Check the architecture doc
 
 Look for `{path.architecture}` at the project root.
 

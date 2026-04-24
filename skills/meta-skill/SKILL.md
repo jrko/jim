@@ -102,7 +102,7 @@ Work through this checklist before presenting the artifact. Fix failures inline 
 **Anti-patterns — any of these is a failure:**
 - [ ] No personality soup ("I am here to help you...")
 - [ ] No permission creep (tools beyond what the skill actually needs)
-- [ ] No instruction shadowing (repeating rules already in `WORKFLOW.md`)
+- [ ] No instruction shadowing (repeating rules already in `{path.workflow}`)
 - [ ] No duplicate logic (same instructions in 3+ places → extract to a shared skill)
 
 ### 6. Present to user

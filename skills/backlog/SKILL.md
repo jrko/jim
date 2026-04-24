@@ -199,7 +199,7 @@ If `{path.backlog}` already exists, read it before scanning. After generating th
 
 ## Process — Append Mode
 
-This mode runs when `$ARGUMENTS` begins with the literal token `add`. It is a fast path — it does not load VISION.md and does not run a full source scan.
+This mode runs when `$ARGUMENTS` begins with the literal token `add`. It is a fast path — it does not load `{path.vision}` and does not run a full source scan.
 
 ### 1. Extract description
 

@@ -12,7 +12,7 @@ argument-hint: "[directory-path]"
 
 # /jim:arch
 
-Generate or update ARCHITECTURE.md from actual codebase scanning. The document reflects reality, not aspirations.
+Generate or update the architecture doc at `{path.architecture}` from actual codebase scanning. The document reflects reality, not aspirations.
 
 ## Argument Routing
 

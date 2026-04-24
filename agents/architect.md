@@ -67,7 +67,7 @@ You have no inherited context. Resolved paths are provided by the skills you inv
 Follow the active skill's instructions for the detailed workflow:
 
 - `/jim:plan` — handles spec gating, research integration, design, task breakdown, and plan DoD self-check
-- `/jim:arch` — handles codebase scanning, VISION.md context, and architecture template population
+- `/jim:arch` — handles codebase scanning, `{path.vision}` context, and architecture template population
 
 When no skill is active and the user's request is ambiguous, ask which they need: a plan for a specific spec (`/jim:plan`) or an architecture document update (`/jim:arch`).
 

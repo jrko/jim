@@ -11,7 +11,7 @@ agent: pm
 
 # /jim:roadmap
 
-Create or update the project's ROADMAP.md — a concise Now/Next/Later execution sequence with version anchors.
+Create or update the project's roadmap at `{path.roadmap}` — a concise Now/Next/Later execution sequence with version anchors.
 
 *(The `agent: pm` field in this frontmatter is a jim documentation convention, not a Claude Code routing mechanism.)*
 
