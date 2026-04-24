@@ -18,9 +18,9 @@ Capture freeform ideation and exploratory thinking. No rigid structure — the g
 
 ## Process
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted.
 
 ### 2. Get the topic
 
@@ -28,11 +28,11 @@ Use `$ARGUMENTS` as the topic for the brainstorm file. If empty, ask: "What do y
 
 ### 3. Read context (light)
 
-Quickly read `VISION.md` and `ROADMAP.md` (defaults, configurable via `.jim/config.md`) if they exist. Don't discuss them — hold them as context so end-of-session routing is informed.
+Quickly read `{path.vision}` and `{path.roadmap}` if they exist. Don't discuss them — hold them as context so end-of-session routing is informed.
 
 ### 4. Create the brainstorm file
 
-Create `docs/brainstorms/{YYYYMMDD}-{topic}.md` (default, configurable via `.jim/config.md`). Use today's date and a topic slug (lowercase, hyphens, no spaces). Create the directory if it doesn't exist.
+Create `{path.brainstorms}/{YYYYMMDD}-{topic}.md`. Use today's date and a topic slug (lowercase, hyphens, no spaces). Create the directory if it doesn't exist.
 
 Write the initial content:
 
