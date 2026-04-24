@@ -26,9 +26,9 @@ Use `$ARGUMENTS` to determine the spec path:
 
 ## Process
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted.
 
 ### 2. Read and gate the spec
 
@@ -53,7 +53,7 @@ Check for `research.md` in the same directory as the spec.
 
 ### 4. Check ARCHITECTURE.md
 
-Look for `ARCHITECTURE.md` (default, configurable via `.jim/config.md`) at the project root (and for `ARCHITECTURE.md` at the target directory if planning a subdirectory).
+Look for `{path.architecture}` at the project root.
 
 - **Exists:** Read it. Treat every architectural invariant as a locked constraint. No design decision may violate these without explicit user approval.
 - **Missing:** Note the absence in the Constitution Check section of the plan. Proceed without constraints.
@@ -88,7 +88,7 @@ Populate all sections from the template:
 1. **Frontmatter** — `spec:` (relative path), `type:` (from spec), `status: draft`
 2. **Overview** — 1-2 sentences on the technical approach
 3. **Design Decisions** — Chosen/Why/Rejected for every non-obvious choice
-4. **Constitution Check** — `ARCHITECTURE.md` constraints listed and confirmed honored, or absence noted
+4. **Constitution Check** — `{path.architecture}` constraints listed and confirmed honored, or absence noted
 5. **File Manifest** — every file to be created or modified, with exact paths
 6. **Interface Contracts** — types, interfaces, API shapes — defined before tasks
 7. **Data Flow** — Mermaid diagram for non-trivial flows; sequence diagram for multi-agent interactions
@@ -97,7 +97,7 @@ Populate all sections from the template:
 10. **Out of Scope** — explicit deferrals
 11. **Open Questions** — unresolved items
 
-Write to `docs/specs/{group}/{id}-{name}/plan.md` (default, configurable via `.jim/config.md`). Status stays `draft`.
+Write to `{path.specs}/{group}/{id}-{name}/plan.md`. Status stays `draft`.
 
 ### 8. Self-check
 
@@ -125,7 +125,7 @@ Before presenting, confirm:
 
 - [ ] Spec was `status: approved` before planning began
 - [ ] research.md was read (or researcher was spawned and completed)
-- [ ] `ARCHITECTURE.md` was checked (present or absence noted)
+- [ ] `{path.architecture}` was checked (present or absence noted)
 - [ ] File manifest lists every file that will be created or modified
 - [ ] Interface contracts are defined before the task breakdown
 - [ ] Every task has a shell-executable `**Verify:**` command
