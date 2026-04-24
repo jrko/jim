@@ -13,7 +13,7 @@ argument-hint: "[add <description>]"
 
 # /jim:backlog
 
-Scan for deferred and out-of-scope work across specs, plans, research, brainstorms, and notes. Consolidate related items, check vision alignment, and produce `BACKLOG.md` (default, configurable via `.jim/config.md`).
+Scan for deferred and out-of-scope work across specs, plans, research, brainstorms, and notes. Consolidate related items, check vision alignment, and produce `{path.backlog}`.
 
 *(The `agent: pm` field in this frontmatter is a jim documentation convention, not a Claude Code routing mechanism.)*
 
@@ -24,63 +24,63 @@ Inspect `$ARGUMENTS` before entering a mode.
 | `$ARGUMENTS` shape | Mode | Behavior |
 | :--- | :--- | :--- |
 | Empty | Regeneration | Full source scan → consolidate → preserve Ad-hoc → approval → write |
-| `add <description…>` (first token literally `add`) | Append | Read `BACKLOG.md` → synthesize title → dedupe check → preview → confirm → write |
+| `add <description…>` (first token literally `add`) | Append | Read `{path.backlog}` → synthesize title → dedupe check → preview → confirm → write |
 | Anything else | Regeneration | Same as empty; non-`add` arguments are ignored with a warning line in the approval prompt |
 
 ## Process — Regeneration Mode
 
-This mode runs when no arguments are passed (or non-`add` arguments are passed). It performs a full source scan, preserves the existing Ad-hoc section, and writes a complete replacement `BACKLOG.md`.
+This mode runs when no arguments are passed (or non-`add` arguments are passed). It performs a full source scan, preserves the existing Ad-hoc section, and writes a complete replacement `{path.backlog}`.
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted.
 
 ### 2. Read strategic context
 
-Read `VISION.md` (default, configurable via `.jim/config.md`) if it exists. Extract the **Non-Goals** section — these are hard boundaries used for conflict checking against backlog items.
+Read `{path.vision}` if it exists. Extract the **Non-Goals** section — these are hard boundaries used for conflict checking against backlog items.
 
 If missing, note it conversationally and proceed without vision conflict checking.
 
 ### 3. Read and extract Ad-hoc block
 
-Read the existing `BACKLOG.md` if it exists. Locate the `## Ad-hoc` heading and extract everything between it and the next `## ` heading (typically `## Themes`), or to end of file if no subsequent `## ` heading exists. Parse `### Title` sub-blocks within that range as individual ad-hoc items.
+Read the existing `{path.backlog}` if it exists. Locate the `## Ad-hoc` heading and extract everything between it and the next `## ` heading (typically `## Themes`), or to end of file if no subsequent `## ` heading exists. Parse `### Title` sub-blocks within that range as individual ad-hoc items.
 
-**Abort condition:** If `BACKLOG.md` contains `### ` item blocks that appear outside any `## ` section AND no `## Ad-hoc` heading exists, abort with this warning and do not proceed:
+**Abort condition:** If `{path.backlog}` contains `### ` item blocks that appear outside any `## ` section AND no `## Ad-hoc` heading exists, abort with this warning and do not proceed:
 
-> ! BACKLOG.md contains `### ...` item blocks outside any recognized section,
+> ! `{path.backlog}` contains `### ...` item blocks outside any recognized section,
 >   and no `## Ad-hoc` heading was found. This usually means the heading was
 >   deleted by accident.
 >
 >   Please restore the `## Ad-hoc` heading above the orphaned items (or delete
 >   them if intentional) and re-run /jim:backlog.
 
-If `BACKLOG.md` does not exist, proceed with an empty ad-hoc item set.
+If `{path.backlog}` does not exist, proceed with an empty ad-hoc item set.
 
 ### 4. Scan structured sources
 
 Use Glob and Grep to find deferred items in sources with predictable headings.
 
 **Specs and plans:**
-- Glob `docs/specs/**/spec.md` and `docs/specs/**/plan.md` (default, configurable via `.jim/config.md`)
+- Glob `{path.specs}/**/spec.md` and `{path.specs}/**/plan.md`
 - Grep for `## Out of Scope` sections
 - Read the Out of Scope section content from each matching file
 
 **Security reviews:**
-- Glob `docs/specs/**/security.md` (default, configurable via `.jim/config.md`)
+- Glob `{path.specs}/**/security.md`
 - Grep for findings with `**Route:** Backlog`
 - Read the matching finding blocks (title, severity, description, suggestion)
 
 **Roadmap:**
-- Read `ROADMAP.md` (default, configurable via `.jim/config.md`) if it exists
+- Read `{path.roadmap}` if it exists
 - Extract the `## Later` section — items acknowledged but not committed
 
 ### 5. Scan unstructured sources
 
 Read these files in full — deferred items are embedded in prose without standard headings.
 
-- Glob `docs/specs/**/research.md` (default, configurable via `.jim/config.md`) — look for deferred ideas, "not adopting" notes, "out of scope for" mentions
-- Glob `docs/brainstorms/*.md` (default, configurable via `.jim/config.md`) — look for ideas that were never routed to specs
-- Glob `docs/notes/*.md` (default, configurable via `.jim/config.md`) — look for freeform deferred ideas
+- Glob `{path.specs}/**/research.md` — look for deferred ideas, "not adopting" notes, "out of scope for" mentions
+- Glob `{path.brainstorms}/*.md` — look for ideas that were never routed to specs
+- Glob `{path.notes}/*.md` — look for freeform deferred ideas
 
 Use judgment to identify deferred items in prose. There is no regex pattern that catches everything — read for intent.
 
@@ -96,7 +96,7 @@ Err on the side of inclusion. If uncertain whether an item has been resolved, ke
 
 ### 7. Check vision alignment
 
-For each remaining sourced item AND each ad-hoc item extracted in step 3, check against VISION.md Non-Goals:
+For each remaining sourced item AND each ad-hoc item extracted in step 3, check against `{path.vision}` Non-Goals:
 
 - If an item conflicts with a Non-Goal, flag it. The conflict line will appear in the output as a `**Vision conflict:**` line inside that item's block.
 - If an item is compatible or neutral, no vision line is needed — compatible is the default assumption.
@@ -144,20 +144,20 @@ Present the proposed backlog to the user before writing. The prompt should inclu
 
 - Source scan summary (how many specs, plans, research docs, brainstorms scanned)
 - Raw item count and consolidated item count
-- "Carrying forward N ad-hoc items from existing BACKLOG.md" (use 0 if none)
+- "Carrying forward N ad-hoc items from existing `{path.backlog}`" (use 0 if none)
 - Each consolidated item with title, one-line summary, and source list
 - Any duplicate warnings from step 9 — each flagged item listed with: keep, remove, or merge options
 - Identified themes with related item references
 
-Ask: "Write this to `BACKLOG.md`?" (default, configurable via `.jim/config.md`)
+Ask: "Write this to `{path.backlog}`?"
 
 If the user requests changes, return to the consolidation step and adjust.
 
-### 13. Write BACKLOG.md
+### 13. Write the backlog
 
 After approval, first check `.jim/skills/backlog/assets/backlog-template.md` — if it exists, use it instead of the built-in. Read `assets/backlog-template.md` for the output structure.
 
-Write `BACKLOG.md` (default, configurable via `.jim/config.md`) as a complete replacement. Use Write, not Edit — each run produces a fresh document.
+Write `{path.backlog}` as a complete replacement. Use Write, not Edit — each run produces a fresh document.
 
 **Ad-hoc section:** Re-emit the `## Ad-hoc` section in its reserved position — between the sourced items area and `## Themes`. If the extracted block (from step 3) contained `### Title` items, re-emit them verbatim. If the block was empty (no `### ` items), emit the placeholder comment from the template unchanged. Whitespace normalization is permitted, but no user-authored item title or description may be lost.
 
@@ -189,13 +189,13 @@ The `**Vision conflict:**` line is only present when a conflict exists.
 
 ### 14. First-run guidance
 
-If this is the first run (no existing `BACKLOG.md` before this invocation), inform the user:
+If this is the first run (no existing `{path.backlog}` before this invocation), inform the user:
 
-> "This creates BACKLOG.md. Once this file exists, it will be automatically regenerated after each `/jim:build` completion. You can delete the file at any time to opt out of post-build updates."
+> "This creates `{path.backlog}`. Once this file exists, it will be automatically regenerated after each `/jim:build` completion. You can delete the file at any time to opt out of post-build updates."
 
 ### 15. Differential context
 
-If `BACKLOG.md` already exists, read it before scanning. After generating the new version, briefly note what changed — new items added, items removed (resolved), items consolidated differently. This helps the user understand the delta without diffing manually.
+If `{path.backlog}` already exists, read it before scanning. After generating the new version, briefly note what changed — new items added, items removed (resolved), items consolidated differently. This helps the user understand the delta without diffing manually.
 
 ## Process — Append Mode
 
@@ -205,9 +205,9 @@ This mode runs when `$ARGUMENTS` begins with the literal token `add`. It is a fa
 
 Verify `$ARGUMENTS` starts with `add`. Extract the remainder as the item description (free-form prose). If the description is empty after `add`, ask the user for a description before proceeding.
 
-### 2. Read existing BACKLOG.md
+### 2. Read existing backlog
 
-If `BACKLOG.md` exists, read it to extract existing ad-hoc and sourced items for deduplication. If `BACKLOG.md` does not exist, prepare a minimal skeleton in memory:
+If `{path.backlog}` exists, read it to extract existing ad-hoc and sourced items for deduplication. If `{path.backlog}` does not exist, prepare a minimal skeleton in memory:
 
 ```markdown
 # Backlog
@@ -240,7 +240,7 @@ Compare the candidate title and description against both existing ad-hoc items a
 Display the preview to the user:
 
 ```
-Preview — this will be appended to ## Ad-hoc in BACKLOG.md:
+Preview — this will be appended to ## Ad-hoc in `{path.backlog}`:
 
   ### {Synthesized Title}
   {Description}
@@ -254,11 +254,11 @@ Wait for user confirmation. Do not write without it.
 
 ### 6. Insert into ## Ad-hoc section
 
-On confirmation, locate the `## Ad-hoc` section in `BACKLOG.md` (or the minimal skeleton) and insert the new `### Title` block at the end of that section, before the closing `---` or `## Themes` heading.
+On confirmation, locate the `## Ad-hoc` section in `{path.backlog}` (or the minimal skeleton) and insert the new `### Title` block at the end of that section, before the closing `---` or `## Themes` heading.
 
-### 7. Write BACKLOG.md
+### 7. Write the backlog
 
-Write the updated content to `docs/BACKLOG.md` using Write.
+Write the updated content to `{path.backlog}` using Write.
 
 ### 8. Report
 
