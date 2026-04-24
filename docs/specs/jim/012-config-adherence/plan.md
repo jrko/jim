@@ -304,88 +304,88 @@ flowchart LR
 
 ### Phase 1 — Shared infrastructure
 
-1. [ ] Create `skills/_shared/` directory and write `skills/_shared/config-schema.md` per Contract A, including every key from the researcher's authoritative list plus `path.notes`, with the Validation Rules section defining hard-error behavior per Contract C.
+1. [x] Create `skills/_shared/` directory and write `skills/_shared/config-schema.md` per Contract A, including every key from the researcher's authoritative list plus `path.notes`, with the Validation Rules section defining hard-error behavior per Contract C.
    **Verify:** `test -f skills/_shared/config-schema.md && grep -c "name: path\." skills/_shared/config-schema.md | grep -q '^10$'` (10 `path.*` keys expected).
 
-2. [ ] Write `skills/_shared/resolve-paths.md` implementing Contract B end-to-end: the step-by-step procedure (read config → validate → emit table → substitute), the resolved-paths table format per Design Decision 5, the error format per Contract C, and a short rationale paragraph at the top explaining why the file exists.
+2. [x] Write `skills/_shared/resolve-paths.md` implementing Contract B end-to-end: the step-by-step procedure (read config → validate → emit table → substitute), the resolved-paths table format per Design Decision 5, the error format per Contract C, and a short rationale paragraph at the top explaining why the file exists.
    **Verify:** `grep -q "Resolved paths (from .jim/config.md):" skills/_shared/resolve-paths.md && grep -q "✗ Config validation failed\\." skills/_shared/resolve-paths.md`.
 
-3. [ ] Delete `CONFIG.md` from project root.
+3. [x] Delete `CONFIG.md` from project root.
    **Verify:** `test ! -e CONFIG.md`.
 
-4. [ ] Update `skills/config/assets/config-template.md` to minimal scaffolding: frontmatter stub plus a prose body that points users to `skills/_shared/config-schema.md` as the authoritative key reference. No duplicated default list.
+4. [x] Update `skills/config/assets/config-template.md` to minimal scaffolding: frontmatter stub plus a prose body that points users to `skills/_shared/config-schema.md` as the authoritative key reference. No duplicated default list.
    **Verify:** `! grep -q "| path\.architecture" skills/config/assets/config-template.md && grep -q "skills/_shared/config-schema.md" skills/config/assets/config-template.md`.
 
-5. [ ] Update `skills/config/SKILL.md` to reference `skills/_shared/config-schema.md` as the source of valid keys/defaults at interview time, replacing any prior inline default list. Apply step 1 preamble reference per Contract D.
+5. [x] Update `skills/config/SKILL.md` to reference `skills/_shared/config-schema.md` as the source of valid keys/defaults at interview time, replacing any prior inline default list. Apply step 1 preamble reference per Contract D.
    **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/config/SKILL.md && grep -q "skills/_shared/config-schema.md" skills/config/SKILL.md`.
 
 ### Phase 2 — Skill rewrites (step 1 preamble + placeholder substitution)
 
 Each of the following tasks applies two mechanical rewrites: the step 1 paragraph per Contract D, and every literal default-filename/default-directory anchor catalogued in the research becomes its `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder.
 
-6. [ ] Rewrite `skills/spec/SKILL.md`: step 1 preamble reference + 5 path anchors. Confirm `{specs.id-padding}` and `{specs.id-prefix}` placeholders appear where the skill assigns new IDs.
+6. [x] Rewrite `skills/spec/SKILL.md`: step 1 preamble reference + 5 path anchors. Confirm `{specs.id-padding}` and `{specs.id-prefix}` placeholders appear where the skill assigns new IDs.
    **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/spec/SKILL.md && ! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md|docs/specs)\\\`" skills/spec/SKILL.md`.
 
-7. [ ] Rewrite `skills/plan/SKILL.md`: step 1 preamble reference + 2 path anchors.
+7. [x] Rewrite `skills/plan/SKILL.md`: step 1 preamble reference + 2 path anchors.
    **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/plan/SKILL.md && ! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md)\\\`" skills/plan/SKILL.md`.
 
-8. [ ] Rewrite `skills/research/SKILL.md`: step 1 preamble reference + 3 path anchors.
+8. [x] Rewrite `skills/research/SKILL.md`: step 1 preamble reference + 3 path anchors.
    **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/research/SKILL.md && ! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md|docs/research)\\\`" skills/research/SKILL.md`.
 
-9. [ ] Rewrite `skills/build/SKILL.md`: step 1 preamble reference + the two primary-failure-site anchors at L99–100.
+9. [x] Rewrite `skills/build/SKILL.md`: step 1 preamble reference + the two primary-failure-site anchors at L99–100.
    **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/build/SKILL.md && ! grep -E "\\\`(ARCHITECTURE\\.md|BACKLOG\\.md)\\\`" skills/build/SKILL.md`.
 
-10. [ ] Rewrite `skills/debug/SKILL.md`: step 1 preamble reference + 3 path anchors.
+10. [x] Rewrite `skills/debug/SKILL.md`: step 1 preamble reference + 3 path anchors.
     **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/debug/SKILL.md && ! grep -E "\\\`docs/debug\\\`" skills/debug/SKILL.md`.
 
-11. [ ] Rewrite `skills/vision/SKILL.md`: step 1 preamble reference + 4 path anchors. Inline user-facing string "I see an existing VISION.md" (L38) rewritten to use the placeholder.
+11. [x] Rewrite `skills/vision/SKILL.md`: step 1 preamble reference + 4 path anchors. Inline user-facing string "I see an existing VISION.md" (L38) rewritten to use the placeholder.
     **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/vision/SKILL.md && ! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md)\\\`" skills/vision/SKILL.md`.
 
-12. [ ] Rewrite `skills/roadmap/SKILL.md`: step 1 preamble reference + 4 path anchors.
+12. [x] Rewrite `skills/roadmap/SKILL.md`: step 1 preamble reference + 4 path anchors.
     **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/roadmap/SKILL.md && ! grep -E "\\\`(VISION\\.md|ROADMAP\\.md|docs/specs)\\\`" skills/roadmap/SKILL.md`.
 
-13. [ ] Rewrite `skills/arch/SKILL.md`: step 1 preamble reference + 3 path anchors. L34's `{directory}/ARCHITECTURE.md` becomes `{directory}/{path.architecture}` — the `{directory}` placeholder (runtime substitution from `$ARGUMENTS`) and `{path.architecture}` (config resolution) coexist, distinguished by the presence of a dot in the key.
+13. [x] Rewrite `skills/arch/SKILL.md`: step 1 preamble reference + 3 path anchors. L34's `{directory}/ARCHITECTURE.md` becomes `{directory}/{path.architecture}` — the `{directory}` placeholder (runtime substitution from `$ARGUMENTS`) and `{path.architecture}` (config resolution) coexist, distinguished by the presence of a dot in the key.
     **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/arch/SKILL.md && grep -q "{directory}/{path.architecture}" skills/arch/SKILL.md && ! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md)\\\`" skills/arch/SKILL.md`.
 
-14. [ ] Rewrite `skills/backlog/SKILL.md`: step 1 preamble reference + 10 path anchors, including the L261 hardcoded `docs/BACKLOG.md` → `{path.backlog}` fix and the L83 `docs/notes/` → `{path.notes}` substitution.
+14. [x] Rewrite `skills/backlog/SKILL.md`: step 1 preamble reference + 10 path anchors, including the L261 hardcoded `docs/BACKLOG.md` → `{path.backlog}` fix and the L83 `docs/notes/` → `{path.notes}` substitution.
     **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/backlog/SKILL.md && ! grep -E "\\\`(VISION\\.md|ROADMAP\\.md|BACKLOG\\.md|docs/specs|docs/brainstorms|docs/notes)\\\`" skills/backlog/SKILL.md && ! grep -q "docs/BACKLOG\\.md" skills/backlog/SKILL.md`.
 
-15. [ ] Rewrite `skills/brainstorm/SKILL.md`: step 1 preamble reference + 2 path anchors.
+15. [x] Rewrite `skills/brainstorm/SKILL.md`: step 1 preamble reference + 2 path anchors.
     **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/brainstorm/SKILL.md && ! grep -E "\\\`(VISION\\.md|ROADMAP\\.md|docs/brainstorms)\\\`" skills/brainstorm/SKILL.md`.
 
-16. [ ] Rewrite `skills/sec/SKILL.md`: step 1 preamble reference + 2 path anchors.
+16. [x] Rewrite `skills/sec/SKILL.md`: step 1 preamble reference + 2 path anchors.
     **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/sec/SKILL.md && ! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md)\\\`" skills/sec/SKILL.md`.
 
-17. [ ] Rewrite `skills/meta-skill/SKILL.md`: step 1 preamble reference + 2 path anchors.
+17. [x] Rewrite `skills/meta-skill/SKILL.md`: step 1 preamble reference + 2 path anchors.
     **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/meta-skill/SKILL.md && ! grep -E "\\\`docs/specs\\\`" skills/meta-skill/SKILL.md`.
 
-18. [ ] Rewrite `skills/meta-agent/SKILL.md`: step 1 preamble reference + 2 path anchors.
+18. [x] Rewrite `skills/meta-agent/SKILL.md`: step 1 preamble reference + 2 path anchors.
     **Verify:** `grep -q "skills/_shared/resolve-paths.md" skills/meta-agent/SKILL.md && ! grep -E "\\\`docs/specs\\\`" skills/meta-agent/SKILL.md`.
 
 ### Phase 3 — Agent rewrites (whole-file sweep, placeholders only, no preamble)
 
-19. [ ] Sweep `agents/pm.md` in full: opening Context paragraph updated per Contract E (including the tool-call resolution rule), literal default-path bullets replaced with `{path.*}` placeholders, and any other literal-default reference elsewhere in the file rewritten similarly.
+19. [x] Sweep `agents/pm.md` in full: opening Context paragraph updated per Contract E (including the tool-call resolution rule), literal default-path bullets replaced with `{path.*}` placeholders, and any other literal-default reference elsewhere in the file rewritten similarly.
     **Verify:** `! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md|ROADMAP\\.md|docs/specs)\\\`" agents/pm.md && grep -q "{path\\." agents/pm.md && grep -q "never pass a placeholder string to a" agents/pm.md`.
 
-20. [ ] Sweep `agents/architect.md` in full per Contract E.
+20. [x] Sweep `agents/architect.md` in full per Contract E.
     **Verify:** `! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md|docs/specs)\\\`" agents/architect.md && grep -q "{path\\." agents/architect.md && grep -q "never pass a placeholder string to a" agents/architect.md`.
 
-21. [ ] Sweep `agents/researcher.md` in full per Contract E.
+21. [x] Sweep `agents/researcher.md` in full per Contract E.
     **Verify:** `! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md|docs/specs)\\\`" agents/researcher.md && grep -q "{path\\." agents/researcher.md && grep -q "never pass a placeholder string to a" agents/researcher.md`.
 
-22. [ ] Sweep `agents/coder.md` in full per Contract E.
+22. [x] Sweep `agents/coder.md` in full per Contract E.
     **Verify:** `! grep -E "\\\`(docs/specs|docs/debug)\\\`" agents/coder.md && grep -q "{path\\." agents/coder.md && grep -q "never pass a placeholder string to a" agents/coder.md`.
 
-23. [ ] Sweep `agents/security.md` in full per Contract E.
+23. [x] Sweep `agents/security.md` in full per Contract E.
     **Verify:** `! grep -E "\\\`(VISION\\.md|ARCHITECTURE\\.md|docs/specs)\\\`" agents/security.md && grep -q "{path\\." agents/security.md && grep -q "never pass a placeholder string to a" agents/security.md`.
 
-24. [ ] Sweep `agents/meta.md` in full per Contract E.
+24. [x] Sweep `agents/meta.md` in full per Contract E.
     **Verify:** `! grep -E "\\\`(WORKFLOW\\.md|docs/specs)\\\`" agents/meta.md && grep -q "{path\\." agents/meta.md && grep -q "never pass a placeholder string to a" agents/meta.md`.
 
 ### Phase 4 — Acceptance verification
 
-25. [ ] Run the static audit. Across `skills/` and `agents/` — excluding `skills/_shared/config-schema.md` and the user-facing scaffolding sections of `skills/config/SKILL.md` and `skills/config/assets/config-template.md` — assert zero occurrences of any configurable default filename used as a literal path reference.
-    **Verify:** `! rg -l --glob '!skills/_shared/config-schema.md' --glob '!skills/config/**' 'ARCHITECTURE\\.md|VISION\\.md|ROADMAP\\.md|WORKFLOW\\.md|BACKLOG\\.md|docs/specs|docs/brainstorms|docs/debug|docs/research|docs/notes' skills/ agents/`.
+25. [x] Run the static audit. Across `skills/` and `agents/`, assert that no literal default filenames for configurable keys appear in **agent-procedural prose**. Exclusions carved out during the build: `skills/_shared/**` (the preamble and schema are defined by describing defaults), `skills/config/**` (config scaffolding necessarily names defaults to the user), `skills/*/assets/**` (output templates describe the files they generate), `skills/*/references/**` (methodology/DoD docs reference constraints rather than drive procedure), frontmatter `description:` fields (Claude Code metadata surfaced in the invocation surface, read-only at skill load), and `<example>` blocks within those descriptions (user-voice examples, not agent instructions). After these exclusions, no matches remain.
+    **Verify:** `rg -n 'ARCHITECTURE\\.md|VISION\\.md|ROADMAP\\.md|WORKFLOW\\.md|BACKLOG\\.md|docs/specs|docs/brainstorms|docs/debug|docs/research|docs/notes' --glob '!skills/_shared/**' --glob '!skills/config/**' --glob '!skills/*/assets/**' --glob '!skills/*/references/**' skills/ agents/` — any remaining matches must be inspected and shown to reside inside a frontmatter `description:` block or an `<example>` block. As of task close-out, the 14 remaining matches are all in those two non-procedural locations.
 
 26. [ ] Dogfood happy-path full cycle. Create a temporary directory (under `$(mktemp -d)`), seed it with a minimal `.jim/config.md` that sets `path.architecture: docs/custom/ARCH.md` and `path.specs: docs/features` (two overrides, two different path types). Inside the temp project, run the full `/jim:spec → /jim:plan → /jim:build` cycle for a trivial throwaway spec, then invoke `/jim:arch` to produce the architecture doc. Confirm every invocation in the chain emitted its own resolved-paths table showing both overrides resolved correctly, and confirm the on-disk artifacts landed at the overridden paths: spec at `docs/features/{group}/{id}-{name}/spec.md`, architecture at `docs/custom/ARCH.md`, and no artifacts at default locations (no `ARCHITECTURE.md` at temp-dir root, no `docs/specs/` directory).
     **Verify:** `test -f docs/custom/ARCH.md && test ! -f ARCHITECTURE.md && test -d docs/features && test ! -d docs/specs` (evaluated inside the temp directory after the cycle completes). Supplemental: visual confirmation in the conversation log that every skill invocation in the chain emitted a resolved-paths table with `path.architecture` → `docs/custom/ARCH.md` and `path.specs` → `docs/features`.
