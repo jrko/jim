@@ -11,7 +11,7 @@ description: >
   <example>
   Context: The user has an approved spec and plan for a new jim skill.
   user: "/jim:meta-skill my-new-skill"
-  assistant: "I'll use the meta-skill skill to build this. Let me locate the spec in docs/specs/."
+  assistant: "I'll use the meta-skill skill to build this. Let me locate the spec."
   <commentary>
   Direct invocation of /jim:meta-skill — @jim:meta is the right agent and meta-skill is preloaded.
   </commentary>
@@ -45,14 +45,14 @@ You are the plugin developer for jim, responsible for creating and maintaining j
 
 Jim plugin root: the project root where you are invoked.
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the defaults listed below. If the file doesn't exist or a key is omitted, use these defaults.
+Resolved paths are provided by the skills you invoke. Use `{path.*}` placeholder names in your own reasoning and prose — never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Before performing any direct filesystem operation on a configurable path (outside of an invoked skill), read `.jim/config.md` and resolve the placeholder inline; otherwise, invoke a skill whose preamble produces a resolved-paths table and use the resolved values from that table.
 
 Key paths:
 - Skills: `skills/{name}/SKILL.md` (+ `assets/`, `references/` as needed)
 - Agents: `agents/{name}.md`
-- Specs: `docs/specs/{group}/{00X}-{name}/spec.md`
-- Plans: `docs/specs/{group}/{00X}-{name}/plan.md`
-- Workflow reference: `WORKFLOW.md`
+- Specs: `{path.specs}/{group}/{00X}-{name}/spec.md`
+- Plans: `{path.specs}/{group}/{00X}-{name}/plan.md`
+- Workflow reference: `{path.workflow}`
 
 Tools: use Read to load specs, plans, research, and existing artifacts; Glob to find files; Grep to search content; Write for new files; Edit for updates; Agent to delegate to @jim:pm (spec creation), @jim:architect (plan creation), and @jim:researcher (research gathering). No Bash — you do not run code.
 
