@@ -11,15 +11,15 @@ argument-hint: "[idea-or-name]"
 
 # /jim:spec
 
-Turn a rough idea into a structured spec (`docs/specs/{group}/{00X}-{name}/spec.md`) through collaborative interview.
+Turn a rough idea into a structured spec (`{path.specs}/{group}/{00X}-{name}/spec.md`) through collaborative interview.
 
 *(The `agent: pm` field in this frontmatter is a jim documentation convention, not a Claude Code routing mechanism.)*
 
 ## Process
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted.
 
 ### 2. Seed the conversation
 
@@ -35,16 +35,16 @@ Use `$ARGUMENTS` as the idea or name hint.
 
 Read these files from the project root if they exist:
 
-- **`VISION.md`** (default, configurable via `.jim/config.md`) — locked constraint. Do not re-litigate strategic decisions.
-- **`ARCHITECTURE.md`** (default, configurable via `.jim/config.md`) — locked constraint. Technical invariants are not negotiable.
+- **`{path.vision}`** — locked constraint. Do not re-litigate strategic decisions.
+- **`{path.architecture}`** — locked constraint. Technical invariants are not negotiable.
 
-If either is missing, note it conversationally ("I notice there's no VISION.md yet — you might want to create one to anchor future specs") and proceed. Never block on their absence.
+If either is missing, note it conversationally ("I notice there's no vision doc yet — you might want to create one to anchor future specs") and proceed. Never block on their absence.
 
 First check `.jim/skills/spec/references/spec-types.md` — if it exists, use it instead of the built-in. Read `references/spec-types.md` for type guidance, anti-patterns, and status lifecycle.
 
 ### 4. Check existing specs
 
-Glob `docs/specs/` (default, configurable via `.jim/config.md`) to identify existing groups and specs.
+Glob `{path.specs}/` to identify existing groups and specs.
 
 - If `$ARGUMENTS` matches an existing spec name, ask: "Update the existing spec, or create a new one?"
 - Identify the target group. If ambiguous, suggest a noun-based group name or ask.
@@ -103,7 +103,7 @@ Ask 1-3 questions at a time. Never a wall of questions.
 - "This is getting broad — should we split off the search piece into its own spec?"
 - "That criterion sounds hard to test. Can we make it measurable?"
 
-**Technique: Strategic alignment.** If `VISION.md` exists and the idea seems to diverge from it, raise it as a conversation — never as a blocker:
+**Technique: Strategic alignment.** If `{path.vision}` exists and the idea seems to diverge from it, raise it as a conversation — never as a blocker:
 - "I notice the vision focuses on X, but this pulls toward Y. Intentional pivot, or should we scope differently?"
 
 Cap at 3-5 questions per topic area. If a topic area still feels vague after 5 questions, note it as an Open Question and move on.
@@ -116,7 +116,7 @@ No confidence scores. No numeric thresholds. The question is structural: "Can I 
 
 ### 9. Generate spec.md
 
-Now assign the ID: Glob `docs/specs/{group}/*/` (default, configurable via `.jim/config.md`) to find existing IDs. Pick `max(existing IDs) + 1`. Use the padding width from `.jim/config.md` `specs.id-padding` (default: 3) and prefix from `specs.id-prefix` (default: none). For example, with `id-padding: 4` and `id-prefix: FE-`, the ID would be `FE-0001`. If no existing specs in the group, start at the first ID (e.g., `001` or `FE-0001`).
+Now assign the ID: Glob `{path.specs}/{group}/*/` to find existing IDs. Pick `max(existing IDs) + 1`. Use `{specs.id-padding}` for zero-pad width and prepend `{specs.id-prefix}`. For example, with `specs.id-padding: 4` and `specs.id-prefix: FE-`, the ID would be `FE-0001`. If no existing specs in the group, start at the first ID (e.g. `001` or `FE-0001`).
 
 First check `.jim/skills/spec/assets/spec-template.md` — if it exists, use it instead of the built-in. Read `assets/spec-template.md`. Generate the spec:
 
@@ -128,14 +128,14 @@ First check `.jim/skills/spec/assets/spec-template.md` — if it exists, use it 
 - For bugs, ensure acceptance criteria includes "Regression test covers the reported scenario."
 - For refactors, ensure acceptance criteria includes "Existing tests pass without modification."
 
-Write the spec to `docs/specs/{group}/{00X}-{name}/spec.md` (default, configurable via `.jim/config.md`).
+Write the spec to `{path.specs}/{group}/{00X}-{name}/spec.md`.
 
 ### 10. Silent self-check
 
 Before presenting, validate the draft against:
 
 1. **Anti-patterns** — Check all 6 from `references/spec-types.md`. Any violation → auto-correct.
-2. **Locked constraints** — If `VISION.md` or `ARCHITECTURE.md` exist, verify the spec doesn't contradict them.
+2. **Locked constraints** — If `{path.vision}` or `{path.architecture}` exist, verify the spec doesn't contradict them.
 3. **Type-section completeness** — Verify all required sections for the detected type are present and populated.
 
 If the self-check finds issues, fix them inline. Do not tell the user about the self-check — just present a clean draft.
@@ -175,7 +175,7 @@ Before presenting any generated spec, verify:
 - [ ] `title` present and descriptive
 - [ ] `type` is one of: feature, bug, refactor
 - [ ] `group` is noun-based, lowercase
-- [ ] `id` is zero-padded per `specs.id-padding` (default: 3) with `specs.id-prefix` (default: none), sequential within group
+- [ ] `id` is zero-padded per `{specs.id-padding}` with `{specs.id-prefix}`, sequential within group
 - [ ] `status` is `draft`
 - [ ] `origin` present only if source documents exist (removed otherwise)
 
