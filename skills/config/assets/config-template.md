@@ -1,51 +1,26 @@
 ---
-# Add configuration overrides below. Omitted keys use upstream defaults.
+# Add configuration overrides below. Omitted keys use the schema defaults.
 # Skills only read frontmatter — the prose body below is for human reference.
 ---
 
 # Jim Project Configuration
 
-This file configures jim for your project. Only add keys you want to override — omitted keys use the upstream defaults shown below.
+This file configures jim for your project. Only add keys you want to override — omitted keys use the defaults defined in the jim plugin's schema.
 
-## Paths
+## Authoritative schema
 
-Strategic documents (file paths relative to project root):
+The full list of valid keys, their defaults, and their value constraints lives in the jim plugin at `skills/_shared/config-schema.md`. That file is the single source of truth. It documents:
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `path.vision` | `VISION.md` | Product vision document |
-| `path.architecture` | `ARCHITECTURE.md` | Architecture document |
-| `path.roadmap` | `ROADMAP.md` | Roadmap document |
-| `path.workflow` | `WORKFLOW.md` | Workflow process document |
-| `path.backlog` | `BACKLOG.md` | Backlog document |
+- every key (`path.*`, `specs.*`, `workflow.*`)
+- each key's default value and expected value type
+- per-type validation rules (e.g., `path.*` values must be relative, inside the project root, with no `..` or leading `/`)
+- which files and directories are overlayable via `.jim/` and which are not
 
-Artifact directories (directory paths relative to project root):
+Open `skills/_shared/config-schema.md` in your jim installation to see the current key set. The schema is the authority for what you may write in the frontmatter above.
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `path.specs` | `docs/specs` | Spec directories (`{group}/NNN-name/`) |
-| `path.brainstorms` | `docs/brainstorms` | Brainstorm files (`YYYYMMDD-topic.md`) |
-| `path.debug` | `docs/debug` | Debug reports (`YYYYMMDD-topic.md`) |
-| `path.research` | `docs/research` | Standalone research (non-spec-linked) |
+## Overlay directory
 
-## Spec ID Format
-
-| Key | Default | Description |
-|-----|---------|-------------|
-| `specs.id-padding` | `3` | Zero-padded width (3 = `001`, 4 = `0001`) |
-| `specs.id-prefix` | `""` | Optional prefix (e.g., `FE-` produces `FE-001`) |
-
-## Workflow Gates
-
-| Key | Default | Description |
-|-----|---------|-------------|
-| `workflow.require-research` | `false` | Plan phase stops if `research.md` is missing |
-| `workflow.require-security` | `false` | Build phase stops if `security.md` is missing |
-| `workflow.require-plan-approval` | `true` | Build phase stops if plan `status:` is not `approved` |
-
-## Overlay Directory
-
-Place custom assets and references under `.jim/` to override built-in plugin files. Skills check the overlay path first, then fall back to the built-in.
+Place custom assets and references under `.jim/` to override built-in plugin files. Skills check the overlay path first, then fall back to the plugin file.
 
 ```
 .jim/
@@ -59,4 +34,4 @@ Place custom assets and references under `.jim/` to override built-in plugin fil
         tdd-guide.md                     # overrides built-in TDD guide
 ```
 
-Only `assets/` and `references/` are supported as overlays. SKILL.md and agent definitions are not overlayable — use `.claude/agents/` for agent overrides (Claude Code native).
+Only `assets/` and `references/` under a named skill are overlayable. `SKILL.md`, agent definitions, and everything under `skills/_shared/` are plugin contract and cannot be overridden via `.jim/`. For agent overrides, use Claude Code's native `.claude/agents/` mechanism.
