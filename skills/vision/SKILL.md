@@ -17,9 +17,9 @@ Create or update the project's VISION.md through a section-by-section collaborat
 
 ## Process
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted.
 
 ### 2. Seed the conversation
 
@@ -27,15 +27,15 @@ Use `$ARGUMENTS` as a project name or topic hint. If empty, ask: "What project o
 
 ### 3. Read context
 
-Read `ARCHITECTURE.md` (default, configurable via `.jim/config.md`) if it exists — it's a locked constraint. Don't contradict technical decisions already made.
+Read `{path.architecture}` if it exists — it's a locked constraint. Don't contradict technical decisions already made.
 
-If missing, note conversationally: "No ARCHITECTURE.md yet — you might want to create one after this." Do not block.
+If missing, note conversationally: "No architecture doc yet — you might want to create one after this." Do not block.
 
-### 4. Check for existing VISION.md
+### 4. Check for existing vision
 
-Read `VISION.md` (default, configurable via `.jim/config.md`).
+Read `{path.vision}`.
 
-- **Exists:** This is a differential update. Read the content. Tell the user: "I see an existing VISION.md. I'll walk through each section and suggest changes based on our conversation." Identify which sections are well-defined vs. which need work.
+- **Exists:** This is a differential update. Read the content. Tell the user: "I see an existing vision doc. I'll walk through each section and suggest changes based on our conversation." Identify which sections are well-defined vs. which need work.
 - **Does not exist:** Fresh creation. Proceed to interview.
 
 ### 5. Problem Statement & Solution Statement — wordsmith mode
@@ -72,11 +72,11 @@ Walk through the remaining 5 template sections in order. For each section:
 
 **Context dump mode:** If the user pastes existing docs, PRDs, or notes, skip redundant questions and extract answers from the provided context. Label any assumptions explicitly: "I'm assuming X from your notes — correct?"
 
-### 7. Generate VISION.md
+### 7. Generate the vision doc
 
 First check `.jim/skills/vision/assets/vision-template.md` — if it exists, use it instead of the built-in. Read `assets/vision-template.md`. Fill each section with interview results. Keep it concise — the goal is clarity of direction, not exhaustive documentation.
 
-Write to `VISION.md` (default, configurable via `.jim/config.md`).
+Write to `{path.vision}`.
 
 ### 8. Silent self-check
 
@@ -92,7 +92,7 @@ Auto-correct violations before presenting.
 
 Sections are approved individually during the interview (Problem/Solution via wordsmith mode, others as drafted). This step is the final full-document review.
 
-Show the complete VISION.md to the user.
+Show the complete vision doc to the user.
 
 - **Differential update:** Show a summary of changes by section before applying. Ask: "Want me to apply these changes, or would you like adjustments?"
 - **New creation:** Ask: "Want me to write this, or would you like changes first?"
@@ -103,4 +103,4 @@ Use Edit for updates, Write for new files. Never auto-apply.
 
 If the user brings up implementation details during the interview, redirect: "That sounds like an architecture decision — want to run `/jim:arch` after we finish the vision?"
 
-VISION.md covers product direction only.
+The vision doc covers product direction only.
