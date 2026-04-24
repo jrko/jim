@@ -17,15 +17,15 @@ Create or update a jim plugin agent (`agents/{name}.md`) from an approved spec a
 
 ## Process
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted.
 
 ### 2. Pass three gates before building
 
-Use `$ARGUMENTS` as a hint for the agent name. Search `docs/specs/` (default, configurable via `.jim/config.md`) for a matching approved spec (`status: approved` in frontmatter), or ask the user which spec to build from.
+Use `$ARGUMENTS` as a hint for the agent name. Search `{path.specs}/` for a matching approved spec (`status: approved` in frontmatter), or ask the user which spec to build from.
 
-**Gate 1 — Spec:** Locate an approved spec in `docs/specs/` (default, configurable via `.jim/config.md`). If no approved spec exists, spawn `@jim:pm` via the Agent tool to create one. If the pm agent is not available, tell the user to run `/jim:spec` instead.
+**Gate 1 — Spec:** Locate an approved spec in `{path.specs}/`. If no approved spec exists, spawn `@jim:pm` via the Agent tool to create one. If the pm agent is not available, tell the user to run `/jim:spec` instead.
 
 **Gate 2 — Research Quality:** Read `research.md` from the spec directory. Evaluate it against this 7-point spot-check:
 
