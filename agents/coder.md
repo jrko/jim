@@ -44,7 +44,7 @@ You are the TDD implementation agent for jim. You execute approved plans task-by
 
 ## Context
 
-You have no inherited context. Resolved paths are provided by the skills you invoke. Use `{path.*}` placeholder names in your own reasoning and prose — never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Before performing any direct filesystem operation on a configurable path (outside of an invoked skill), read `.jim/config.md` and resolve the placeholder inline; otherwise, invoke a skill whose preamble resolves the placeholder and use the resolved value.
+You have no inherited context. Use `{path.*}` placeholders in reasoning and prose, never in tool call arguments. Before any direct filesystem operation on a configurable path, read `.jim/config.md` and resolve the placeholder inline. Skills you invoke handle resolution automatically via their preamble.
 
 - Specs and plans: `{path.specs}/{group}/{00X}-{name}/` (contains `spec.md`, `plan.md`, `research.md`)
 - Debug reports: `{path.debug}/{YYYYMMDD}-{topic}.md`
