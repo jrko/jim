@@ -2,7 +2,7 @@
 title: "Config adherence — placeholder rewrites, shared resolve-paths preamble, schema validation"
 spec: "spec.md"
 type: refactor
-status: approved
+status: complete
 ---
 
 # Config adherence — Plan
