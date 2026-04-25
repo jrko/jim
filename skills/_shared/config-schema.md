@@ -97,8 +97,26 @@ All `path.*` keys are relative to the project root.
 
 Every rule violation halts execution immediately via the error format defined in `skills/_shared/resolve-paths.md`. Fallback to defaults is prohibited — validation failures must surface to the user, not silently disappear.
 
-## Overlay Boundary
+## Overlay Directory
 
-`skills/_shared/` is part of the jim plugin contract and is **not** overlayable via `.jim/skills/_shared/`. A user who creates `.jim/skills/_shared/config-schema.md` or `.jim/skills/_shared/resolve-paths.md` expecting to add keys, loosen validation, or swap the preamble will find that file silently ignored.
+Place custom assets and references under `.jim/` to override built-in plugin files. Skills check the overlay path first, then fall back to the plugin file.
 
-Per-skill asset and reference overlays under `.jim/skills/{skill-name}/assets/` and `.jim/skills/{skill-name}/references/` remain supported as documented in `ARCHITECTURE.md`; the shared-primitives directory is a distinct surface and operates on plugin-contract semantics.
+```
+.jim/
+  config.md                              # project config (this file's frontmatter)
+  skills/
+    spec/
+      assets/
+        spec-template.md                 # overrides built-in spec template
+    build/
+      references/
+        tdd-guide.md                     # overrides built-in TDD guide
+```
+
+Only `assets/` and `references/` under a named skill are overlayable.
+
+**Plugin contract — not overlayable:**
+
+- `SKILL.md` files — skill bodies are plugin contract.
+- Agent definitions in `agents/` — for agent overrides, use Claude Code's native `.claude/agents/` mechanism.
+- `skills/_shared/` (this directory) — `config-schema.md` and `resolve-paths.md` are the schema and preamble. A user who creates `.jim/skills/_shared/config-schema.md` or `.jim/skills/_shared/resolve-paths.md` expecting to add keys, loosen validation, or swap the preamble will find that file silently ignored.

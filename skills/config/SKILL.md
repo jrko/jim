@@ -55,18 +55,21 @@ Skip if the user has no opinion — defaults are fine.
 
 ### 4. Generate config
 
-Read `skills/_shared/config-schema.md` for the authoritative keys, defaults, and value constraints. Read `assets/config-template.md` for the user-facing prose scaffolding that accompanies the frontmatter.
+Read `skills/_shared/config-schema.md` for the authoritative keys, defaults, and value constraints. Read `assets/config-template.md` for the scaffolding.
 
 Build `.jim/config.md`:
-- **Frontmatter:** Only include keys the user explicitly set to non-default values. Validate every non-default value against the schema's Validation Rules before including it; if the user supplied a value that would fail validation, surface the problem before writing rather than shipping a file that will hard-error on next invocation. Empty frontmatter means all defaults.
-- **Body:** Copy the prose body from `assets/config-template.md`. The template points the user to `skills/_shared/config-schema.md` as the authoritative reference, so do not inline the full key list into the user's `.jim/config.md`.
+
+- Use `assets/config-template.md` verbatim. Insert the user's overrides as keys inside the frontmatter block.
+- Only include keys the user explicitly set to non-default values. Validate every value against the schema's Validation Rules; surface any violation before writing.
+- Empty frontmatter (no overrides) is valid — write the template as-is.
+- Do not add a prose body. The schema and overlay docs live in `skills/_shared/config-schema.md`.
 
 ### 5. Present and stop
 
 Show the generated config to the user.
 
 - **New creation:** Ask: "Want me to write this, or would you like changes first?"
-- **Update:** Show a summary of what changed. Ask: "Want me to apply these changes, or would you like adjustments?"
+- **Update:** Show only the frontmatter changes (added keys, removed keys, changed values). Ask: "Want me to apply these changes, or would you like adjustments?"
 
 Create the `.jim/` directory if it doesn't exist. Use Write for new files, Edit for updates. Never auto-apply.
 
