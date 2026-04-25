@@ -56,6 +56,10 @@ Self-test meta-skill must verify every skill references `skills/_shared/resolve-
 
 Self-test meta-skill must verify that every new `path.*` key added to `skills/_shared/config-schema.md` carries value constraints (relative path, no `..`, no leading `/`, resolved within project root), preventing silent weakening of validation over time. Source: docs/specs/jim/012-config-adherence/security.md finding 4.
 
+### Configurable build hooks (per-task and completion gate)
+
+Make build-time hook scripts configurable via .jim/config.md. Today /jim:build hardcodes `./pre-commit.sh` as the per-task quality gate, and the completion gate runs no extra script. Two new config keys would address this: (a) a per-task hook script — default `./pre-commit.sh` for backward compatibility, configurable to `make test`, `ci`, etc., or empty to disable; (b) a completion-gate hook script (e.g. `./ci.sh`) for a fuller test run that's too expensive per task — empty by default. Both validated via the schema. Source: dogfood feedback during 012-config-adherence — pre-commit.sh absent in test project caused build failure.
+
 ---
 
 ## Themes
