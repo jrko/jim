@@ -455,11 +455,11 @@ Not every change needs the full lifecycle:
 
 ## Configuration and Overlay
 
-Jim is configurable per-project via `.jim/config.md`. All skills and agents read the file at the start of every invocation; omitted keys use defaults, and the file is optional.
+Jim is configurable per-project via `.jim/config.md`. Every skill follows `skills/_shared/resolve-paths.md` at the start of every invocation, which reads the file, validates it against `skills/_shared/config-schema.md`, and resolves placeholder values for use in the skill. Omitted keys use schema defaults; the file itself is optional. Unknown keys or values that violate the schema's validation rules halt the skill with a clear error rather than silently falling back to defaults.
 
 - **Paths** — redirect where jim reads strategic docs and writes specs, brainstorms, debug reports
 - **Spec ID format** — padding width and optional prefix (e.g., `FE-001`)
 - **Workflow gates** — enforce research, security review, or plan approval as prerequisites
 - **Overlay** — place custom templates under `.jim/skills/{name}/assets/` or `references/` to override built-in files (file presence wins, no config key required)
 
-Run `/jim:config` to scaffold or update the config interactively. See [`CONFIG.md`](CONFIG.md) for the full schema.
+Run `/jim:config` to scaffold or update the config interactively. See [`skills/_shared/config-schema.md`](skills/_shared/config-schema.md) for the full schema.

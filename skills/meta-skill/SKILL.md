@@ -17,15 +17,15 @@ Create or update a jim plugin skill (`skills/{name}/SKILL.md`) from an approved 
 
 ## Process
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call.
 
 ### 2. Pass three gates before building
 
-Use `$ARGUMENTS` as a hint for the skill name. Search `docs/specs/` (default, configurable via `.jim/config.md`) for a matching approved spec (`status: approved` in frontmatter), or ask the user which spec to build from.
+Use `$ARGUMENTS` as a hint for the skill name. Search `{path.specs}/` for a matching approved spec (`status: approved` in frontmatter), or ask the user which spec to build from.
 
-**Gate 1 — Spec:** Locate an approved spec in `docs/specs/` (default, configurable via `.jim/config.md`). If no approved spec exists, spawn `@jim:pm` via the Agent tool to create one. If the pm agent is not available, tell the user to run `/jim:spec` instead.
+**Gate 1 — Spec:** Locate an approved spec in `{path.specs}/`. If no approved spec exists, spawn `@jim:pm` via the Agent tool to create one. If the pm agent is not available, tell the user to run `/jim:spec` instead.
 
 **Gate 2 — Research Quality:** Read `research.md` from the spec directory. Evaluate it against this 7-point spot-check:
 
@@ -102,7 +102,7 @@ Work through this checklist before presenting the artifact. Fix failures inline 
 **Anti-patterns — any of these is a failure:**
 - [ ] No personality soup ("I am here to help you...")
 - [ ] No permission creep (tools beyond what the skill actually needs)
-- [ ] No instruction shadowing (repeating rules already in `WORKFLOW.md`)
+- [ ] No instruction shadowing (repeating rules already in `{path.workflow}`)
 - [ ] No duplicate logic (same instructions in 3+ places → extract to a shared skill)
 
 ### 6. Present to user

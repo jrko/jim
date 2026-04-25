@@ -18,9 +18,9 @@ Investigate codebase, external docs, and technical landscape to produce a ground
 
 ## Process
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call.
 
 ### 2. Route input
 
@@ -36,10 +36,10 @@ Use `$ARGUMENTS` to determine the research target and mode:
 
 ### 3. Determine output location
 
-- **Spec path input:** Output to `docs/specs/{group}/{id}-{name}/research.md` (default, configurable via `.jim/config.md`) (same directory as the spec).
+- **Spec path input:** Output to `{path.specs}/{group}/{id}-{name}/research.md` (same directory as the spec).
 - **Everything else:** Suggest a location and confirm with the user before writing:
   - If a related spec exists, suggest its directory.
-  - Otherwise suggest `docs/research/{YYYYMMDD}-{topic}.md` (default, configurable via `.jim/config.md`).
+  - Otherwise suggest `{path.research}/{YYYYMMDD}-{topic}.md`.
 
 ### 4. Check for existing research
 
@@ -93,7 +93,7 @@ Conditional phase. Triggered only after Phase 0 completes.
 
 Mandatory phase — always runs.
 
-1. Read `VISION.md` and `ARCHITECTURE.md` (defaults, configurable via `.jim/config.md`) if they exist. Treat them as locked constraints.
+1. Read `{path.vision}` and `{path.architecture}` if they exist. Treat them as locked constraints.
 2. Produce an explicit alignment statement: "This approach aligns with [strategic goal] and follows the [architectural pattern]" — or flag divergence conversationally.
 3. If strategic docs are missing, note their absence. Don't block on it.
 4. If research recommendations contradict a locked constraint, raise it as a Peer Feedback item for the PM.

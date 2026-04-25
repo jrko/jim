@@ -18,14 +18,18 @@ Create or update `.jim/config.md` to configure jim for the current project.
 
 ## Process
 
-### 1. Check for existing config
+### 1. Resolve config
+
+Follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call.
+
+### 2. Check for existing config
 
 Check if `.jim/config.md` exists at the project root.
 
 - **Exists:** This is an update. Read the file. Summarize current configuration to the user: which keys are set, which are using defaults. Ask: "What do you want to change?"
 - **Does not exist:** Fresh creation. Proceed to interview.
 
-### 2. Interview
+### 3. Interview
 
 Ask about each configuration area. Keep it light — 1-2 questions per area, skip areas the user doesn't care about.
 
@@ -49,20 +53,23 @@ Skip if the user has no opinion — defaults are fine.
 **Overlay:**
 - Mention the overlay directory briefly: "You can also override skill templates and references by placing files in `.jim/skills/{skill}/assets/` or `.jim/skills/{skill}/references/`. Want me to scaffold any overlay directories?"
 
-### 3. Generate config
+### 4. Generate config
 
-Read `assets/config-template.md` for the default values and documentation structure.
+Read `skills/_shared/config-schema.md` for the authoritative keys, defaults, and value constraints. Read `assets/config-template.md` for the scaffolding.
 
 Build `.jim/config.md`:
-- **Frontmatter:** Only include keys the user explicitly set to non-default values. Empty frontmatter means all defaults.
-- **Body:** Copy the prose documentation from the template so the user has a reference for available keys and defaults.
 
-### 4. Present and stop
+- Use `assets/config-template.md` verbatim. Insert the user's overrides as keys inside the frontmatter block.
+- Only include keys the user explicitly set to non-default values. Validate every value against the schema's Validation Rules; surface any violation before writing.
+- Empty frontmatter (no overrides) is valid — write the template as-is.
+- Do not add a prose body. The schema and overlay docs live in `skills/_shared/config-schema.md`.
+
+### 5. Present and stop
 
 Show the generated config to the user.
 
 - **New creation:** Ask: "Want me to write this, or would you like changes first?"
-- **Update:** Show a summary of what changed. Ask: "Want me to apply these changes, or would you like adjustments?"
+- **Update:** Show only the frontmatter changes (added keys, removed keys, changed values). Ask: "Want me to apply these changes, or would you like adjustments?"
 
 Create the `.jim/` directory if it doesn't exist. Use Write for new files, Edit for updates. Never auto-apply.
 

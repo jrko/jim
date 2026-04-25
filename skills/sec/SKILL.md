@@ -31,9 +31,9 @@ Use `$ARGUMENTS` to determine the review target and mode:
 
 ## Process
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call.
 
 ### 2. Determine mode and read target
 
@@ -49,7 +49,7 @@ Read `.jim/config.md` from the project root if it exists. Use any configured `pa
 
 ### 3. Read architectural context
 
-Read `ARCHITECTURE.md` (default, configurable via `.jim/config.md`) if it exists. Note existing:
+Read `{path.architecture}` if it exists. Note existing:
 - Trust boundaries and component relationships
 - Data flows and storage patterns
 - Authentication/authorization patterns
@@ -57,7 +57,7 @@ Read `ARCHITECTURE.md` (default, configurable via `.jim/config.md`) if it exists
 
 If absent, note it and proceed without architectural grounding.
 
-Read `VISION.md` (default, configurable via `.jim/config.md`) if it exists — for strategic context only.
+Read `{path.vision}` if it exists — for strategic context only.
 
 ### 4. Check for existing security.md (spec-scoped only)
 
@@ -172,8 +172,8 @@ Before presenting, confirm:
 - [ ] Suggestions are concrete and actionable (not vague)
 - [ ] Freeform review was performed before STRIDE sweep
 - [ ] All six STRIDE categories are evaluated (relevant, not relevant, or N/A)
-- [ ] `ARCHITECTURE.md` was read for grounding (or absence noted)
-- [ ] No findings duplicate existing `ARCHITECTURE.md` security considerations
+- [ ] `{path.architecture}` was read for grounding (or absence noted)
+- [ ] No findings duplicate existing `{path.architecture}` security considerations
 - [ ] Correct mode: spec-scoped writes `security.md`; ad-hoc outputs to conversation
 - [ ] Differential update used Edit (not Write) when `security.md` already exists
 - [ ] Routing offer matches the mode (spec/plan/backlog for spec-scoped; backlog for ad-hoc)

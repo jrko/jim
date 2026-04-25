@@ -86,7 +86,7 @@ That's it — Jim's slash commands and agents are now available in your session.
 
 Jim works zero-config — sensible defaults apply when no config is present. If your project uses different paths or you want to enforce workflow gates, run `/jim:config` to scaffold `.jim/config.md` interactively. Rerun any time to update.
 
-See [`CONFIG.md`](CONFIG.md) for the full schema — paths, spec ID format, workflow gates, and overlay directory.
+See [`skills/_shared/config-schema.md`](skills/_shared/config-schema.md) for the full schema — paths, spec ID format, workflow gates, validation rules, and the overlay directory.
 
 ## How to develop for Jim
 

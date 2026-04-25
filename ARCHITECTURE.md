@@ -1,6 +1,6 @@
 # Architecture — Jim
 
-*Last updated: 2026-04-18 (011-config build)*
+*Last updated: 2026-04-24 (012-config-adherence build)*
 
 > This document is generated and maintained by `/jim:arch`. Edit via the skill to preserve consistency.
 
@@ -22,6 +22,9 @@ jim/
 │   ├── meta.md              # @jim:meta — plugin developer (builds jim itself)
 │   └── security.md          # @jim:security — security analyst
 ├── skills/                  # Skill definitions — one directory per skill
+│   ├── _shared/             # Plugin-contract shared primitives (not overlayable)
+│   │   ├── config-schema.md     # Authoritative config schema — keys, defaults, value rules
+│   │   └── resolve-paths.md     # Shared preamble — config read, validation, placeholder resolution
 │   ├── spec/                # /jim:spec — collaborative spec creation
 │   ├── plan/                # /jim:plan — implementation planning
 │   ├── research/            # /jim:research — codebase and landscape investigation
@@ -44,6 +47,7 @@ jim/
 ├── ARCHITECTURE.md          # This file
 ├── VISION.md                # Product vision — problem, solution, audience, north star
 ├── ROADMAP.md               # Execution sequence
+├── BACKLOG.md               # Consolidated deferred work
 ├── WORKFLOW.md              # The SDLC process definition — commands, artifacts, philosophy
 ├── CLAUDE.md                # Claude Code project instructions
 └── README.md                # Project readme
@@ -146,10 +150,20 @@ Agents are markdown files (`agents/*.md`) that define personas with frontmatter 
 Skills are SKILL.md files inside `skills/{name}/` directories, optionally accompanied by `assets/` (templates) and `references/` (methodology docs).
 
 - **Purpose:** Provide the detailed process instructions that agents follow when a `/jim:{verb}` command is invoked
-- **Location:** `skills/` — 14 skill directories (spec, plan, research, sec, build, debug, vision, roadmap, arch, backlog, brainstorm, config, meta-skill, meta-agent)
+- **Location:** `skills/` — 14 skill directories (spec, plan, research, sec, build, debug, vision, roadmap, arch, backlog, brainstorm, config, meta-skill, meta-agent), plus the `_shared/` directory holding cross-skill plugin-contract files (see Shared Primitives below).
 - **Interfaces:** Frontmatter fields: `name`, `description`, `agent` (which agent runs this skill), `argument-hint`. Body contains step-by-step process, argument routing, validation checklists.
-- **Dependencies:** Skills reference their `assets/` templates and `references/` docs. Skills are bound to agents via the `agent` frontmatter field (documentation convention, not runtime routing). All skills read `.jim/config.md` for configurable paths and workflow settings. Skills with assets/references check `.jim/skills/{name}/` overlay paths before falling back to built-in files.
-- **Key Constraints:** SKILL.md stays under 500 lines (progressive disclosure). Templates live in `assets/`, methodology in `references/`.
+- **Dependencies:** Skills reference their `assets/` templates and `references/` docs. Skills are bound to agents via the `agent` frontmatter field (documentation convention, not runtime routing). Every skill's step 1 follows `skills/_shared/resolve-paths.md`, which reads `.jim/config.md`, validates it against `skills/_shared/config-schema.md`, and resolves placeholders for substitution at point of use. Skills with assets/references check `.jim/skills/{name}/` overlay paths before falling back to built-in files.
+- **Key Constraints:** SKILL.md stays under 500 lines (progressive disclosure). Templates live in `assets/`, methodology in `references/`. Configurable paths appear in skill bodies as `{path.*}` placeholders, never as literal default filenames.
+
+### Shared Primitives
+
+`skills/_shared/` holds cross-skill files that every skill depends on. Distinct from per-skill `assets/` and `references/`, this directory is plugin contract — not overlayable.
+
+- **Purpose:** Provide one canonical surface for config resolution and schema authority. Eliminates per-skill duplication of config-handling prose. The forcing function is the placeholder syntax itself: `{path.*}` strings in skill bodies are not valid filesystem arguments, so the agent must resolve them before any tool call.
+- **Location:** `skills/_shared/` — `config-schema.md` (authoritative keys, defaults, validation rules; YAML frontmatter `keys:` list plus prose Validation Rules and Overlay Boundary sections); `resolve-paths.md` (runtime preamble — read config, validate, build resolved map, halt format for validation failures, invariants).
+- **Interfaces:** `config-schema.md` exposes a YAML `keys:` list (each entry: `name`, `default`, `type`) consumed by the preamble for enumeration and validation. `resolve-paths.md` is invoked by every skill's step 1 via the canonical phrase "Resolve config — follow `skills/_shared/resolve-paths.md` before proceeding."
+- **Dependencies:** `resolve-paths.md` reads `config-schema.md`. Every skill's step 1 references `resolve-paths.md`. `/jim:config` reads `config-schema.md` for default values and validation rules during interview-time generation.
+- **Key Constraints:** `_shared/` is **not overlayable** via `.jim/skills/_shared/` — a user file there is silently ignored. `resolve-paths.md` enforces hard-error on schema validation failures with a fixed three-line format (`✗ Config validation failed.` / `✗ Key: \`{key}\`` / `✗ Reason: …`); fallback to defaults on validation failure is prohibited.
 
 ### Plugin Manifest
 
@@ -184,7 +198,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 | Backlog | Markdown file | `BACKLOG.md` | Consolidated deferred work — sourced items, user-authored ad-hoc items, cross-cutting themes | PM |
 | Brainstorms | Markdown files | `docs/brainstorms/` | Freeform ideation capture | PM |
 | Debug Reports | Markdown files | `docs/debug/` | Structured failure diagnosis | Coder |
-| Config and Overlay | Markdown files | `.jim/config.md`, `.jim/skills/{name}/` | Project-level configuration (paths, workflow gates, spec ID format) and asset/reference overrides | Meta (via `/jim:config`); all skills and agents read |
+| Config and Overlay | Markdown files | `.jim/config.md`, `.jim/skills/{name}/` | Project-level configuration (paths, workflow gates, spec ID format) and asset/reference overrides. Authoritative schema lives at `skills/_shared/config-schema.md` (plugin contract, not overlayable). | Meta (via `/jim:config`); all skills follow `skills/_shared/resolve-paths.md` at step 1 |
 
 ## External Integrations
 
@@ -203,11 +217,12 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 
 ## Security Considerations
 
-- **Trust boundary:** All input comes from the human developer via Claude Code. Agents do not accept external input. WebFetch/WebSearch results are the only external data — handled by stopping on failure per CLAUDE.md policy.
+- **Trust boundary:** All input comes from the human developer via Claude Code. Agents do not accept external input. WebFetch/WebSearch results are the only external data — handled by stopping on failure per CLAUDE.md policy. `.jim/config.md` is repo-committable, so a malicious config in a cloned repo is a supply-chain-style threat — mitigated by `config-schema.md` value constraints (see below).
 - **Secrets management:** No secrets are stored or managed. `.claude/settings.local.json` contains domain allowlists only.
 - **File system access:** Agents declare tool permissions in frontmatter. Coder agent has Bash access. All agents are prohibited from writing to `.git/`, `~/.ssh/`, `node_modules/`, `.venv/`, `.env`, `.env-*`. The `.gitignore` excludes `docs/prior-art/github.com/` (downloaded references) and `Z_*` files (personal notes).
+- **Security-relevant files:** `skills/_shared/config-schema.md` and `skills/_shared/resolve-paths.md` are load-bearing for config-mediated filesystem safety. **Schema invariants** (config-schema.md): `path.*` values must be relative, must not contain `..` segments, must not begin with `/`, and must resolve within the project root after following symlinks (realpath semantics); `boolean` values must be literal `true`/`false` (case variants and YAML 1.1 `yes`/`no`/`on`/`off` are rejected); unknown keys hard-error. **Preamble invariants** (resolve-paths.md): resolve-before-tool-call (no `{path.*}` placeholder may flow into a tool call unresolved — placeholder syntax itself is the forcing function), no-silent-fallback (validation failures halt; defaults apply only to absent keys), every-invocation (the preamble runs at the start of every skill invocation; no caching across invocations), schema-is-the-authority (any change to the valid key set or value rules goes through `config-schema.md`). Weakening either file weakens config validation project-wide.
 - **Auth:** None — the plugin runs within the user's Claude Code session with their permissions.
-- **Known risks:** No automated validation that agents respect their declared tool boundaries — enforcement depends on Claude Code's agent tool declarations and the model following instructions.
+- **Known risks:** No automated validation that agents respect their declared tool boundaries — enforcement depends on Claude Code's agent tool declarations and the model following instructions. Static-audit pass at refactor close-out verifies current skill bodies invoke the preamble; ongoing enforcement that future skills do the same is deferred to a self-test meta-skill (tracked in `BACKLOG.md`).
 
 ## Development & Testing
 
@@ -254,11 +269,12 @@ Conventions that govern how jim's agents, skills, and tools interact with Claude
 
 ### Configuration and Overlay
 
-- **Config resolution:** All skills read `.jim/config.md` from the project root as step 1 of their process. YAML frontmatter keys override hardcoded defaults. Omitted keys or a missing file means all defaults apply.
-- **Configurable paths:** `path.*` keys redirect where skills read strategic docs (VISION.md, ARCHITECTURE.md, etc.) and write artifacts (specs, brainstorms, debug reports). All paths are relative to project root.
+- **Config resolution:** Every skill's step 1 follows `skills/_shared/resolve-paths.md`. The preamble reads `.jim/config.md`, validates it against `skills/_shared/config-schema.md`, and builds a resolved map (configured value where present, schema default where absent) held internally for the rest of the invocation. The forcing function is the placeholder syntax: skill bodies contain `{path.*}` strings, which are not valid tool arguments, so the agent must resolve them before any tool call.
+- **Configurable paths:** `path.*` keys redirect where skills read strategic docs and write artifacts. Skill bodies reference these as `{path.*}` placeholders (e.g., `{path.architecture}`, `{path.specs}`); literal default filenames do not appear in skill procedural prose. All values are relative to project root and validated against the schema's path constraints.
 - **Workflow gates:** `workflow.require-research`, `workflow.require-security`, `workflow.require-plan-approval` control phase-entry enforcement in plan and build skills.
 - **Spec ID format:** `specs.id-padding` and `specs.id-prefix` control ID generation in the spec skill.
 - **Asset/reference overlay:** Skills check `.jim/skills/{skill-name}/assets/{file}` and `.jim/skills/{skill-name}/references/{file}` before reading built-in files. File presence wins — no config key needed.
+- **Shared-primitives boundary:** `skills/_shared/` is **not overlayable** via `.jim/skills/_shared/`. Schema and preamble are plugin contract; user files at the overlay path are silently ignored.
 - **Agent overlay:** Handled natively by Claude Code via `.claude/agents/` (project-level agents override plugin agents by priority). Not a jim-specific mechanism.
 
 ### Anti-Patterns
@@ -284,3 +300,4 @@ These are documented failure modes from prior art research (`docs/specs/jim/001-
 | Meta | Jim developing Jim — using `@jim:meta` agent with `/jim:meta-skill` and `/jim:meta-agent` to build plugin components |
 | Config | Project-level configuration in `.jim/config.md` — paths, workflow gates, spec ID format |
 | Overlay | User-provided asset/reference files in `.jim/skills/{name}/` that override built-in plugin files |
+| Shared primitive | A cross-skill plugin-contract file under `skills/_shared/` (e.g., the resolve-paths preamble or the config schema). Not overlayable; one canonical source per concern. |

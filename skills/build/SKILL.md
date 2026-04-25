@@ -27,9 +27,9 @@ Use `$ARGUMENTS` to determine the spec directory:
 
 ## Process
 
-### 1. Read config
+### 1. Resolve config
 
-Read `.jim/config.md` from the project root if it exists. Use any configured `path.*` values instead of the default paths in this skill. If the file doesn't exist or a key is omitted, use the defaults shown below.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call.
 
 ### 2. Gate the plan
 
@@ -96,8 +96,8 @@ Then read the next unchecked task and repeat.
 
 After all tasks are marked `[x]`:
 
-1. Check if `ARCHITECTURE.md` exists (default, configurable via `.jim/config.md`). If it does, invoke `/jim:arch` to run a differential update — the architect will scan the codebase, compare against the existing document, and present any changes for your approval. If it does not exist, skip this step.
-2. Check if `BACKLOG.md` exists (default, configurable via `.jim/config.md`). If it does, invoke `/jim:backlog` to regenerate it — the PM will scan for deferred work, consolidate items, and present the updated backlog for your approval. If it does not exist, skip this step.
+1. Check if `{path.architecture}` exists. If it does, invoke `/jim:arch` to run a differential update — the architect will scan the codebase, compare against the existing document, and present any changes for your approval. If it does not exist, skip this step.
+2. Check if `{path.backlog}` exists. If it does, invoke `/jim:backlog` to regenerate it — the PM will scan for deferred work, consolidate items, and present the updated backlog for your approval. If it does not exist, skip this step.
 3. Report to the user and ask: "Should I mark the plan status as `complete`?"
 4. STOP. Wait for the human to confirm. Do not proceed to the next SDLC phase, do not auto-invoke review. Update the plan frontmatter to `status: complete` only after explicit confirmation.
 
