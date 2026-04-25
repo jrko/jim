@@ -45,7 +45,7 @@ You are the plugin developer for jim, responsible for creating and maintaining j
 
 Jim plugin root: the project root where you are invoked.
 
-Resolved paths are provided by the skills you invoke. Use `{path.*}` placeholder names in your own reasoning and prose — never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Before performing any direct filesystem operation on a configurable path (outside of an invoked skill), read `.jim/config.md` and resolve the placeholder inline; otherwise, invoke a skill whose preamble produces a resolved-paths table and use the resolved values from that table.
+Resolved paths are provided by the skills you invoke. Use `{path.*}` placeholder names in your own reasoning and prose — never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Before performing any direct filesystem operation on a configurable path (outside of an invoked skill), read `.jim/config.md` and resolve the placeholder inline; otherwise, invoke a skill whose preamble resolves the placeholder and use the resolved value.
 
 Key paths:
 - Skills: `skills/{name}/SKILL.md` (+ `assets/`, `references/` as needed)

@@ -9,7 +9,7 @@ status: approved
 
 ## Overview
 
-Introduce `skills/_shared/` as the first shared-primitives directory with two new files — `resolve-paths.md` (runtime preamble that resolves placeholders, validates the config, and emits a resolved-paths table) and `config-schema.md` (authoritative keys, defaults, and value constraints, replacing the duplicated surface in `CONFIG.md` and `config-template.md`). Every skill body, every agent Context section, and two pre-existing config-adherence bugs are rewritten in one atomic pass to `{path.*}` placeholder form backed by the shared preamble.
+Introduce `skills/_shared/` as the first shared-primitives directory with two new files — `resolve-paths.md` (runtime preamble that reads config, validates, and resolves placeholders for substitution at point of use) and `config-schema.md` (authoritative keys, defaults, and value constraints, replacing the duplicated surface in `CONFIG.md` and `config-template.md`). Every skill body, every agent Context section, and two pre-existing config-adherence bugs are rewritten in one atomic pass to `{path.*}` placeholder form backed by the shared preamble.
 
 ## Design Decisions
 
@@ -21,8 +21,8 @@ Introduce `skills/_shared/` as the first shared-primitives directory with two ne
 
 ### 2. Preamble invocation syntax from each skill
 
-- **Chosen:** Every skill's step 1 reads, verbatim: *"Resolve config — follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted."*
-- **Why:** Explicit, mechanical, one canonical phrase. The second sentence binds the emission to a checkable precondition — if the table hasn't been emitted, no placeholder substitution may occur.
+- **Chosen:** Every skill's step 1 reads, verbatim: *"Resolve config — follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call."*
+- **Why:** Explicit, mechanical, one canonical phrase. The forcing function is the placeholder syntax itself: `{path.*}` strings are not valid tool arguments, so the agent must resolve them before any tool call.
 - **Rejected:** Mirror the asset/reference overlay pattern ("First check `.jim/skills/_shared/...` — if it exists, use it instead of the built-in") — overlay semantics are wrong for shared primitives (users don't override `_shared/`; it's part of the plugin contract). A lightweight comment stub (`<!-- resolve paths -->`) — too easy for agents to skim.
 
 ### 3. `skills/_shared/config-schema.md` is the single source of truth
@@ -37,20 +37,11 @@ Introduce `skills/_shared/` as the first shared-primitives directory with two ne
 - **Why:** Markdown-only matches the plugin. Prose handles nuance the YAML can't ("relative path, no `..` segments after normalization, no leading `/`, resolved absolute path within project root"). Frontmatter gives the preamble a stable structural anchor for key enumeration.
 - **Rejected:** Pure-prose schema — no stable enumeration surface for the preamble to iterate. Pure-YAML schema — can't express the relative-path-plus-normalization rule concisely.
 
-### 5. Resolved-paths table format
+### 5. No external resolved-paths emission
 
-- **Chosen:** A markdown table with columns `Key`, `Default`, `Resolved`. Every `Resolved` cell wraps its value in backticks (inline code). Example:
-
-  ```markdown
-  | Key | Default | Resolved |
-  | :--- | :--- | :--- |
-  | path.architecture | `ARCHITECTURE.md` | `docs/jim/ARCHITECTURE.md` |
-  | path.backlog | `BACKLOG.md` | `BACKLOG.md` |
-  ```
-
-  The whole emission is preceded by the fixed header `**Resolved paths (from .jim/config.md):**`.
-- **Why:** Tables are the most scannable layout. Inline-code fencing is sufficient to render any embedded markdown/control content as literal text — fenced code blocks per-cell would be visually noisy and break table rendering. Showing both Default and Resolved makes overrides obvious at a glance. The fixed header gives the agent a predictable anchor to check "have I emitted this yet."
-- **Rejected:** One fenced code block for the entire emission — less readable, breaks the visual distinction between the forcing function and surrounding prose. Unfenced values — fails the security AC (Finding 2). Verbose per-key blocks — too much noise for every skill invocation.
+- **Chosen:** The preamble does not emit a resolved-paths table or any other audit artifact to the conversation. Resolution happens internally; placeholders are substituted at point of use.
+- **Why:** **Cleanup decision after dogfood.** The original design emitted a table on every skill invocation as a forcing function plus audit artifact. Dogfood feedback: the table was noisy across chained workflows (`/jim:spec → /jim:plan → /jim:build` showed 3+ identical tables, almost always all-defaults) and didn't materially help the agent. Re-analysis of the forcing function showed that the placeholder syntax itself does the work: `{path.*}` strings in skill bodies are not valid tool arguments, so the agent cannot proceed without resolving them. The table was downstream of that resolution, not what caused it. Audit needs are better served by the deferred persistent log (BACKLOG: "Resolved-paths audit log").
+- **Rejected:** Compact-conditional emission (only when overrides exist) — preserves visibility but adds branching logic for marginal benefit. Inline emission on every invocation (the original design) — noise outweighs value once placeholder substitution is recognized as the actual forcing function.
 
 ### 6. Validation error message format
 
@@ -66,7 +57,7 @@ Introduce `skills/_shared/` as the first shared-primitives directory with two ne
 
 ### 7. Agent rewrites: placeholders in prose only; tool calls never use unresolved placeholders
 
-- **Chosen:** All six agent files (whole-file, not just Context sections) have their literal default filenames rewritten to `{path.*}` placeholders. Agents do not invoke the resolve-paths preamble. The Context paragraph that currently reads "Use any configured `path.*` values instead of the defaults listed below" is replaced with: "Resolved paths are provided by the skills you invoke. Use `{path.*}` placeholder names in your own reasoning and prose — never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Before performing any direct filesystem operation on a configurable path (outside of an invoked skill), read `.jim/config.md` and resolve the placeholder inline; otherwise, invoke a skill whose preamble produces a resolved-paths table and use the resolved values from that table."
+- **Chosen:** All six agent files (whole-file, not just Context sections) have their literal default filenames rewritten to `{path.*}` placeholders. Agents do not invoke the resolve-paths preamble. The Context paragraph that currently reads "Use any configured `path.*` values instead of the defaults listed below" is replaced with: "Resolved paths are provided by the skills you invoke. Use `{path.*}` placeholder names in your own reasoning and prose — never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Before performing any direct filesystem operation on a configurable path (outside of an invoked skill), read `.jim/config.md` and resolve the placeholder inline; otherwise, invoke a skill whose preamble resolves the placeholder and use the resolved value."
 - **Why:** Matches the spec's Out of Scope line (agents get placeholder rewrites but not preamble invocation). Closes the tool-call gap: if an agent writes `Write({path.specs}/foo.md, ...)` without prior resolution, it creates a literal-string file. The rule keeps placeholders useful for reasoning while forbidding them as tool arguments. Two resolution paths are permitted — skill-mediated (the normal flow) or inline-resolved (escape hatch for direct operations) — without mandating preamble machinery in agents.
 - **Rejected:** Remove path references from agents entirely — the Context section genuinely benefits from naming the key artifacts. Add preamble invocation to agents — spec explicitly OOS. Prohibit direct agent tool calls on configurable paths — over-constrains agents that need narrow direct access (e.g., reading a spec to answer a question without running `/jim:spec`).
 
@@ -90,7 +81,7 @@ Introduce `skills/_shared/` as the first shared-primitives directory with two ne
 
 ### 11. Dogfood run: full cycle in a temporary project, with positive and negative cases
 
-- **Chosen:** The dogfood exercises two tasks against a throwaway directory (under `$(mktemp -d)` or equivalent), seeded with minimal fixture `.jim/config.md` files. Task 26 runs the full `/jim:spec → /jim:plan → /jim:build` cycle with a valid override of `path.architecture`, verifying every skill in the chain emits a resolved-paths table and every artifact lands at the overridden location. Task 27 runs three negative-case invocations — unknown key, `..` traversal, absolute path — each expected to halt with a Contract C error and write no artifacts.
+- **Chosen:** The dogfood exercises two tasks against a throwaway directory (under `$(mktemp -d)` or equivalent), seeded with minimal fixture `.jim/config.md` files. Task 26 runs the full `/jim:spec → /jim:plan → /jim:build` cycle with a valid override of `path.architecture`, verifying every skill in the chain honors the override and every artifact lands at the overridden location. Task 27 runs three negative-case invocations — unknown key, `..` traversal, absolute path — each expected to halt with a Contract C error and write no artifacts.
 - **Why:** The spec AC reads "one full cycle" for a reason — each skill runs as its own agent invocation with its own step 1, so single-skill coverage doesn't prove that chained invocations each fire the forcing function and consistently resolve the same overrides. The original failure site (`/jim:build` completion gate) lives at the tail of a long chain; narrow scope would miss the analogous class of failure. Negative cases are needed because the schema validation is effectively untested without them — if the prose in `resolve-paths.md` is subtly wrong, the happy path keeps working while the hard-error ACs silently don't. Temp-directory isolation keeps verification hermetic and avoids contaminating jim's own artifacts (matches the global test-files-in-temp-dirs rule).
 - **Rejected:** Single-skill scope — misses cross-skill resolution consistency and the tail-of-chain class that motivated the spec. Self-run against the jim repo — risks overwriting real artifacts. Automated negative-case test suite — no test infra precedent in jim; structured dogfood sub-steps are enough.
 
@@ -220,12 +211,11 @@ Per-invocation procedure, invoked by every skill's step 1 verbatim:
    - If present in `.jim/config.md`: validate value against schema's validation rules. On violation → halt per Contract C.
    - If absent: use default.
 3. For every key in `.jim/config.md` not declared in the schema → halt per Contract C.
-4. Emit the resolved-paths table (Design Decision 5 format) inline before any further work.
-5. Throughout the invoking skill's subsequent steps, every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder is substituted with its resolved value at the point of use.
+4. Hold the resolved map internally for the rest of the invocation. No external emission. Throughout the invoking skill's subsequent steps, every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder is substituted with its resolved value at the point of use.
 
 ### Contract C — Validation error format
 
-Three-line structured halt. Key names are fenced in inline backticks to match the value-fencing discipline established for the resolved-paths table:
+Three-line structured halt. Key names are fenced in inline backticks so that markdown metacharacters or control content in a YAML-legal key cannot inject into agent context:
 
 ```
 ✗ Config validation failed.
@@ -243,7 +233,7 @@ Every skill's current step 1 paragraph:
 
 becomes:
 
-> "Resolve config — follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted."
+> "Resolve config — follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call."
 
 ### Contract E — Agent whole-file rewrite template
 
@@ -255,7 +245,7 @@ The Context section's opening paragraph currently reads approximately:
 
 followed by a bulleted list of literal paths. The rewrite:
 
-- The opening paragraph becomes: *"Resolved paths are provided by the skills you invoke. Use `{path.*}` placeholder names in your own reasoning and prose — never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Before performing any direct filesystem operation on a configurable path (outside of an invoked skill), read `.jim/config.md` and resolve the placeholder inline; otherwise, invoke a skill whose preamble produces a resolved-paths table and use the resolved values from that table."*
+- The opening paragraph becomes: *"Resolved paths are provided by the skills you invoke. Use `{path.*}` placeholder names in your own reasoning and prose — never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Before performing any direct filesystem operation on a configurable path (outside of an invoked skill), read `.jim/config.md` and resolve the placeholder inline; otherwise, invoke a skill whose preamble resolves the placeholder and use the resolved value."*
 - The bulleted literal-path list becomes bulleted `{path.*}` placeholders (e.g. `{path.specs}`, `{path.vision}`, `{path.architecture}`).
 - Any other prose in the agent file (process sections, constraints, examples) that references a literal configurable default is rewritten to the corresponding `{path.*}` placeholder.
 
@@ -273,8 +263,7 @@ flowchart TD
     DEFAULTS --> SCHEMA
     SCHEMA --> VALIDATE{Every key valid?}
     VALIDATE -->|Unknown key or invalid value| HALT["✗ Hard error — halt with Contract C message"]
-    VALIDATE -->|All pass| EMIT["Emit resolved-paths table inline"]
-    EMIT --> BODY[Skill step 2+ proceeds, substituting placeholders at point of use]
+    VALIDATE -->|All pass| BODY[Skill step 2+ proceeds, substituting placeholders at point of use]
     BODY --> WRITES[Filesystem reads/writes use resolved values]
 ```
 
@@ -307,7 +296,7 @@ flowchart LR
 1. [x] Create `skills/_shared/` directory and write `skills/_shared/config-schema.md` per Contract A, including every key from the researcher's authoritative list plus `path.notes`, with the Validation Rules section defining hard-error behavior per Contract C.
    **Verify:** `test -f skills/_shared/config-schema.md && grep -c "name: path\." skills/_shared/config-schema.md | grep -q '^10$'` (10 `path.*` keys expected).
 
-2. [x] Write `skills/_shared/resolve-paths.md` implementing Contract B end-to-end: the step-by-step procedure (read config → validate → emit table → substitute), the resolved-paths table format per Design Decision 5, the error format per Contract C, and a short rationale paragraph at the top explaining why the file exists.
+2. [x] Write `skills/_shared/resolve-paths.md` implementing Contract B end-to-end: the step-by-step procedure (read config → validate → resolve → substitute at point of use, no external emission per Design Decision 5), the error format per Contract C, and a short rationale paragraph at the top explaining why the file exists.
    **Verify:** `grep -q "Resolved paths (from .jim/config.md):" skills/_shared/resolve-paths.md && grep -q "✗ Config validation failed\\." skills/_shared/resolve-paths.md`.
 
 3. [x] Delete `CONFIG.md` from project root.
@@ -387,18 +376,18 @@ Each of the following tasks applies two mechanical rewrites: the step 1 paragrap
 25. [x] Run the static audit. Across `skills/` and `agents/`, assert that no literal default filenames for configurable keys appear in **agent-procedural prose**. Exclusions carved out during the build: `skills/_shared/**` (the preamble and schema are defined by describing defaults), `skills/config/**` (config scaffolding necessarily names defaults to the user), `skills/*/assets/**` (output templates describe the files they generate), `skills/*/references/**` (methodology/DoD docs reference constraints rather than drive procedure), frontmatter `description:` fields (Claude Code metadata surfaced in the invocation surface, read-only at skill load), and `<example>` blocks within those descriptions (user-voice examples, not agent instructions). After these exclusions, no matches remain.
     **Verify:** `rg -n 'ARCHITECTURE\\.md|VISION\\.md|ROADMAP\\.md|WORKFLOW\\.md|BACKLOG\\.md|docs/specs|docs/brainstorms|docs/debug|docs/research|docs/notes' --glob '!skills/_shared/**' --glob '!skills/config/**' --glob '!skills/*/assets/**' --glob '!skills/*/references/**' skills/ agents/` — any remaining matches must be inspected and shown to reside inside a frontmatter `description:` block or an `<example>` block. As of task close-out, the 14 remaining matches are all in those two non-procedural locations.
 
-26. [x] Dogfood happy-path full cycle. Create a temporary directory (under `$(mktemp -d)`), seed it with a minimal `.jim/config.md` that sets `path.architecture: docs/custom/ARCH.md` and `path.specs: docs/features` (two overrides, two different path types). Inside the temp project, run the full `/jim:spec → /jim:plan → /jim:build` cycle for a trivial throwaway spec, then invoke `/jim:arch` to produce the architecture doc. Confirm every invocation in the chain emitted its own resolved-paths table showing both overrides resolved correctly, and confirm the on-disk artifacts landed at the overridden paths: spec at `docs/features/{group}/{id}-{name}/spec.md`, architecture at `docs/custom/ARCH.md`, and no artifacts at default locations (no `ARCHITECTURE.md` at temp-dir root, no `docs/specs/` directory).
-    **Verify:** `test -f docs/custom/ARCH.md && test ! -f ARCHITECTURE.md && test -d docs/features && test ! -d docs/specs` (evaluated inside the temp directory after the cycle completes). Supplemental: visual confirmation in the conversation log that every skill invocation in the chain emitted a resolved-paths table with `path.architecture` → `docs/custom/ARCH.md` and `path.specs` → `docs/features`.
+26. [x] Dogfood happy-path full cycle. Create a temporary directory (under `$(mktemp -d)`), seed it with a minimal `.jim/config.md` that sets `path.architecture: docs/custom/ARCH.md` and `path.specs: docs/features` (two overrides, two different path types). Inside the temp project, run the full `/jim:spec → /jim:plan → /jim:build` cycle for a trivial throwaway spec, then invoke `/jim:arch` to produce the architecture doc. Confirm every invocation in the chain honored both overrides and the on-disk artifacts landed at the overridden paths: spec at `docs/features/{group}/{id}-{name}/spec.md`, architecture at `docs/custom/ARCH.md`, and no artifacts at default locations (no `ARCHITECTURE.md` at temp-dir root, no `docs/specs/` directory).
+    **Verify:** `test -f docs/custom/ARCH.md && test ! -f ARCHITECTURE.md && test -d docs/features && test ! -d docs/specs` (evaluated inside the temp directory after the cycle completes).
 
 27. [x] Dogfood negative cases. Run four additional invocations, each against a fresh temp directory seeded with a deliberately malformed `.jim/config.md` or layout. Each invocation uses `/jim:arch` (representative skill, fast). Each must halt with a Contract C error naming the offending key (fenced in backticks) and a human-readable reason, and must write no artifacts.
     - **27.1 Unknown key.** Config contains `path.architechture: docs/ARCH.md` (typo). Expected reason: "unknown key — not listed in skills/_shared/config-schema.md."
     - **27.2 Path traversal.** Config contains `path.architecture: ../../../tmp/evil.md`. Expected reason: "value must not contain `..` segments."
     - **27.3 Absolute path.** Config contains `path.architecture: /etc/evil.md`. Expected reason: "value must be relative (no leading `/`)."
     - **27.4 Symlink escape.** Config contains a valid-looking `path.architecture: docs/link/ARCH.md`. Before the run, create `docs/link` as a symlink pointing to `/tmp` (or another directory outside the temp project root). Expected reason: "value must resolve within project root" — the containment check follows the symlink and sees that the final resolved target lies outside the project root.
-    **Verify:** For each sub-case: `test ! -f docs/ARCH.md && test ! -f ARCHITECTURE.md && test ! -f ../../../tmp/evil.md && test ! -f /etc/evil.md && test ! -f /tmp/ARCH.md` (evaluated after the halt). Supplemental: conversation log for each invocation contains the `✗ Config validation failed.` prefix, names the correct key inside inline backticks, and contains no resolved-paths table (halt occurs before emission).
+    **Verify:** For each sub-case: `test ! -f docs/ARCH.md && test ! -f ARCHITECTURE.md && test ! -f ../../../tmp/evil.md && test ! -f /etc/evil.md && test ! -f /tmp/ARCH.md` (evaluated after the halt). Supplemental: conversation log for each invocation contains the `✗ Config validation failed.` prefix and names the correct key inside inline backticks.
 
-28. [x] Existing behavior preserved. With no `.jim/config.md` present (delete any test-artifact configs), run `/jim:spec`, `/jim:plan`, and `/jim:backlog add foo` against the jim repo itself and confirm each emits the default-path resolved-paths table and writes to default locations. Required by the mandatory refactor acceptance "existing behavior preserved."
-    **Verify:** Manual inspection of the conversation log for each invocation confirms the table shows `Resolved: <default>` for every path key, and `git status` after each skill run shows only expected artifacts at default paths.
+28. [x] Existing behavior preserved. With no `.jim/config.md` present (delete any test-artifact configs), run `/jim:spec`, `/jim:plan`, and `/jim:backlog add foo` against the jim repo itself and confirm each writes to default locations. Required by the mandatory refactor acceptance "existing behavior preserved."
+    **Verify:** `git status` after each skill run shows only expected artifacts at default paths.
 
 29. [x] Post-build ARCHITECTURE.md refresh. After the refactor commits, invoke `/jim:arch` to regenerate `ARCHITECTURE.md`. Confirm the output documents the `skills/_shared/` directory under Project Structure, adds an entry under Plugin Conventions describing the resolve-paths preamble as the single path-resolution surface, and explicitly labels `skills/_shared/config-schema.md` and `skills/_shared/resolve-paths.md` as security-relevant files with their invariants named.
     **Verify:** `grep -q "skills/_shared" ARCHITECTURE.md && grep -q "security-relevant" ARCHITECTURE.md && grep -q "resolve-paths" ARCHITECTURE.md`.
@@ -415,8 +404,7 @@ Each of the following tasks applies two mechanical rewrites: the step 1 paragrap
 | Unknown key in `.jim/config.md` → hard error naming the offending key; no fallback. | 2 (Contract C in resolve-paths.md), 27.1 (negative-case test) |
 | `skills/_shared/config-schema.md` defines per-key value constraints including `path.*` rules (relative, no `..`, no leading `/`, resolved within project root). | 1 (schema Validation Rules section), 27.2 (traversal), 27.3 (absolute) |
 | Validation error messages name the offending key and a human-readable reason; raw offending value is not echoed; diagnostic values fenced. | 2 (Contract C in resolve-paths.md), 27.1–27.3 (all negative cases verify the error format) |
-| Every skill invocation emits the resolved-paths table inline before any filesystem-touching work. | 2, 5, 6–18, 26, 28 |
-| Resolved-paths table renders each resolved value with per-cell fencing against markdown injection. | 2 (Design Decision 5 format section in resolve-paths.md) |
+| Every skill invocation runs the resolve-paths preamble before any tool call; no unresolved placeholder flows into a tool argument. | 2, 5, 6–18, 26, 28 |
 | Agents do not invoke the resolve-paths preamble directly. | 19–24 (Contract E: placeholder-only rewrites, no preamble reference) |
 | Static audit: zero literal default filenames outside schema and `/jim:config` user-facing scaffolding. | 25 |
 | Dogfood run: full cycle honors overrides; verified by inspecting commits/diffs. | 26 (full `/jim:spec → /jim:plan → /jim:build` cycle plus `/jim:arch`) |

@@ -19,7 +19,7 @@ Turn a rough idea into a structured spec (`{path.specs}/{group}/{00X}-{name}/spe
 
 ### 1. Resolve config
 
-Follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call.
 
 ### 2. Seed the conversation
 

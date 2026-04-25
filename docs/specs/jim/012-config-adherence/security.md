@@ -26,7 +26,7 @@ Differential review covering spec and plan. All eleven findings across both revi
 ### 2. Prompt injection via resolved-paths table
 
 - **Severity:** Advisory
-- **Status:** **Addressed.** Plan Design Decision 5 specifies per-cell inline-code fencing in the resolved-paths table markdown. Task 2 writes `skills/_shared/resolve-paths.md` including this format.
+- **Status:** **Addressed (and superseded).** The resolved-paths table was removed entirely during post-build cleanup — the placeholder syntax itself is the forcing function and the table emission added noise without proportional value. With no table emission, there is no value-echoing surface to inject into. Finding's underlying risk is moot. Plan Design Decision 5 captures the rationale.
 
 ### 3. Error messages echoing raw values
 
@@ -48,7 +48,7 @@ Differential review covering spec and plan. All eleven findings across both revi
 ### 6. Agent tool calls may use unresolved `{path.*}` placeholders as literal paths
 
 - **Severity:** Notable
-- **Status:** **Addressed.** Plan Design Decision 7 and Contract E now specify that placeholders are for reasoning and prose only — agents never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Two resolution paths are permitted: skill-mediated (via a preamble-emitted resolved-paths table) or inline-resolved (read `.jim/config.md` and resolve before constructing the tool argument). Tasks 19–24 verify the rule text appears in each agent file.
+- **Status:** **Addressed.** Plan Design Decision 7 and Contract E now specify that placeholders are for reasoning and prose only — agents never pass a placeholder string to a `Write`, `Edit`, `Read`, or `Glob` tool call. Two resolution paths are permitted: skill-mediated (the preamble resolves the placeholder internally and substitutes at point of use) or inline-resolved (read `.jim/config.md` and resolve before constructing the tool argument). Tasks 19–24 verify the rule text appears in each agent file.
 
 ### 7. Path normalization semantics — symlink handling unspecified
 

@@ -1,8 +1,8 @@
 # Resolve Paths — Shared Preamble
 
-This file is the shared config-resolution preamble invoked by every skill's step 1. It reads `.jim/config.md`, validates it against `skills/_shared/config-schema.md`, resolves every `{path.*}`, `{specs.*}`, and `{workflow.*}` placeholder that the invoking skill will reference, and emits a visible **Resolved paths table** that makes the final values checkable before any filesystem-touching work occurs.
+This file is the shared config-resolution preamble invoked by every skill's step 1. It reads `.jim/config.md`, validates it against `skills/_shared/config-schema.md`, and resolves every `{path.*}`, `{specs.*}`, and `{workflow.*}` placeholder so that the invoking skill's subsequent steps substitute resolved values at point of use.
 
-The preamble exists because skill bodies previously referenced literal default filenames inline — agents anchored on those concrete strings and silently skipped config resolution under load. Replacing inline literals with placeholders is only half the fix; the other half is this preamble's forcing function, which produces an externalized artifact (the table) that the invoking agent must emit before proceeding.
+The forcing function is the placeholder syntax itself: skill bodies contain `{path.*}` strings, which are not valid filesystem arguments. To complete any tool call that targets a configurable path, the agent must resolve the placeholder first. There is no externalized table — config adherence comes from the impossibility of passing an unresolved placeholder to a tool, not from emitting an audit artifact every invocation.
 
 `_shared/` is a plugin contract, not an overlayable surface. See the Overlay Boundary section in `skills/_shared/config-schema.md`.
 
@@ -44,29 +44,9 @@ For every key declared in the schema:
 - If the key appeared in `.jim/config.md` and passed validation: its resolved value is the user's configured value.
 - If the key did not appear in `.jim/config.md`: its resolved value is the schema default.
 
-### Step 5 — Emit the resolved-paths table
+The resolved map is held internally for the rest of the skill invocation. It is not emitted to the conversation — the user has trusted their `.jim/config.md` (if present) and the schema defaults (otherwise); per-invocation visibility of the resolution is unnecessary noise.
 
-Before any further work (before any `Read`, `Write`, `Edit`, `Glob`, or `Bash` tool call that touches the filesystem, and before any subsequent skill step), emit the following table inline in the conversation:
-
-```
-**Resolved paths (from .jim/config.md):**
-
-| Key | Default | Resolved |
-| :--- | :--- | :--- |
-| path.vision | `VISION.md` | `<resolved-value>` |
-| path.architecture | `ARCHITECTURE.md` | `<resolved-value>` |
-| ... | ... | ... |
-```
-
-Formatting rules:
-
-- One row per key declared in the schema, in schema-declaration order.
-- The `Default` column contains the schema default wrapped in inline backticks.
-- The `Resolved` column contains the resolved value wrapped in inline backticks. Inline backtick fencing neutralizes any markdown directives or injection payloads embedded in the resolved value — it must be applied to every resolved value, including defaults, including empty strings (render `""` inside backticks).
-- The fixed header `**Resolved paths (from .jim/config.md):**` precedes the table. Use this exact string; it is the anchor an auditor can grep for to confirm the table was emitted.
-- If `.jim/config.md` is absent, the emission still occurs — every `Resolved` cell simply equals its `Default`. The table is emitted on every invocation, not only when a config file exists.
-
-### Step 6 — Substitute placeholders at point of use
+### Step 5 — Substitute placeholders at point of use
 
 In the invoking skill's subsequent steps, every occurrence of a `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder is substituted with its resolved value at the point of use. The resolved map from step 4 is the single source for substitution; do not resolve placeholders ad hoc from memory or by re-reading `.jim/config.md`.
 
@@ -86,15 +66,15 @@ When any validation step halts, emit exactly these three lines, in this order, a
 
 Additional rules for the error emission:
 
-- The key name is wrapped in inline backticks to match the value-fencing discipline elsewhere in the preamble. A YAML-legal key that contains markdown metacharacters or control content cannot inject into agent context when rendered inside backticks.
+- The key name is wrapped in inline backticks. A YAML-legal key that contains markdown metacharacters or control content cannot inject into agent context when rendered inside backticks.
 - The raw offending **value** is never echoed in the error text. The reason names the constraint that was violated, not the value that violated it. If an operator needs the raw value for diagnostics, they can read `.jim/config.md` directly.
-- After emitting the three lines, stop the current skill invocation. Do not emit a resolved-paths table. Do not proceed to the invoking skill's subsequent steps. Do not fall back to defaults.
+- After emitting the three lines, stop the current skill invocation. Do not proceed to the invoking skill's subsequent steps. Do not fall back to defaults.
 
 ---
 
 ## Invariants
 
-- **Emit before touch.** No filesystem-touching tool call may precede the resolved-paths table emission within a skill invocation.
 - **No silent fallback.** Every validation failure halts; defaults only apply to keys that are absent from `.jim/config.md`, never to keys that are present but invalid.
-- **Every invocation.** The preamble runs at the start of every skill invocation, uniformly. There is no "already resolved" shortcut across invocations — subskill calls, repeat calls within a session, and first-time calls all emit the table.
+- **Every invocation.** The preamble runs at the start of every skill invocation, uniformly. There is no "already resolved" shortcut across invocations — subskill calls, repeat calls within a session, and first-time calls all run the resolution.
+- **Resolve before tool call.** No `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder may flow into a tool call unresolved. The placeholder syntax itself is the forcing function — passing an unresolved placeholder to a tool would create a literal-string file or directory, which is impossible to mistake for correct behavior.
 - **Schema is the authority.** Any change to the set of valid keys, defaults, or value constraints goes through `skills/_shared/config-schema.md`. This file describes how to *use* the schema; it does not duplicate its contents.

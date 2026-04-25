@@ -20,7 +20,7 @@ Capture freeform ideation and exploratory thinking. No rigid structure — the g
 
 ### 1. Resolve config
 
-Follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call.
 
 ### 2. Get the topic
 

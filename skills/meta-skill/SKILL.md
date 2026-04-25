@@ -19,7 +19,7 @@ Create or update a jim plugin skill (`skills/{name}/SKILL.md`) from an approved 
 
 ### 1. Resolve config
 
-Follow `skills/_shared/resolve-paths.md` before proceeding. Do not reference any `{path.*}` placeholder until the preamble's resolved-paths table has been emitted.
+Follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call.
 
 ### 2. Pass three gates before building
 
