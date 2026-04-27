@@ -60,6 +60,10 @@ Self-test meta-skill must verify that every new `path.*` key added to `skills/_s
 
 Make build-time hook scripts configurable via .jim/config.md. Today /jim:build hardcodes `./pre-commit.sh` as the per-task quality gate, and the completion gate runs no extra script. Two new config keys would address this: (a) a per-task hook script — default `./pre-commit.sh` for backward compatibility, configurable to `make test`, `ci`, etc., or empty to disable; (b) a completion-gate hook script (e.g. `./ci.sh`) for a fuller test run that's too expensive per task — empty by default. Both validated via the schema. Source: dogfood feedback during 012-config-adherence — pre-commit.sh absent in test project caused build failure.
 
+### Shellcheck CI for executable artifacts
+
+`bin/jim_path` (introduced in spec 013) is jim's first non-markdown executable artifact. Add a CI workflow that runs `shellcheck bin/*` on every push to enforce sustained static-analysis discipline as the executable surface grows. Optional companion: a small test harness exercising each schema key against a fixture project — likely subsumed by the future Self-test meta-skill rather than built standalone. Source: docs/specs/jim/013-jim-path-helper/security.md finding 5.
+
 ---
 
 ## Themes
