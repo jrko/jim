@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+# bin/jim_path — resolve a single .jim/config.md key to its value.
+# Contracts: docs/specs/jim/013-jim-path-helper/plan.md (A and D).
+
+set -euo pipefail
+
+# === Step 1: Portable symlink resolution. `readlink -f` is GNU-only. ===
+helper_path="$0"
+while [ -L "$helper_path" ]; do
+    target="$(readlink "$helper_path")"
+    case "$target" in
+        /*) helper_path="$target" ;;
+        *)  helper_path="$(dirname -- "$helper_path")/$target" ;;
+    esac
+done
+
+# === Step 2: Canonicalize directory and derive plugin root. ===
+helper_dir="$(cd -P -- "$(dirname -- "$helper_path")" && pwd -P)"
+plugin_root="$(dirname -- "$helper_dir")"
+schema_path="$plugin_root/skills/_shared/config-schema.md"
+
+# === Step 3: Plausibility check — derived plugin root must be jim. ===
+manifest="$plugin_root/.claude-plugin/plugin.json"
+if ! grep -q '"name"[[:space:]]*:[[:space:]]*"jim"' "$manifest" 2>/dev/null; then
+    echo "jim_path: not a jim plugin install" >&2
+    exit 1
+fi
+
+# === Step 4: Parse arguments. ===
+key=""
+root="$PWD"
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --root)
+            shift
+            if [ $# -eq 0 ]; then
+                echo "jim_path: --root requires a value" >&2
+                exit 1
+            fi
+            root="$1"
+            ;;
+        --root=*)
+            root="${1#--root=}"
+            ;;
+        --*)
+            echo "jim_path: unknown flag" >&2
+            exit 1
+            ;;
+        *)
+            if [ -z "$key" ]; then
+                key="$1"
+            else
+                echo "jim_path: unexpected argument" >&2
+                exit 1
+            fi
+            ;;
+    esac
+    shift
+done
+if [ -z "$key" ]; then
+    echo "jim_path: missing key" >&2
+    exit 1
+fi
+
+# === Step 5: Read schema, validate key, look up default. ===
+if [ ! -r "$schema_path" ]; then
+    echo "jim_path: cannot read schema" >&2
+    exit 1
+fi
+
+schema_default="$(awk -v target="$key" '
+BEGIN { fence = 0; in_keys = 0; state = 0; got_name = ""; got_default = ""; printed = 0 }
+/^---$/ { fence++; if (fence == 2) exit; next }
+fence != 1 { next }
+/^keys:[[:space:]]*$/ { in_keys = 1; next }
+in_keys == 0 { next }
+/^[[:space:]]*$/ { next }
+/^  - name:[[:space:]]*/ {
+    if (state != 0 && state != 3) { print "MALFORMED"; printed = 1; exit 0 }
+    state = 1
+    got_name = $0; sub(/^  - name:[[:space:]]*/, "", got_name)
+    next
+}
+/^    default:[[:space:]]*/ {
+    if (state != 1) { print "MALFORMED"; printed = 1; exit 0 }
+    state = 2
+    got_default = $0; sub(/^    default:[[:space:]]*/, "", got_default)
+    if (got_default ~ /^".*"$/) {
+        got_default = substr(got_default, 2, length(got_default) - 2)
+    }
+    next
+}
+/^    type:[[:space:]]*/ {
+    if (state != 2) { print "MALFORMED"; printed = 1; exit 0 }
+    state = 3
+    if (got_name == target) {
+        print "FOUND:" got_default
+        printed = 1
+        exit 0
+    }
+    next
+}
+{ print "MALFORMED"; printed = 1; exit 0 }
+END {
+    if (printed) exit 0
+    if (state != 0 && state != 3) { print "MALFORMED"; exit 0 }
+    print "NOKEY"
+}
+' "$schema_path")"
+
+case "$schema_default" in
+    MALFORMED)
+        echo "jim_path: malformed schema" >&2
+        exit 1
+        ;;
+    NOKEY)
+        echo "jim_path: unknown key (see .jim/config.md)" >&2
+        exit 2
+        ;;
+    FOUND:*)
+        schema_default="${schema_default#FOUND:}"
+        ;;
+    *)
+        echo "jim_path: malformed schema" >&2
+        exit 1
+        ;;
+esac
+
+# === Step 6: Read .jim/config.md (if present), look up configured value. ===
+config_path="$root/.jim/config.md"
+configured_value=""
+configured_found=0
+
+if [ -e "$config_path" ]; then
+    if [ ! -r "$config_path" ]; then
+        echo "jim_path: cannot read .jim/config.md" >&2
+        exit 1
+    fi
+    lookup="$(awk -v target="$key" '
+BEGIN { fence = 0; result = "MALFORMED"; printed = 0 }
+/^---$/ {
+    fence++
+    if (fence == 1) { result = "NOKEY"; next }
+    if (fence == 2) exit
+    next
+}
+fence != 1 { next }
+/^[[:space:]]*$/ { next }
+/^[[:space:]]*#/ { next }
+{
+    pos = index($0, ":")
+    if (pos == 0) { result = "MALFORMED"; exit 0 }
+    name = substr($0, 1, pos - 1)
+    sub(/^[[:space:]]+/, "", name)
+    sub(/[[:space:]]+$/, "", name)
+    if (name != target) next
+    val = substr($0, pos + 1)
+    sub(/^[[:space:]]+/, "", val)
+    sub(/[[:space:]]+$/, "", val)
+    if (val ~ /^".*"$/) {
+        val = substr(val, 2, length(val) - 2)
+    }
+    print "FOUND:" val
+    printed = 1
+    exit 0
+}
+END { if (!printed) print result }
+' "$config_path")"
+    case "$lookup" in
+        MALFORMED)
+            echo "jim_path: malformed config" >&2
+            exit 1
+            ;;
+        FOUND:*)
+            configured_value="${lookup#FOUND:}"
+            configured_found=1
+            ;;
+        NOKEY)
+            ;;
+    esac
+fi
+
+# === Step 7: Print resolved value. ===
+if [ "$configured_found" = "1" ]; then
+    printf '%s\n' "$configured_value"
+else
+    printf '%s\n' "$schema_default"
+fi
