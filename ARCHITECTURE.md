@@ -1,6 +1,6 @@
 # Architecture — Jim
 
-*Last updated: 2026-04-24 (012-config-adherence build)*
+*Last updated: 2026-04-27 (013-jim-path-helper build)*
 
 > This document is generated and maintained by `/jim:arch`. Edit via the skill to preserve consistency.
 
@@ -196,7 +196,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 ### Spec Archive
 
 - **Purpose:** Living development artifacts — specs, research, and plans organized by group and sequential ID
-- **Location:** `docs/specs/{group}/{00X}-{name}/` — currently `docs/specs/jim/001-meta/` through `011-config/`
+- **Location:** `docs/specs/{group}/{00X}-{name}/` — currently `docs/specs/jim/001-meta/` through `013-jim-path-helper/`
 - **Interfaces:** Each spec directory contains up to four files: `spec.md`, `research.md`, `plan.md`, `security.md`
 - **Dependencies:** Produced by PM (spec), researcher (research), and architect (plan) agents
 - **Key Constraints:** IDs are 3-digit zero-padded, sequential within each group. Groups are noun-based directories. Specs must be `approved` before plans can be created.
