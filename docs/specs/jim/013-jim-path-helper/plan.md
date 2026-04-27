@@ -2,7 +2,7 @@
 title: "jim_path helper — shell-mediated config-adherent path resolution for Bash calls"
 spec: "spec.md"
 type: feature
-status: approved
+status: complete
 ---
 
 # jim_path helper — Plan
