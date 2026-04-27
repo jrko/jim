@@ -44,9 +44,20 @@ For every key declared in the schema:
 
 Hold the map internally; do not emit to the conversation.
 
+**Derived placeholders.** In addition to the schema-declared keys, compute `{jim_path}` — the only derived placeholder defined today. Documented in `skills/_shared/config-schema.md` under "Derived Placeholders".
+
+- **Source:** Claude Code's session-level primary working directory — the absolute path Claude Code was invoked in. This is the project root for the rest of the session.
+- **Expansion form (multi-token):** `jim_path --root='<absolute-project-root>'`. Helper discovery uses Claude Code's plugin `bin/` PATH convention; the placeholder injects only the project root, not the helper path.
+- **Quoting algorithm:** single-quote wrap the project root using the `'\''` escape idiom — replace every embedded `'` with `'\''` and surround the result with single-quotes. The placeholder is the single chokepoint between Claude's environment and any Bash subprocess that uses the helper, so quoting at this layer protects every downstream caller.
+- **Halt:** if the project root contains a null byte (cannot be represented as a single-quoted shell token), halt with the same error format as schema validation failures. Other unusual bytes (newlines, control chars) pass through as literal bytes inside the single-quoted string — bash preserves them as-is.
+
+Do **not** parse the skill-invocation system-reminder line (`Base directory for this skill: …`) to derive paths. That line is not a documented stable contract and could change between Claude Code versions. If a future placeholder needs the plugin root (e.g., for invocations not covered by the `bin/` PATH convention), derive it from `${CLAUDE_SKILL_DIR}` — the documented stable Claude Code env var — by stripping the trailing `/skills/<skill-name>` segment.
+
+The resolved map gains one entry whose value is a multi-token shell command rather than a single value. This is the documented pattern for any future derived placeholder whose substitution is a command rather than a path.
+
 ### Step 5 — Substitute placeholders at point of use
 
-In the invoking skill's subsequent steps, every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder is substituted with its resolved value at the point of use. Do not resolve ad hoc from memory or by re-reading `.jim/config.md`. Placeholders never flow into tool call arguments unresolved — `Write({path.backlog}, ...)` becomes `Write(BACKLOG.md, ...)` (or the override).
+In the invoking skill's subsequent steps, every `{path.*}`, `{specs.*}`, `{workflow.*}`, or `{jim_path}` placeholder is substituted with its resolved value at the point of use. Do not resolve ad hoc from memory or by re-reading `.jim/config.md`. Placeholders never flow into tool call arguments unresolved — `Write({path.backlog}, ...)` becomes `Write(BACKLOG.md, ...)` (or the override). For `{jim_path}` specifically, substitution produces a multi-token shell command: `$({jim_path} path.X)` becomes `$(jim_path --root='/abs/project/root' path.X)` inside Bash invocations.
 
 ---
 
