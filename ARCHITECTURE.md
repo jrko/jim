@@ -14,6 +14,8 @@ jim/
 │   └── plugin.json          # Plugin manifest — name, version, description
 ├── .claude/
 │   └── settings.local.json  # Local permission allowlists (WebFetch domains, etc.)
+├── bin/                     # Plugin executables — auto-added to Bash tool's PATH (Claude Code plugin convention)
+│   └── jim_path             # Resolves a config key from .jim/config.md → stdout (or schema default)
 ├── agents/                  # Agent definitions — one .md per agent persona
 │   ├── pm.md                # @jim:pm — product manager
 │   ├── architect.md         # @jim:architect — technical architect
@@ -165,13 +167,23 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 - **Dependencies:** `resolve-paths.md` reads `config-schema.md`. Every skill's step 1 references `resolve-paths.md`. `/jim:config` reads `config-schema.md` for default values and validation rules during interview-time generation.
 - **Key Constraints:** `_shared/` is **not overlayable** via `.jim/skills/_shared/` — a user file there is silently ignored. `resolve-paths.md` enforces hard-error on schema validation failures with a fixed three-line format (`✗ Config validation failed.` / `✗ Key: \`{key}\`` / `✗ Reason: …`); fallback to defaults on validation failure is prohibited.
 
+### Plugin Executables
+
+`bin/jim_path` — jim's first non-markdown executable artifact. A single bash script that resolves a `.jim/config.md` key to its configured value (or schema default) and prints it to stdout. Hardens config adherence at the Bash-tool surface, where native-tool placeholder discipline cannot reach.
+
+- **Purpose:** Skills compose `$(jim_path <key>)` into Bash invocations to make wrong paths syntactically impossible at runtime. The shell substitution is evaluated by Bash, not the agent — the agent writes the placeholder once and never computes the resolved value itself. Cd-safe: project root flows through via the `--root` flag injected by the resolve-paths preamble's `{jim_path}` placeholder substitution.
+- **Location:** `bin/jim_path`. Auto-added to the Bash tool's PATH via Claude Code's documented plugin `bin/` convention while the plugin is enabled. Skills invoke by name; absolute paths are not embedded in skill prose.
+- **Interfaces:** CLI — `jim_path <key> [--root <abs-path>]`. Stdout is the resolved value + newline. Stderr is empty on success or one of the documented one-line error messages: `unknown key (see .jim/config.md)`, `cannot read schema`, `cannot read .jim/config.md`, `malformed schema`, `malformed config`, `not a jim plugin install`. Exit codes: 0 success, 2 unknown key, 1 other error.
+- **Dependencies:** Reads `<plugin-root>/skills/_shared/config-schema.md` (for the `keys:` list — derived from `BASH_SOURCE` self-location with portable POSIX symlink resolution; verified via `<plugin-root>/.claude-plugin/plugin.json` plausibility check). Reads `<root>/.jim/config.md` (for the configured value, when present). Both parsed by hand-rolled awk under the schema's documented format constraint (see `skills/_shared/config-schema.md` Schema Format Constraint section). No external library or runtime dependency.
+- **Key Constraints:** Helper validates only the *requested key name* against the schema; it does not re-validate values — that is the resolve-paths preamble's job at skill-invocation time. Helper exits 1 with `not a jim plugin install` if the derived plugin root does not contain a `plugin.json` naming `jim`, closing the misinstall/relocation gap. No raw key or value content is echoed in stderr — protects agent context against attacker-controlled key names in malicious committed configs.
+
 ### Plugin Manifest
 
 - **Purpose:** Declares jim as a Claude Code plugin with name, version, and metadata
 - **Location:** `.claude-plugin/plugin.json` (L1–16)
 - **Interfaces:** Standard Claude Code plugin JSON: `name`, `version`, `description`, `author`, `keywords`
 - **Dependencies:** None — consumed by Claude Code's plugin loader
-- **Key Constraints:** `name` must be `"jim"` — all skills and agents are namespaced under this
+- **Key Constraints:** `name` must be `"jim"` — all skills and agents are namespaced under this. The helper's plausibility check depends on this name being literally `"jim"`.
 
 ### WORKFLOW.md
 
@@ -213,24 +225,24 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 - **Entry point:** `.claude-plugin/plugin.json` — Claude Code discovers and loads the plugin from this manifest
 - **Configuration:** `.claude/settings.local.json` for permission allowlists. `.jim/config.md` for project-level configuration (paths, workflow gates, spec ID format). `.jim/skills/` for asset/reference overlays. All optional — zero-config defaults match upstream layout.
 - **Distribution:** Git repository. Users install by cloning/adding the repo as a Claude Code plugin.
-- **Environment requirements:** Claude Code CLI. No build step, no dependencies, no package manager — pure markdown.
+- **Environment requirements:** Claude Code CLI. No build step, no dependencies, no package manager. Mostly markdown — one bash script (`bin/jim_path`) ships under Claude Code's plugin `bin/` PATH convention; it has no library dependencies and runs under any POSIX bash.
 
 ## Security Considerations
 
 - **Trust boundary:** All input comes from the human developer via Claude Code. Agents do not accept external input. WebFetch/WebSearch results are the only external data — handled by stopping on failure per CLAUDE.md policy. `.jim/config.md` is repo-committable, so a malicious config in a cloned repo is a supply-chain-style threat — mitigated by `config-schema.md` value constraints (see below).
 - **Secrets management:** No secrets are stored or managed. `.claude/settings.local.json` contains domain allowlists only.
 - **File system access:** Agents declare tool permissions in frontmatter. Coder agent has Bash access. All agents are prohibited from writing to `.git/`, `~/.ssh/`, `node_modules/`, `.venv/`, `.env`, `.env-*`. The `.gitignore` excludes `docs/prior-art/github.com/` (downloaded references) and `Z_*` files (personal notes).
-- **Security-relevant files:** `skills/_shared/config-schema.md` and `skills/_shared/resolve-paths.md` are load-bearing for config-mediated filesystem safety. **Schema invariants** (config-schema.md): `path.*` values must be relative, must not contain `..` segments, must not begin with `/`, and must resolve within the project root after following symlinks (realpath semantics); `boolean` values must be literal `true`/`false` (case variants and YAML 1.1 `yes`/`no`/`on`/`off` are rejected); unknown keys hard-error. **Preamble invariants** (resolve-paths.md): resolve-before-tool-call (no `{path.*}` placeholder may flow into a tool call unresolved — placeholder syntax itself is the forcing function), no-silent-fallback (validation failures halt; defaults apply only to absent keys), every-invocation (the preamble runs at the start of every skill invocation; no caching across invocations), schema-is-the-authority (any change to the valid key set or value rules goes through `config-schema.md`). Weakening either file weakens config validation project-wide.
+- **Security-relevant files:** `skills/_shared/config-schema.md`, `skills/_shared/resolve-paths.md`, and `bin/jim_path` form the trio that's load-bearing for config-mediated filesystem safety. **Schema invariants** (config-schema.md): `path.*` values must be relative, must not contain `..` segments, must not begin with `/`, and must resolve within the project root after following symlinks (realpath semantics); `boolean` values must be literal `true`/`false` (case variants and YAML 1.1 `yes`/`no`/`on`/`off` are rejected); unknown keys hard-error. The schema's frontmatter and any `.jim/config.md` must conform to a restricted YAML subset (single-line scalars, no anchors/aliases/merges) — the format constraint enables hand-rolled awk parsing in the helper without a YAML library, and bounds the parser audit surface. **Preamble invariants** (resolve-paths.md): resolve-before-tool-call (no `{path.*}` placeholder may flow into a tool call unresolved — placeholder syntax itself is the forcing function), no-silent-fallback (validation failures halt; defaults apply only to absent keys), every-invocation (the preamble runs at the start of every skill invocation; no caching across invocations), schema-is-the-authority (any change to the valid key set or value rules goes through `config-schema.md`); the preamble also computes the derived `{jim_path}` placeholder, single-quoting the project root with the `'\''` escape idiom and halting on null bytes. **Helper invariants** (bin/jim_path): trusts the preamble for value validation (validates only the requested key name against the schema); plausibility-checks its derived plugin root via `.claude-plugin/plugin.json` before reading the schema; never echoes raw key or value content in stderr (Claude's Bash tool captures stderr into agent context, so attacker-controlled keys in malicious configs cannot flow markdown or prompt-injection content into that surface). Weakening any of the three weakens config validation project-wide.
 - **Auth:** None — the plugin runs within the user's Claude Code session with their permissions.
 - **Known risks:** No automated validation that agents respect their declared tool boundaries — enforcement depends on Claude Code's agent tool declarations and the model following instructions. Static-audit pass at refactor close-out verifies current skill bodies invoke the preamble; ongoing enforcement that future skills do the same is deferred to a self-test meta-skill (tracked in `BACKLOG.md`).
 
 ## Development & Testing
 
 - **Setup:** Clone the repository and configure it as a Claude Code plugin
-- **Run tests:** No automated test suite — jim is a pure-markdown plugin with no executable code
+- **Run tests:** No automated test suite. Jim is mostly markdown plus one bash script (`bin/jim_path`); the helper's contract is verified via the inline verify battery documented in `docs/specs/jim/013-jim-path-helper/plan.md` Task 2. Continuous static analysis (`shellcheck bin/*`) is tracked in `BACKLOG.md` for follow-up.
 - **Test framework:** N/A
-- **Test conventions:** Jim validates its own output through validation checklists embedded in each skill's process section
-- **Linting / formatting:** N/A — markdown only. Consistency enforced by templates in `skills/*/assets/`
+- **Test conventions:** Jim validates its own output through validation checklists embedded in each skill's process section. Executable artifact (`bin/jim_path`) is exercised against fixture plugin trees constructed under `mktemp -d` per the plan's verify battery.
+- **Linting / formatting:** Markdown consistency enforced by templates in `skills/*/assets/`. Bash linting (`shellcheck`) is in backlog.
 
 ## Plugin Conventions
 
@@ -271,6 +283,7 @@ Conventions that govern how jim's agents, skills, and tools interact with Claude
 
 - **Config resolution:** Every skill's step 1 follows `skills/_shared/resolve-paths.md`. The preamble reads `.jim/config.md`, validates it against `skills/_shared/config-schema.md`, and builds a resolved map (configured value where present, schema default where absent) held internally for the rest of the invocation. The forcing function is the placeholder syntax: skill bodies contain `{path.*}` strings, which are not valid tool arguments, so the agent must resolve them before any tool call.
 - **Configurable paths:** `path.*` keys redirect where skills read strategic docs and write artifacts. Skill bodies reference these as `{path.*}` placeholders (e.g., `{path.architecture}`, `{path.specs}`); literal default filenames do not appear in skill procedural prose. All values are relative to project root and validated against the schema's path constraints.
+- **`{jim_path}` derived placeholder for Bash calls:** native tool calls (Write, Edit, Read, Glob) cannot shell-substitute, so `{path.*}` placeholders in skill prose are resolved by the agent before tool invocation. Bash invocations have no equivalent forcing function — to close that gap, skills compose `$({jim_path} <key>)` substitutions in Bash code blocks, where `{jim_path}` expands to `jim_path --root='<absolute-project-root>'` (the helper itself is on the Bash tool's PATH via Claude Code's plugin `bin/` convention; the placeholder injects only the project root, single-quoted with `'\''` escape, for cd-safety). At runtime Bash evaluates the substitution by invoking the helper, which prints the resolved value. Wrong path becomes a runtime impossibility rather than a per-call agent judgment. See the Plugin Executables component above and `docs/specs/jim/013-jim-path-helper/`.
 - **Workflow gates:** `workflow.require-research`, `workflow.require-security`, `workflow.require-plan-approval` control phase-entry enforcement in plan and build skills.
 - **Spec ID format:** `specs.id-padding` and `specs.id-prefix` control ID generation in the spec skill.
 - **Asset/reference overlay:** Skills check `.jim/skills/{skill-name}/assets/{file}` and `.jim/skills/{skill-name}/references/{file}` before reading built-in files. File presence wins — no config key needed.

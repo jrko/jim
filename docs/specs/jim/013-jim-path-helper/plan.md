@@ -295,7 +295,7 @@ sequenceDiagram
    ```
    Plus manual inspection: every Bash invocation in the cycle's transcript that resolved a configurable path used `$(jim_path …)` substitution; the resolved values match the override.
 
-6. [ ] **Update `ARCHITECTURE.md`.** As part of the build completion gate, edit `ARCHITECTURE.md`:
+6. [x] **Update `ARCHITECTURE.md`.** As part of the build completion gate, edit `ARCHITECTURE.md`:
    - Add `bin/` to the Project Structure tree, noting it ships under Claude Code's documented plugin `bin/` convention (auto-added to Bash tool's PATH).
    - Add a Core Components subsection (or extend Shared Primitives) describing `bin/jim_path` with its CLI contract, its plugin-root-derivation invariant, and its security-relevant invariants (never validates values, never echoes raw values in stderr).
    - Document the `{jim_path}` placeholder alongside the existing placeholder discussion.
