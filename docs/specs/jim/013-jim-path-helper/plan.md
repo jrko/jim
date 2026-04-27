@@ -236,7 +236,7 @@ sequenceDiagram
    [ "$(grep -cE '^  - name: ' skills/_shared/config-schema.md)" -ge 15 ]
    ```
 
-2. [ ] **Implement `bin/jim_path`.** Create the file with `#!/usr/bin/env bash` shebang, `set -euo pipefail`, and the helper logic per Contract A:
+2. [x] **Implement `bin/jim_path`.** Create the file with `#!/usr/bin/env bash` shebang, `set -euo pipefail`, and the helper logic per Contract A:
    - Parse arguments (positional `<key>`, optional `--root <path>`).
    - Derive `plugin_root` per Contract D using the portable symlink-resolution loop (no `readlink -f` — GNU-only). Run the plausibility check against `<plugin_root>/.claude-plugin/plugin.json`; exit 1 with `jim_path: not a jim plugin install` if absent or not jim.
    - Read schema; awk-extract the `keys:` list.
@@ -254,7 +254,7 @@ sequenceDiagram
    (./bin/jim_path bogus.key; test $? -eq 2) &&
    test -x bin/jim_path &&
    # Empty-string default (specs.id-prefix: "" in current schema)
-   ./bin/jim_path specs.id-prefix | xxd | grep -q '^00000000: 0a *$' &&
+   [ "$(./bin/jim_path specs.id-prefix | wc -c)" -eq 1 ] &&
    # Misinstall / non-jim plugin root → exit 1, "not a jim plugin install"
    scratch="$(mktemp -d)" &&
    mkdir -p "$scratch/bin" "$scratch/skills/_shared" "$scratch/.claude-plugin" &&
