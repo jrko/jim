@@ -276,7 +276,7 @@ sequenceDiagram
 3. [x] **Extend `resolve-paths.md` preamble.** Edit `skills/_shared/resolve-paths.md`: (a) add `{jim_path}` to step 4's resolved-map population, with the expansion algorithm from Contract C; (b) document the single-quote escape rule and the null-byte halt; (c) document the multi-token-expansion pattern as a reusable shape; (d) document the explicit non-use of the system-reminder line and the `${CLAUDE_SKILL_DIR}` fallback if plugin-root computation is ever needed; (e) ensure step 5 (substitution at point of use) explicitly mentions `{jim_path}` alongside the existing placeholder set.
    **Verify:** `grep -q "{jim_path}" skills/_shared/resolve-paths.md && grep -q "single-quote" skills/_shared/resolve-paths.md && grep -q "CLAUDE_SKILL_DIR" skills/_shared/resolve-paths.md && grep -q "primary working directory" skills/_shared/resolve-paths.md`. Plus a manual read-through to confirm the multi-token-expansion pattern is documented in prose.
 
-4. [ ] **Static audit baseline.** Run a grep across `skills/**/SKILL.md` for literal default filenames inside Bash code blocks or `Bash(...)` invocations. Confirm zero matches outside the expected exceptions (`skills/_shared/config-schema.md`, `skills/config/`).
+4. [x] **Static audit baseline.** Run a grep across `skills/**/SKILL.md` for literal default filenames inside Bash code blocks or `Bash(...)` invocations. Confirm zero matches outside the expected exceptions (`skills/_shared/config-schema.md`, `skills/config/`).
    **Verify:**
    ```
    ! grep -l '^```bash' skills/*/SKILL.md 2>/dev/null
