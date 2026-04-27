@@ -87,6 +87,16 @@ All `path.*` keys are relative to the project root.
 | `workflow.require-security` | `false` | boolean | When `true`, `/jim:build` halts if no `security.md` exists in the spec directory. |
 | `workflow.require-plan-approval` | `true` | boolean | When `true`, `/jim:build` halts if `plan.md` is still `status: draft`. |
 
+## Derived Placeholders
+
+In addition to the configurable keys above, the resolve-paths preamble (`skills/_shared/resolve-paths.md`) computes a small set of derived placeholders at skill-invocation time. These are not configurable — they cannot be overridden via `.jim/config.md`, and the schema does not list them in the `keys:` frontmatter.
+
+| Placeholder | Source | Substitution form | Purpose |
+| :--- | :--- | :--- | :--- |
+| `{jim_path}` | Claude Code's session-level primary working directory | `jim_path --root='<absolute-project-root>'` | Shell-mediated config-adherent path resolution for skill Bash calls. Helper discovery uses Claude Code's plugin `bin/` PATH convention; the placeholder expansion injects the absolute project root via `--root` so the helper is cd-safe. The expansion is multi-token — the documented pattern for any future placeholder that resolves to a shell command rather than a single value. |
+
+Skills reference derived placeholders the same way they reference configurable keys — by literal `{name}` substitution at point of use. Derived placeholders do not flow into tool calls unresolved.
+
 ## Validation Rules
 
 - **Unknown key** (a key present in `.jim/config.md` but not listed in the frontmatter above) → hard error.
@@ -96,6 +106,19 @@ All `path.*` keys are relative to the project root.
 - **`string`:** any string accepted (no constraint beyond the type requirement).
 
 Every rule violation halts execution immediately via the error format defined in `skills/_shared/resolve-paths.md`. Fallback to defaults is prohibited — validation failures must surface to the user, not silently disappear.
+
+## Schema Format Constraint
+
+The frontmatter of this file and the frontmatter of any `.jim/config.md` must conform to a restricted YAML subset that is parseable by `awk` without a YAML library. This constraint preserves jim's no-dependency stance and bounds the parser audit surface.
+
+- Single YAML document (no `---` separators inside frontmatter beyond the start and end markers).
+- The `keys:` value is a sequence of mappings; each mapping has exactly three fields: `name`, `default`, `type`.
+- `.jim/config.md` frontmatter is a flat mapping of `key.name: value` entries (one per line).
+- All scalar values are single-line. No `|`, `>`, or implicit multi-line continuation.
+- No anchors (`&`), aliases (`*`), merge tags (`<<:`), or explicit type tags (`!!str`, etc.).
+- Quoting is permitted for empty strings (`""`), integer-typed defaults, and boolean-typed defaults. Otherwise unquoted plain scalars are required.
+
+Schema or config additions that violate this constraint cause `bin/jim_path` to exit 1 with `jim_path: malformed schema` or `jim_path: malformed config`. Future schema additions must remain in this restricted form.
 
 ## Overlay Directory
 

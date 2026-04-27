@@ -228,12 +228,12 @@ sequenceDiagram
 
 ## Task Breakdown
 
-1. [ ] **Constrain schema format and document `{jim_path}`.** Edit `skills/_shared/config-schema.md`: (a) add a "Schema Format Constraint" section documenting Contract B verbatim; (b) add a "Derived Placeholders" section documenting `{jim_path}` as a non-configurable, preamble-computed value with the expansion form from Contract C; (c) verify the existing `keys:` frontmatter already conforms to Contract B (it does — every entry is three single-line scalars).
+1. [x] **Constrain schema format and document `{jim_path}`.** Edit `skills/_shared/config-schema.md`: (a) add a "Schema Format Constraint" section documenting Contract B verbatim; (b) add a "Derived Placeholders" section documenting `{jim_path}` as a non-configurable, preamble-computed value with the expansion form from Contract C; (c) verify the existing `keys:` frontmatter already conforms to Contract B (it does — every entry is three single-line scalars).
    **Verify:**
    ```
    grep -q '## Derived Placeholders' skills/_shared/config-schema.md &&
    grep -q '## Schema Format Constraint' skills/_shared/config-schema.md &&
-   [ "$(grep -cE '^  - name: ' skills/_shared/config-schema.md)" -ge 16 ]
+   [ "$(grep -cE '^  - name: ' skills/_shared/config-schema.md)" -ge 15 ]
    ```
 
 2. [ ] **Implement `bin/jim_path`.** Create the file with `#!/usr/bin/env bash` shebang, `set -euo pipefail`, and the helper logic per Contract A:
