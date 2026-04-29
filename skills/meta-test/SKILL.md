@@ -104,15 +104,17 @@ The reference exists, but it is in step 2, not step 1. The check fails because s
 
 Count: pass count is `<files-with-reference-in-step-1> / <total-skills-globbed>`. Skills that pass are not listed individually.
 
-**Implementation hint:** a parser-friendly bash idiom uses `||` rather than `if/else/:` (the latter has tripped Claude Code's bash parser with `Unhandled node type: string`):
+**Implementation hint:** prefer per-file `Read` with `limit: 40` over a bash for-loop. Both the `if/else/:` and the `||` shapes have tripped Claude Code's bash parser with `Unhandled node type: string` — the multi-line `for ... do ... done` structure itself appears to be the trigger. The Read tool sidesteps the parser entirely:
+
+- One `Read` call per `skills/*/SKILL.md` with `limit: 40`, looking for the literal string `skills/_shared/resolve-paths.md`. With ~15 skills today, this is ~15 tool calls — acceptable for a manual audit and avoids any Bash permission prompt.
+
+If a bash one-liner is preferred (and the operator has allowlisted the pattern), the parser-safe shape is a single `grep -L` (no loop, no variable expansion):
 
 ```
-for f in skills/*/SKILL.md; do
-  head -40 "$f" | grep -q "skills/_shared/resolve-paths.md" || echo "MISS: $f"
-done
+grep -L "skills/_shared/resolve-paths.md" skills/*/SKILL.md
 ```
 
-Per-file `Read` with a 40-line limit is an alternative when bash is unavailable, at the cost of one tool call per skill.
+`grep -L` lists files **missing** the pattern. This relaxes the check from "in step 1" to "anywhere in file" — the practical impact is small (the canonical idiom always places the reference in step 1; a skill with the reference outside step 1 is unusual and would surface in code review), but the relaxation is real. Use the Read approach when audit strength matters; use `grep -L` when speed matters and the relaxation is acceptable.
 
 ### 5. Check 2 — Schema value rules
 
