@@ -25,3 +25,21 @@ Statically audit jim's own skills and agents for the four config-adherence invar
 ### 1. Resolve config
 
 Follow `skills/_shared/resolve-paths.md` before proceeding. Resolve every `{path.*}`, `{specs.*}`, or `{workflow.*}` placeholder before passing it to a tool call.
+
+### 2. Read the config schema
+
+Read `skills/_shared/config-schema.md` to derive the audit's two key inputs:
+
+- **Configurable-key list and per-key default values** — parsed from the keys: frontmatter at the top of the file (the YAML sequence under `keys:`). This list is the literal-default search corpus for Check 3 and the set of valid keys for Check 4's `$({jim_path} <key>)` substitution form.
+- **Type-rule presence checklist** — parsed from the `## Validation Rules` section. The rule names whose presence Check 2 verifies: unknown-key hard-error, file-path/directory-path constraints, positive-integer, boolean, string.
+
+The schema is treated as authoritative input. The meta-test does not maintain its own copy of these lists; tampering with the schema (removing a key, weakening or deleting a rule, corrupting the `keys:` frontmatter) directly affects what the audit can detect. Schema modifications carry the same review weight as modifications to `bin/jim_path` or `resolve-paths.md` — they are part of the security-relevant trio per `ARCHITECTURE.md`.
+
+**Schema-read failure semantics — fail loud, never silently fall back:**
+
+- **Schema file missing or unreadable:** halt with `✗ /jim:meta-test — cannot read skills/_shared/config-schema.md`. Do not proceed to Checks 1–4.
+- **`keys:` frontmatter missing or unparseable as a mapping sequence:** halt with `✗ /jim:meta-test — schema keys: section is missing or malformed`. Do not proceed.
+- **`## Validation Rules` section missing:** halt with `✗ /jim:meta-test — schema Validation Rules section is missing`. Do not proceed.
+- **Schema readable, `keys:` empty (no path keys present):** Check 3 reports `0/0` legitimately; do not halt — the audit can still run with an empty corpus.
+
+Fallback to a hardcoded list, fallback to silent ✓, or fallback to "skip this check" is **prohibited**. Defense-in-depth for the schema-trust boundary documented above: if the schema is broken, the audit is broken, and the user must see that loudly before any other finding.
