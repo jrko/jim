@@ -124,3 +124,62 @@ For each rule: read the `## Validation Rules` section's prose and confirm a sent
 ```
 
 Count: pass count is `<rules-present> / 5`. The denominator is fixed at 5 — if a future spec adds a sixth type rule, both this skill and the count denominator update together.
+
+### 6. Check 3 — Tool-argument literal defaults
+
+**Rule:** no literal default filename from the schema's `keys:` list appears in a tool-argument position in any audited file. The literal-default corpus comes from step 2's schema read — for each `path.*` key, the `default` field is the string to search for (e.g., `VISION.md`, `ARCHITECTURE.md`, `docs/specs`, `docs/brainstorms`). Non-path keys (`specs.id-padding`, `specs.id-prefix`, `workflow.*`) are not filenames and not subject to this check.
+
+**What counts as a tool-argument position (flag):**
+
+- Function-call syntax: `Read(...)`, `Write(...)`, `Edit(...)`, `Glob(...)`, `Grep(...)` with the literal as an argument
+- Inline backticks governed by a tool-call verb in a procedural step — e.g., a step instructing the agent to `` Read `ARCHITECTURE.md` ``
+- Fenced bash/shell code blocks where the literal appears as a path argument
+
+**What does not count (pass — descriptive prose):**
+
+- Frontmatter `description:` fields
+- Headings, markdown table cells used for documentation
+- Plain prose mentions ("the architecture document is read for context")
+- `<example>` blocks in agent files (illustrative user input, not tool invocations)
+- Backticked references in explanatory paragraphs not adjacent to a tool-call verb
+
+**False-positive bias:** when the literal could plausibly be either prose or a tool argument, **flag it**. A contributor can resolve a false flag by rephrasing or by using a non-default illustrative value, but a missed leak goes silent. Anchor examples below calibrate clear-prose vs clear-tool-argument cases — borderline cases default to flagging.
+
+**Positive anchor — clear prose (passes):**
+
+```
+This skill reads ARCHITECTURE.md for locked architectural constraints.
+```
+
+The literal appears in a sentence with verbs and articles. No tool-call verb governs it. Pass.
+
+**Negative anchor — clear tool argument (fails):**
+
+```
+### 4. Read the architecture document
+
+Read `ARCHITECTURE.md` to verify the change does not violate locked
+constraints.
+```
+
+The literal sits inside backticks immediately after a tool-call verb (`Read`) in a procedural step. Flag.
+
+(Anchor examples in this skill body deliberately use a fictional path `docs/example/CUSTOM.md` and a fictional skill name when illustrating violations elsewhere, to avoid the meta-test flagging its own examples on self-audit.)
+
+**`/jim:config` scaffolding exemption (narrow):**
+
+The skill `skills/config/SKILL.md` legitimately mentions default values when scaffolding new `.jim/config.md` files. The exemption is pinned to **step 3 and step 4** of `skills/config/SKILL.md`:
+
+- step 3 (interview / discover paths) — exempt
+- step 4 (generate config / scaffolding) — exempt
+
+step 1 (resolve config preamble), step 2 (check for existing config), and step 5 (present and stop) of `skills/config/SKILL.md` are subject to normal Check 3 rules. The exemption applies to no other file.
+
+**Per-finding line shape (fail case):**
+
+```
+- <file>:<line> — literal `<filename>` in <description of position>
+  (use {<schema key>})
+```
+
+Count: pass count is `<files-without-violations> / <total-files-audited>`. Each violation is listed individually with file:line.
