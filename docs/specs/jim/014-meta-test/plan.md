@@ -240,17 +240,14 @@ flowchart TD
     ! grep -qE '(Read|Write|Edit|Glob|Grep)\([^)]*\b(VISION|ARCHITECTURE|ROADMAP|WORKFLOW|BACKLOG)\.md' skills/meta-test/SKILL.md
     ```
 
-13. [ ] **Self-exercise smoke test on the live corpus.** Run grep-based simulations of Checks 1 and 4 against the current audit surface to confirm zero violations on the live repo (Checks 2 and 3 require Claude's judgment and are exercised via the manual invocation below). Then, the coder invokes `/jim:meta-test` in this build session and confirms the skill emits ✓ for all four invariants in the report.
+13. [ ] **Self-exercise smoke test on the live corpus.** Run a grep-based simulation of Check 1 against the current audit surface to confirm zero preamble-invocation violations (Checks 2, 3, and 4 require Claude's judgment and are exercised via the live `/jim:meta-test` invocation below — the Check 4 grep simulation was dropped during build because the meta-test's own body now contains bash anchor blocks that judgment correctly classifies as illustrations, but grep cannot). Then, the coder invokes `/jim:meta-test` in this build session and confirms the skill emits ✓ for all four invariants in the report.
     **Verify:**
     ```
     # Check 1 simulation: every skill references resolve-paths.md
     for f in skills/*/SKILL.md; do grep -q "skills/_shared/resolve-paths.md" "$f" || { echo "MISS: $f"; exit 1; }; done &&
-    echo "Check 1: $(ls skills/*/SKILL.md | wc -l) skills pass" &&
-    # Check 4 simulation: no fenced bash blocks exist in audit surface
-    ! grep -lE '^```(bash|sh|shell)' skills/*/SKILL.md agents/*.md 2>/dev/null &&
-    echo "Check 4: 0/0 ✓ (no bash blocks in audit surface)"
+    echo "Check 1: $(ls skills/*/SKILL.md | wc -l) skills pass"
     ```
-    Plus manual confirmation: the coder invokes `/jim:meta-test` and observes the in-conversation report shows ✓ for Preamble invocation, Schema value rules, Tool-argument literal defaults, and Bash placeholder substitution.
+    Plus the load-bearing manual confirmation: the coder invokes `/jim:meta-test` and observes the in-conversation report shows ✓ for Preamble invocation, Schema value rules, Tool-argument literal defaults, and Bash placeholder substitution.
 
 ## Requirements Coverage Summary
 
