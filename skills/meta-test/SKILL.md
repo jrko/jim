@@ -226,3 +226,39 @@ cat docs/specs/group/001-name/spec.md
 ```
 
 Count: pass count is `<correct-invocations> / <total-bash-invocations>`. Today: `0/0`.
+
+### 8. Compile and present the report
+
+After all four checks have run, emit a single in-conversation report. Write nothing to disk — no `Write` call, no artifact, no log file. The skill's output is exclusively the conversation message produced in this step.
+
+**Pass case — all four invariants satisfied:**
+
+```
+✓ /jim:meta-test — all invariants satisfied
+
+  Audited <N> skills, <M> agents.
+
+  - Preamble invocation: <N>/<N> ✓
+  - Schema value rules: 5/5 type rules preserved ✓
+  - Tool-argument literal defaults: 0 violations ✓
+  - Bash $({jim_path} <key>) placeholder substitution: <K>/<K> invocations ✓
+```
+
+`<N>` = count of `skills/*/SKILL.md` files. `<M>` = count of `agents/*.md` files. `<K>` = count of Bash invocations encountered in the audit surface (today: `0`; emit `0/0 ✓`).
+
+**Fail case — one or more violations:**
+
+```
+✗ /jim:meta-test — <V> violations across <F> files
+
+  Audited <N> skills, <M> agents.
+
+  <Invariant name>: <pass>/<total> (<violations> violation(s))
+    - <file:line> — <one-line description>; <fix hint>
+
+  <Invariant name>: <pass>/<total> ✓
+```
+
+Per-invariant blocks emitted in **fixed order**: Preamble invocation → Schema value rules → Tool-argument literal defaults → Bash placeholder substitution. Sections that pass cleanly are listed at the bottom in `<pass>/<total> ✓` form. Sections with violations are listed first, with each violation as a bullet showing file:line, a one-line description of the problem, and a fix hint pointing to the placeholder or substitution form the contributor should use.
+
+The report is the only output. Do not summarize separately, do not propose follow-up actions, do not modify any file. Stop after presenting.
