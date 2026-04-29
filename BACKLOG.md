@@ -54,6 +54,14 @@ Self-test meta-skill must verify that every new `path.*` key added to `skills/_s
 
 Make build-time hook scripts configurable via .jim/config.md. Today /jim:build hardcodes `./pre-commit.sh` as the per-task quality gate, and the completion gate runs no extra script. Two new config keys would address this: (a) a per-task hook script — default `./pre-commit.sh` for backward compatibility, configurable to `make test`, `ci`, etc., or empty to disable; (b) a completion-gate hook script (e.g. `./ci.sh`) for a fuller test run that's too expensive per task — empty by default. Both validated via the schema. Source: dogfood feedback during 012-config-adherence — pre-commit.sh absent in test project caused build failure.
 
+### Meta-test: audit-surface symlink policy
+
+Define meta-test behavior when the audit-surface Glob (`skills/*/SKILL.md`, `agents/*.md`) matches a symlink. Three failure modes need a documented response: (a) the audit reads content outside the intended surface (realpath escapes project root); (b) symlink loops or links to large files exhaust Claude's tool budget mid-audit; (c) a symlink targeting a clean SKILL.md masks a real violation by aliasing to it. Repo-review discipline is the primary defense in jim's tightly-controlled repo; meta-test should at minimum halt with an error if it encounters a symlink in the audit surface, mirroring `config-schema.md`'s realpath + project-root containment posture. Source: docs/specs/jim/014-meta-test/security.md finding 10.
+
+### Meta-test verifies schema restricted-YAML format constraint
+
+Meta-test should statically verify that `skills/_shared/config-schema.md` and any committed `.jim/config.md` conform to the restricted YAML subset documented in `config-schema.md`'s Schema Format Constraint section (single-line scalars, no anchors/aliases/merges, three-field key entries, etc.). The runtime defense in `bin/jim_path` already exits with `malformed schema` / `malformed config` if violated, so this is hardening rather than a requirements gap — surface the violation at PR time instead of first invocation. Source: docs/specs/jim/014-meta-test/security.md finding 7.
+
 ### Shellcheck CI for executable artifacts
 
 `bin/jim_path` (introduced in spec 013) is jim's first non-markdown executable artifact. Add a CI workflow that runs `shellcheck bin/*` on every push to enforce sustained static-analysis discipline as the executable surface grows. Optional companion: a small test harness exercising each schema key against a fixture project — likely subsumed by the future Self-test meta-skill rather than built standalone. Source: docs/specs/jim/013-jim-path-helper/security.md finding 5.
