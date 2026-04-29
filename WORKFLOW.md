@@ -67,6 +67,7 @@ Research is not a gated phase; it is an agile service that grounds the SDLC in r
 | `/jim:config` | Scaffold or update project configuration | `@jim:meta` | `.jim/config.md` |
 | `/jim:meta-skill` | Create/update a jim plugin skill from spec | `@jim:meta` | `jim/skills/{name}/SKILL.md` |
 | `/jim:meta-agent` | Create/update a jim plugin agent from spec | `@jim:meta` | `jim/agents/{name}.md` |
+| `/jim:meta-test` | Static audit of jim's skills and agents for config-adherence invariants | `@jim:meta` | In-conversation report (no artifact) |
 
 ---
 
@@ -202,10 +203,13 @@ jim/
 │   │   └── references/
 │   │       └── skill-standards.md
 │   │
-│   └── meta-agent/
-│       ├── SKILL.md             # → /jim:meta-agent
-│       └── references/
-│           └── agent-standards.md
+│   ├── meta-agent/
+│   │   ├── SKILL.md             # → /jim:meta-agent
+│   │   └── references/
+│   │       └── agent-standards.md
+│   │
+│   └── meta-test/
+│       └── SKILL.md             # → /jim:meta-test
 │
 ├── docs/
 │   ├── specs/               # Spec directories grouped by domain (e.g., jim/001-meta)
@@ -230,7 +234,7 @@ jim/
 | `@jim:security` | Design-time security analysis and threat review | `/jim:sec` |
 | `@jim:coder` | TDD implementation, debugging | `/jim:build`, `/jim:debug` |
 | `@jim:reviewer` | Quality gate *(not yet implemented)* | TBD |
-| `@jim:meta` | Plugin development — builds skills, agents, and config | `/jim:meta-skill`, `/jim:meta-agent`, `/jim:config` |
+| `@jim:meta` | Plugin development — builds skills, agents, and config; audits config-adherence | `/jim:meta-skill`, `/jim:meta-agent`, `/jim:meta-test`, `/jim:config` |
 
 ### Agent ↔ Skill Composition
 
@@ -305,6 +309,7 @@ description: Plugin developer. Creates and updates jim skills and agents
 skills:
   - meta-skill
   - meta-agent
+  - meta-test
 tools: Read, Write, Edit, Glob, Grep
 ---
 ```
@@ -413,6 +418,7 @@ Jim can develop itself through its own SDLC. Skills and agents for the plugin ar
 /jim:plan          → plan the skill's structure and content (optional)
 /jim:meta-skill    → build the skill from spec + plan
 /jim:meta-agent    → build the agent from spec + plan
+/jim:meta-test     → audit jim's skills and agents for config-adherence invariants
 ```
 
 Jim's own specs live in `docs/specs/jim/` as a group. Jim's strategic docs (`VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`) live at the project root.
