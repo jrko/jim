@@ -50,6 +50,7 @@ Jim can also develop itself — skills and agents for the plugin are specs like 
 | `/jim:config` | Scaffold or update `.jim/config.md` for your project |
 | `/jim:meta-skill` | Build a jim plugin skill from spec |
 | `/jim:meta-agent` | Build a jim plugin agent from spec |
+| `/jim:meta-test` | Audit jim's own skills and agents for config-adherence invariants |
 
 ## Agents
 
@@ -60,7 +61,7 @@ Jim can also develop itself — skills and agents for the plugin are specs like 
 | `@jim:researcher` | Codebase and landscape investigation |
 | `@jim:security` | Security analysis and threat review |
 | `@jim:coder` | TDD builds, debugging |
-| `@jim:meta` | Plugin development — builds skills, agents, and config |
+| `@jim:meta` | Plugin development — builds skills, agents, and config; audits config-adherence |
 
 ## How to install
 
