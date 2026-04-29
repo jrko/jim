@@ -1,6 +1,6 @@
 # Architecture — Jim
 
-*Last updated: 2026-04-27 (013-jim-path-helper build)*
+*Last updated: 2026-04-29 (014-meta-test build)*
 
 > This document is generated and maintained by `/jim:arch`. Edit via the skill to preserve consistency.
 
@@ -40,7 +40,8 @@ jim/
 │   ├── sec/                 # /jim:sec — security analysis and threat review
 │   ├── config/              # /jim:config — project configuration scaffolding
 │   ├── meta-skill/          # /jim:meta-skill — create/update jim skills
-│   └── meta-agent/          # /jim:meta-agent — create/update jim agents
+│   ├── meta-agent/          # /jim:meta-agent — create/update jim agents
+│   └── meta-test/           # /jim:meta-test — static audit of config-adherence invariants
 ├── docs/
 │   ├── specs/               # Spec directories grouped by domain (e.g., jim/001-meta)
 │   ├── brainstorms/         # Freeform ideation (YYYYMMDD-topic.md)
@@ -83,6 +84,7 @@ flowchart TD
     subgraph "Meta Skills"
         MS["/jim:meta-skill"]
         MA["/jim:meta-agent"]
+        MT["/jim:meta-test"]
         CONF["/jim:config"]
     end
 
@@ -112,7 +114,7 @@ flowchart TD
 
     U --> VIS & ROAD & ARCH & BACKLOG & BRAIN
     U --> SPEC & RES & PLAN & SEC & BUILD & DEBUG
-    U --> MS & MA & CONF
+    U --> MS & MA & MT & CONF
 
     VIS & ROAD & BACKLOG & BRAIN --> PM
     ARCH --> ARCHITECT
@@ -121,7 +123,7 @@ flowchart TD
     PLAN --> ARCHITECT
     SEC --> SECURITY
     BUILD & DEBUG --> CODER
-    MS & MA & CONF --> META
+    MS & MA & MT & CONF --> META
 
     PM --> VDOC & RDOC & SDOC & BLOGDOC & BDOC
     ARCHITECT --> ADOC & PDOC
@@ -152,7 +154,7 @@ Agents are markdown files (`agents/*.md`) that define personas with frontmatter 
 Skills are SKILL.md files inside `skills/{name}/` directories, optionally accompanied by `assets/` (templates) and `references/` (methodology docs).
 
 - **Purpose:** Provide the detailed process instructions that agents follow when a `/jim:{verb}` command is invoked
-- **Location:** `skills/` — 14 skill directories (spec, plan, research, sec, build, debug, vision, roadmap, arch, backlog, brainstorm, config, meta-skill, meta-agent), plus the `_shared/` directory holding cross-skill plugin-contract files (see Shared Primitives below).
+- **Location:** `skills/` — 15 skill directories (spec, plan, research, sec, build, debug, vision, roadmap, arch, backlog, brainstorm, config, meta-skill, meta-agent, meta-test), plus the `_shared/` directory holding cross-skill plugin-contract files (see Shared Primitives below).
 - **Interfaces:** Frontmatter fields: `name`, `description`, `agent` (which agent runs this skill), `argument-hint`. Body contains step-by-step process, argument routing, validation checklists.
 - **Dependencies:** Skills reference their `assets/` templates and `references/` docs. Skills are bound to agents via the `agent` frontmatter field (documentation convention, not runtime routing). Every skill's step 1 follows `skills/_shared/resolve-paths.md`, which reads `.jim/config.md`, validates it against `skills/_shared/config-schema.md`, and resolves placeholders for substitution at point of use. Skills with assets/references check `.jim/skills/{name}/` overlay paths before falling back to built-in files.
 - **Key Constraints:** SKILL.md stays under 500 lines (progressive disclosure). Templates live in `assets/`, methodology in `references/`. Configurable paths appear in skill bodies as `{path.*}` placeholders, never as literal default filenames.
@@ -234,12 +236,12 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 - **File system access:** Agents declare tool permissions in frontmatter. Coder agent has Bash access. All agents are prohibited from writing to `.git/`, `~/.ssh/`, `node_modules/`, `.venv/`, `.env`, `.env-*`. The `.gitignore` excludes `docs/prior-art/github.com/` (downloaded references) and `Z_*` files (personal notes).
 - **Security-relevant files:** `skills/_shared/config-schema.md`, `skills/_shared/resolve-paths.md`, and `bin/jim_path` form the trio that's load-bearing for config-mediated filesystem safety. **Schema invariants** (config-schema.md): `path.*` values must be relative, must not contain `..` segments, must not begin with `/`, and must resolve within the project root after following symlinks (realpath semantics); `boolean` values must be literal `true`/`false` (case variants and YAML 1.1 `yes`/`no`/`on`/`off` are rejected); unknown keys hard-error. The schema's frontmatter and any `.jim/config.md` must conform to a restricted YAML subset (single-line scalars, no anchors/aliases/merges) — the format constraint enables hand-rolled awk parsing in the helper without a YAML library, and bounds the parser audit surface. **Preamble invariants** (resolve-paths.md): resolve-before-tool-call (no `{path.*}` placeholder may flow into a tool call unresolved — placeholder syntax itself is the forcing function), no-silent-fallback (validation failures halt; defaults apply only to absent keys), every-invocation (the preamble runs at the start of every skill invocation; no caching across invocations), schema-is-the-authority (any change to the valid key set or value rules goes through `config-schema.md`); the preamble also computes the derived `{jim_path}` placeholder, single-quoting the project root with the `'\''` escape idiom and halting on null bytes. **Helper invariants** (bin/jim_path): trusts the preamble for value validation (validates only the requested key name against the schema); plausibility-checks its derived plugin root via `.claude-plugin/plugin.json` before reading the schema; never echoes raw key or value content in stderr (Claude's Bash tool captures stderr into agent context, so attacker-controlled keys in malicious configs cannot flow markdown or prompt-injection content into that surface). Weakening any of the three weakens config validation project-wide.
 - **Auth:** None — the plugin runs within the user's Claude Code session with their permissions.
-- **Known risks:** No automated validation that agents respect their declared tool boundaries — enforcement depends on Claude Code's agent tool declarations and the model following instructions. Static-audit pass at refactor close-out verifies current skill bodies invoke the preamble; ongoing enforcement that future skills do the same is deferred to a self-test meta-skill (tracked in `BACKLOG.md`).
+- **Known risks:** No automated validation that agents respect their declared tool boundaries — enforcement depends on Claude Code's agent tool declarations and the model following instructions. Ongoing enforcement of skill/agent config-adherence invariants (preamble invocation, schema value rules, literal-default-filename position in tool-argument contexts, Bash `$({jim_path} <key>)` placeholder substitution) is delegated to `/jim:meta-test` — a static-audit meta-skill (`skills/meta-test/SKILL.md`) that walks `skills/*/SKILL.md` and `agents/*.md` and applies judgment over the four invariants. Run `/jim:meta-test` before committing changes to skills or agents. Schema-read failures halt loudly rather than silently falling back, defending the schema-trust boundary that all four checks depend on.
 
 ## Development & Testing
 
 - **Setup:** Clone the repository and configure it as a Claude Code plugin
-- **Run tests:** No automated test suite. Jim is mostly markdown plus one bash script (`bin/jim_path`); the helper's contract is verified via the inline verify battery documented in `docs/specs/jim/013-jim-path-helper/plan.md` Task 2. Continuous static analysis (`shellcheck bin/*`) is tracked in `BACKLOG.md` for follow-up.
+- **Run tests:** No automated test suite. Jim is mostly markdown plus one bash script (`bin/jim_path`); the helper's contract is verified via the inline verify battery documented in `docs/specs/jim/013-jim-path-helper/plan.md` Task 2. Skill and agent config-adherence invariants are audited via `/jim:meta-test` — a static-audit meta-skill that runs in-conversation and reports pass/fail across four checks (preamble invocation, schema value rules, literal-default-filename position, Bash placeholder substitution). Continuous static analysis (`shellcheck bin/*`) is tracked in `BACKLOG.md` for follow-up.
 - **Test framework:** N/A
 - **Test conventions:** Jim validates its own output through validation checklists embedded in each skill's process section. Executable artifact (`bin/jim_path`) is exercised against fixture plugin trees constructed under `mktemp -d` per the plan's verify battery.
 - **Linting / formatting:** Markdown consistency enforced by templates in `skills/*/assets/`. Bash linting (`shellcheck`) is in backlog.
