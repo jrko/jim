@@ -43,3 +43,25 @@ The schema is treated as authoritative input. The meta-test does not maintain it
 - **Schema readable, `keys:` empty (no path keys present):** Check 3 reports `0/0` legitimately; do not halt — the audit can still run with an empty corpus.
 
 Fallback to a hardcoded list, fallback to silent ✓, or fallback to "skip this check" is **prohibited**. Defense-in-depth for the schema-trust boundary documented above: if the schema is broken, the audit is broken, and the user must see that loudly before any other finding.
+
+### 3. Enumerate the audit surface
+
+The audit surface is exactly two file globs:
+
+- `skills/*/SKILL.md` — every skill body
+- `agents/*.md` — every agent definition
+
+Glob both patterns. Hold the resulting file list internally for Checks 1, 3, and 4. Check 2 reads only the schema, which was already loaded in step 2.
+
+**Self-audit by inclusion.** `skills/meta-test/SKILL.md` is part of the `skills/*/SKILL.md` glob and is therefore audited along with every other skill. There is no self-exclusion clause and no `if file == 'skills/meta-test/SKILL.md': skip` shortcut. The meta-test verifies its own preamble invocation, its own literal-default-filename position, and any Bash invocations under exactly the same rules as every other skill.
+
+**Out of scope — never audited:**
+
+- `skills/_shared/` — plugin contract, source of truth (schema and preamble live here; auditing them would be circular)
+- `skills/*/references/` — methodology documents; may legitimately mention default filenames
+- `skills/*/assets/` — templates and fixtures; may legitimately mention default filenames
+- `bin/` — executable artifacts; parsed by `bin/jim_path` itself, not by skills
+- `.claude-plugin/` — plugin manifest
+- Root strategic docs: `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `BACKLOG.md`, `WORKFLOW.md`, `CLAUDE.md`
+
+These paths are listed for reader reference; they are never globbed and never read by this skill.
