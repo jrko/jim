@@ -240,7 +240,7 @@ flowchart TD
     ! grep -qE '(Read|Write|Edit|Glob|Grep)\([^)]*\b(VISION|ARCHITECTURE|ROADMAP|WORKFLOW|BACKLOG)\.md' skills/meta-test/SKILL.md
     ```
 
-13. [ ] **Self-exercise smoke test on the live corpus.** Run a grep-based simulation of Check 1 against the current audit surface to confirm zero preamble-invocation violations (Checks 2, 3, and 4 require Claude's judgment and are exercised via the live `/jim:meta-test` invocation below — the Check 4 grep simulation was dropped during build because the meta-test's own body now contains bash anchor blocks that judgment correctly classifies as illustrations, but grep cannot). Then, the coder invokes `/jim:meta-test` in this build session and confirms the skill emits ✓ for all four invariants in the report.
+13. [x] **Self-exercise smoke test on the live corpus.** Run a grep-based simulation of Check 1 against the current audit surface to confirm zero preamble-invocation violations (Checks 2, 3, and 4 require Claude's judgment and are exercised via the live `/jim:meta-test` invocation below — the Check 4 grep simulation was dropped during build because the meta-test's own body now contains bash anchor blocks that judgment correctly classifies as illustrations, but grep cannot). Then, the coder invokes `/jim:meta-test` in this build session and confirms the skill emits ✓ for all four invariants in the report.
     **Verify:**
     ```
     # Check 1 simulation: every skill references resolve-paths.md

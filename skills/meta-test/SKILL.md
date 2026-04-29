@@ -66,6 +66,8 @@ Glob both patterns. Hold the resulting file list internally for Checks 1, 3, and
 
 These paths are listed for reader reference; they are never globbed and never read by this skill.
 
+**Apply the four checks below in numerical order — Check 1 → Check 2 → Check 3 → Check 4 — and emit the consolidated report in step 8. Executing out of order is permitted but produces a confusing conversational stream where reported counts arrive before their justification. The fixed report ordering in step 8 is independent: even when the checks happen to be batched (e.g., schema read in step 2 supports both Check 2 and Check 3), the report still emits Preamble → Schema → Literal-defaults → Bash.**
+
 ### 4. Check 1 — Preamble invocation
 
 **Rule:** every `skills/*/SKILL.md`'s step 1 contains a literal reference to the file path `skills/_shared/resolve-paths.md`.
@@ -101,6 +103,16 @@ The reference exists, but it is in step 2, not step 1. The check fails because s
 ```
 
 Count: pass count is `<files-with-reference-in-step-1> / <total-skills-globbed>`. Skills that pass are not listed individually.
+
+**Implementation hint:** a parser-friendly bash idiom uses `||` rather than `if/else/:` (the latter has tripped Claude Code's bash parser with `Unhandled node type: string`):
+
+```
+for f in skills/*/SKILL.md; do
+  head -40 "$f" | grep -q "skills/_shared/resolve-paths.md" || echo "MISS: $f"
+done
+```
+
+Per-file `Read` with a 40-line limit is an alternative when bash is unavailable, at the cost of one tool call per skill.
 
 ### 5. Check 2 — Schema value rules
 
