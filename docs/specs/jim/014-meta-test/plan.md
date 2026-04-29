@@ -2,7 +2,7 @@
 title: "Meta-test skill — static audit of config-adherence invariants"
 spec: "spec.md"
 type: feature
-status: approved
+status: complete
 ---
 
 # Meta-test skill — Plan
