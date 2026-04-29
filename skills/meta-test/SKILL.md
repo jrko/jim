@@ -101,3 +101,26 @@ The reference exists, but it is in step 2, not step 1. The check fails because s
 ```
 
 Count: pass count is `<files-with-reference-in-step-1> / <total-skills-globbed>`. Skills that pass are not listed individually.
+
+### 5. Check 2 — Schema value rules
+
+**Rule:** every value-type rule documented in `skills/_shared/config-schema.md`'s `## Validation Rules` section is preserved across schema edits. The check verifies presence of each rule, not specific wording.
+
+Five rules whose presence is verified:
+
+1. **unknown-key** — a key in `.jim/config.md` not listed in the schema's frontmatter must hard-error.
+2. **file-path / directory-path** — values must be relative; must not contain `..` segments after normalization; must not begin with `/`; must resolve within the project root after symlink resolution.
+3. **positive-integer** — must parse as an integer ≥ 1.
+4. **boolean** — must be the literal YAML `true` or `false`. Case variants (`True`, `FALSE`) and YAML 1.1 forms (`yes`, `no`, `on`, `off`) are rejected.
+5. **string** — any string accepted (no constraint beyond the type requirement).
+
+For each rule: read the `## Validation Rules` section's prose and confirm a sentence (or bullet) covers the rule's intent. Wording can vary; intent must be present. A rule can be considered present if the section describes the same constraint a contributor would need to implement.
+
+**Per-finding line shape (fail case):**
+
+```
+- Missing rule: <rule name> (e.g., "boolean")
+  Section: skills/_shared/config-schema.md ## Validation Rules
+```
+
+Count: pass count is `<rules-present> / 5`. The denominator is fixed at 5 — if a future spec adds a sixth type rule, both this skill and the count denominator update together.
