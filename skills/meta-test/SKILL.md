@@ -183,3 +183,46 @@ step 1 (resolve config preamble), step 2 (check for existing config), and step 5
 ```
 
 Count: pass count is `<files-without-violations> / <total-files-audited>`. Each violation is listed individually with file:line.
+
+### 7. Check 4 — Bash placeholder substitution
+
+**Rule:** every Bash invocation in the audit surface that references a configurable path uses the placeholder form `$({jim_path} <key>)` — where `<key>` is one of the configurable keys derived from step 2's schema read.
+
+**What is flagged:**
+
+- **Raw `$(jim_path <key>)`** — drops spec 013's cd-safe `--root=` flag injection. Even if it works under default project root, it silently breaks for any cwd != project root.
+- **Hardcoded path values** — `cat docs/example/CUSTOM.md`, `ls docs/specs/group/`, etc., where the literal corresponds to a schema-declared `path.*` default.
+- **Alternative resolution mechanisms** — inline `awk` parsing of `.jim/config.md`, `cat .jim/config.md | grep`, or any other shell-mediated config read that bypasses `jim_path`. The helper is the single chokepoint by design.
+
+**What is not flagged:**
+
+- Bash invocations referencing paths that do **not** correspond to a schema-declared `path.*` key (arbitrary paths used in unrelated examples are fine — "configurable path" scope is exactly the schema's path keys).
+- Comments or prose inside fenced bash blocks that mention paths textually but are not executed.
+
+**Empty-corpus case (no Bash blocks anywhere in the audit surface):** the check reports `0/0 invocations ✓` rather than omitting the line. The audit must always show all four checks. The empty corpus is the correct result when no skill or agent has yet introduced a Bash block; future contributors adding one will see the count grow.
+
+**Positive anchor (passes):**
+
+```bash
+cat $({jim_path} path.specs)/group/001-name/spec.md
+```
+
+The placeholder `{jim_path}` will be expanded by the resolve-paths preamble at skill-invocation time to `jim_path --root='<absolute-project-root>'`, producing a cd-safe invocation.
+
+**Negative anchors (fail):**
+
+```bash
+# Violation — raw helper invocation (loses --root= injection)
+cat $(jim_path path.specs)/group/001-name/spec.md
+
+# Violation — hardcoded path (corresponds to path.specs default)
+cat docs/specs/group/001-name/spec.md
+```
+
+**Per-finding line shape (fail case):**
+
+```
+- <file>:<line> — <description>; use $({jim_path} <key>) form
+```
+
+Count: pass count is `<correct-invocations> / <total-bash-invocations>`. Today: `0/0`.
