@@ -225,7 +225,7 @@ flowchart TD
 9. [x] **Add Step 8 — compile and present report.** Append `### 8. Compile and present the report`. Embed the Contract B (pass-case) and Contract C (fail-case) report templates verbatim as fenced text blocks. Specify that the report stays in conversation only — no Write call, no artifact. Specify the per-invariant fixed ordering. Specify the file-line excerpt requirement for fail-case violations (file path, invariant violated, quoted excerpt, fix hint).
    **Verify:** `grep -qF '✓ /jim:meta-test' skills/meta-test/SKILL.md && grep -qF '✗ /jim:meta-test' skills/meta-test/SKILL.md && grep -qiE "in.conversation|no artifact|no.* file" skills/meta-test/SKILL.md`
 
-10. [ ] **Add Validation Checklist.** Append a `## Validation Checklist` section before the skill ends, covering: every audited file was read; every check produced a count or finding list; report follows the contract templates; no artifacts written; self-audit is included; `/jim:config` exemption is applied only to steps 3 and 4 of `skills/config/SKILL.md`.
+10. [x] **Add Validation Checklist.** Append a `## Validation Checklist` section before the skill ends, covering: every audited file was read; every check produced a count or finding list; report follows the contract templates; no artifacts written; self-audit is included; `/jim:config` exemption is applied only to steps 3 and 4 of `skills/config/SKILL.md`.
     **Verify:** `grep -qE "## Validation Checklist|^## Validation" skills/meta-test/SKILL.md`
 
 11. [ ] **Confirm progressive-disclosure budget.** Skill stays at or under 500 lines per ARCHITECTURE.md constraint.

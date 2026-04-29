@@ -262,3 +262,16 @@ After all four checks have run, emit a single in-conversation report. Write noth
 Per-invariant blocks emitted in **fixed order**: Preamble invocation → Schema value rules → Tool-argument literal defaults → Bash placeholder substitution. Sections that pass cleanly are listed at the bottom in `<pass>/<total> ✓` form. Sections with violations are listed first, with each violation as a bullet showing file:line, a one-line description of the problem, and a fix hint pointing to the placeholder or substitution form the contributor should use.
 
 The report is the only output. Do not summarize separately, do not propose follow-up actions, do not modify any file. Stop after presenting.
+
+## Validation Checklist
+
+Before presenting the report, confirm:
+
+- [ ] Every audited file (every `skills/*/SKILL.md` and `agents/*.md`) was read
+- [ ] Schema-read failure semantics applied — if `skills/_shared/config-schema.md`, its `keys:` frontmatter, or its `## Validation Rules` section is missing/malformed, the audit halted with the documented error rather than proceeding
+- [ ] All four checks ran: Preamble invocation, Schema value rules, Tool-argument literal defaults, Bash placeholder substitution
+- [ ] Each check produced a count or finding list (no silent omissions; empty corpus reports `0/0`)
+- [ ] Report follows the pass-case or fail-case template; per-invariant ordering is fixed
+- [ ] No file was written — output is in conversation only
+- [ ] Self-audit by inclusion was honored — `skills/meta-test/SKILL.md` was audited along with every other skill, with no self-exclusion
+- [ ] `/jim:config` exemption was applied only to step 3 and step 4 of `skills/config/SKILL.md`; steps 1, 2, and 5 of that file were checked normally; no other file received the exemption
