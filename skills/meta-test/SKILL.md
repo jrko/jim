@@ -65,3 +65,39 @@ Glob both patterns. Hold the resulting file list internally for Checks 1, 3, and
 - Root strategic docs: `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `BACKLOG.md`, `WORKFLOW.md`, `CLAUDE.md`
 
 These paths are listed for reader reference; they are never globbed and never read by this skill.
+
+### 4. Check 1 — Preamble invocation
+
+**Rule:** every `skills/*/SKILL.md`'s step 1 contains a literal reference to the file path `skills/_shared/resolve-paths.md`.
+
+The check is **structural**, not phrase-matched. Read the first ~40 lines of each skill body — the region where step 1 lives — and look for the literal string `skills/_shared/resolve-paths.md`. Rephrasing the prose around the reference does not break the check; a missing or relocated reference does. Agents (`agents/*.md`) are excluded from this check — they have no numbered step structure and do not invoke the preamble directly.
+
+**Positive anchor (passes):**
+
+```
+### 1. Resolve config
+
+Follow `skills/_shared/resolve-paths.md` before proceeding. …
+```
+
+The file path appears inside the first step. Any rephrasing of the surrounding prose still passes as long as the reference is present in the step-1 region.
+
+**Negative anchor (fails):**
+
+```
+### 1. Read the schema
+…
+### 2. Resolve paths
+Follow `skills/_shared/resolve-paths.md` before proceeding.
+```
+
+The reference exists, but it is in step 2, not step 1. The check fails because step 1 has no preamble invocation.
+
+**Per-finding line shape (fail case):**
+
+```
+- skills/<name>/SKILL.md — step 1 does not reference
+  skills/_shared/resolve-paths.md
+```
+
+Count: pass count is `<files-with-reference-in-step-1> / <total-skills-globbed>`. Skills that pass are not listed individually.
