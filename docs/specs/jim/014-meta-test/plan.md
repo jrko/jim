@@ -228,18 +228,16 @@ flowchart TD
 10. [x] **Add Validation Checklist.** Append a `## Validation Checklist` section before the skill ends, covering: every audited file was read; every check produced a count or finding list; report follows the contract templates; no artifacts written; self-audit is included; `/jim:config` exemption is applied only to steps 3 and 4 of `skills/config/SKILL.md`.
     **Verify:** `grep -qE "## Validation Checklist|^## Validation" skills/meta-test/SKILL.md`
 
-11. [ ] **Confirm progressive-disclosure budget.** Skill stays at or under 500 lines per ARCHITECTURE.md constraint.
+11. [x] **Confirm progressive-disclosure budget.** Skill stays at or under 500 lines per ARCHITECTURE.md constraint.
     **Verify:** `[ "$(wc -l < skills/meta-test/SKILL.md)" -le 500 ]`
 
-12. [ ] **Self-lint sanity pass.** Run grep-based simulations of each invariant against the meta-test's own SKILL.md to confirm the skill passes its own checks. Specifically: (Check 1) the file-path reference to `skills/_shared/resolve-paths.md` appears in step 1; (Check 3) no literal default filename from the schema appears in a tool-argument position in the meta-test's body — anchor examples must use non-default values per Decision 5; (Check 4) any Bash blocks in the meta-test body use `$({jim_path} <key>)` form (today: zero Bash blocks expected — the skill body documents bash discipline but contains no executable Bash).
+12. [x] **Self-lint sanity pass.** Run grep-based simulations of each invariant against the meta-test's own SKILL.md to confirm the skill passes the structural portion of its own checks. Specifically: (Check 1) the file-path reference to `skills/_shared/resolve-paths.md` appears in step 1; (Check 3 partial) no literal default filename from the schema appears in a tool-argument position in the meta-test's body — anchor examples must use non-default values per Decision 5. The Check 4 self-lint clause was dropped during build (see below): the meta-test's Check 4 negative anchors must contain raw `$(jim_path …)` to be pedagogically useful, and a grep can't distinguish anchor-as-illustration from anchor-as-violation. The runtime meta-test (task 13 manual invocation, plus all future self-audit runs) applies judgment correctly; build-time grep simulation cannot.
     **Verify:**
     ```
     # Check 1: preamble reference appears within the first ~30 lines (step 1 region)
     head -40 skills/meta-test/SKILL.md | grep -q "skills/_shared/resolve-paths.md" &&
     # Check 3 sanity: no schema-default appears as a tool-call argument like Read(VISION.md)
-    ! grep -qE '(Read|Write|Edit|Glob|Grep)\([^)]*\b(VISION|ARCHITECTURE|ROADMAP|WORKFLOW|BACKLOG)\.md' skills/meta-test/SKILL.md &&
-    # Check 4 sanity: any bash block uses {jim_path} placeholder, not raw jim_path
-    ! grep -E '\$\(jim_path[[:space:]]' skills/meta-test/SKILL.md
+    ! grep -qE '(Read|Write|Edit|Glob|Grep)\([^)]*\b(VISION|ARCHITECTURE|ROADMAP|WORKFLOW|BACKLOG)\.md' skills/meta-test/SKILL.md
     ```
 
 13. [ ] **Self-exercise smoke test on the live corpus.** Run grep-based simulations of Checks 1 and 4 against the current audit surface to confirm zero violations on the live repo (Checks 2 and 3 require Claude's judgment and are exercised via the manual invocation below). Then, the coder invokes `/jim:meta-test` in this build session and confirms the skill emits ✓ for all four invariants in the report.
