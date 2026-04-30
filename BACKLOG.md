@@ -66,10 +66,6 @@ Refine the research workflow based on real-world usage feedback. Specifics emerg
 <!-- Use `### Title` headings followed by a free-form description. -->
 <!-- Add items manually or via `/jim:backlog add <description>`.   -->
 
-### Configurable build hooks (per-task and completion gate)
-
-Make build-time hook scripts configurable via .jim/config.md. Today /jim:build hardcodes `./pre-commit.sh` as the per-task quality gate, and the completion gate runs no extra script. Two new config keys would address this: (a) a per-task hook script — default `./pre-commit.sh` for backward compatibility, configurable to `make test`, `ci`, etc., or empty to disable; (b) a completion-gate hook script (e.g. `./ci.sh`) for a fuller test run that's too expensive per task — empty by default. Both validated via the schema. Source: dogfood feedback during 012-config-adherence — pre-commit.sh absent in test project caused build failure.
-
 ### Meta-test: audit-surface symlink policy
 
 Define meta-test behavior when the audit-surface Glob (`skills/*/SKILL.md`, `agents/*.md`) matches a symlink. Three failure modes need a documented response: (a) the audit reads content outside the intended surface (realpath escapes project root); (b) symlink loops or links to large files exhaust Claude's tool budget mid-audit; (c) a symlink targeting a clean SKILL.md masks a real violation by aliasing to it. Repo-review discipline is the primary defense in jim's tightly-controlled repo; meta-test should at minimum halt with an error if it encounters a symlink in the audit surface, mirroring `config-schema.md`'s realpath + project-root containment posture. Source: docs/specs/jim/014-meta-test/security.md finding 10.
@@ -85,6 +81,10 @@ Meta-test should statically verify that `skills/_shared/config-schema.md` and an
 ### Read-only invariant check for hooks.pre-completion side effects
 
 Pre-completion hooks (`hooks.pre-completion`, introduced in spec 015) run immediately before `/jim:arch` and `/jim:backlog` regenerate `ARCHITECTURE.md` and `BACKLOG.md`. A successful hook (exit 0) can side-effect project files between hook return and the doc-regen calls — e.g., modifying `plan.md` to mark unchecked tasks complete, or touching `ARCHITECTURE.md` to bias the architect's diff. Spec 015 accepts the trust model (defers to user shell), but a defensive invariant check would record file mtime or hash for `plan.md`, `ARCHITECTURE.md`, and `spec.md` before the hook runs and verify they're unchanged after. Out of scope for 015; track for follow-up if dogfooding surfaces an incident. Source: docs/specs/jim/015-build-hooks/security.md Finding 3.
+
+### `/jim:backlog` removal path for resolved ad-hoc items
+
+`/jim:backlog`'s regeneration mode re-emits ad-hoc items verbatim — the only automated removal path is step 9's duplicate detection (ad-hoc-vs-sourced match). Resolution-by-completion is NOT a removal trigger: when an ad-hoc item describes work that's since shipped (e.g., "Configurable build hooks" became spec 015 and was removed manually after build completion), regeneration preserves the stale entry. Documented workaround is manual `Edit` of `BACKLOG.md`. Two viable solutions: (a) add a `/jim:backlog remove <title>` argument analogous to `add`; (b) extend the resolution filter (step 6) to cover ad-hoc items, with explicit user confirmation per removal. (a) preserves user agency cleanest. Source: dogfood feedback during 015-build-hooks completion gate.
 
 ---
 
