@@ -76,6 +76,10 @@ Meta-test should statically verify that `skills/_shared/config-schema.md` and an
 
 `bin/jim_path` (introduced in spec 013) is jim's first non-markdown executable artifact. Add a CI workflow that runs `shellcheck bin/*` on every push to enforce sustained static-analysis discipline as the executable surface grows. Optional companion: a small test harness exercising each schema key against a fixture project — likely subsumed by the future Self-test meta-skill rather than built standalone. Source: docs/specs/jim/013-jim-path-helper/security.md finding 5.
 
+### Read-only invariant check for hooks.pre-completion side effects
+
+Pre-completion hooks (`hooks.pre-completion`, introduced in spec 015) run immediately before `/jim:arch` and `/jim:backlog` regenerate `ARCHITECTURE.md` and `BACKLOG.md`. A successful hook (exit 0) can side-effect project files between hook return and the doc-regen calls — e.g., modifying `plan.md` to mark unchecked tasks complete, or touching `ARCHITECTURE.md` to bias the architect's diff. Spec 015 accepts the trust model (defers to user shell), but a defensive invariant check would record file mtime or hash for `plan.md`, `ARCHITECTURE.md`, and `spec.md` before the hook runs and verify they're unchanged after. Out of scope for 015; track for follow-up if dogfooding surfaces an incident. Source: docs/specs/jim/015-build-hooks/security.md Finding 3.
+
 ---
 
 ## Themes
