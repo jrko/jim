@@ -45,6 +45,12 @@ keys:
   - name: workflow.require-plan-approval
     default: true
     type: boolean
+  - name: hooks.pre-commit
+    default: ""
+    type: string
+  - name: hooks.pre-completion
+    default: ""
+    type: string
 ---
 
 # Jim Config Schema

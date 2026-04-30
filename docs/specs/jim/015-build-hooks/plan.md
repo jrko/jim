@@ -262,7 +262,7 @@ sequenceDiagram
 
 ## Task Breakdown
 
-1. [ ] Add `hooks.pre-commit` and `hooks.pre-completion` entries to `skills/_shared/config-schema.md` frontmatter `keys:` list, between the existing `workflow.require-plan-approval` entry and the closing `---`. Match existing two-space indent and `default: ""` quoting (`specs.id-prefix` precedent at schema L36-38).
+1. [x] Add `hooks.pre-commit` and `hooks.pre-completion` entries to `skills/_shared/config-schema.md` frontmatter `keys:` list, between the existing `workflow.require-plan-approval` entry and the closing `---`. Match existing two-space indent and `default: ""` quoting (`specs.id-prefix` precedent at schema L36-38).
    **Verify:** `output="$(jim_path hooks.pre-commit)" && [ "$output" = "" ] && output="$(jim_path hooks.pre-completion)" && [ "$output" = "" ]`
 
 2. [ ] Add the "Hook keys" section to `skills/_shared/config-schema.md` body, between `## Workflow gate keys` (L82-88) and `## Derived Placeholders` (L90). Include all four documentation paragraphs from Interface Contracts: Empty-default posture, Embedded-quote limitation, Trust model, Agent-context exposure. Include the per-key purpose table.
