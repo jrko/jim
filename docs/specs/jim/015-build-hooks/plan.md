@@ -280,7 +280,7 @@ sequenceDiagram
 6. [x] Rewrite `WORKFLOW.md` L400 from `**Gate:** All tests pass. \`./pre-commit.sh\` is green.` to `**Gate:** All tests pass. The configured \`hooks.pre-commit\` is green, when set.`
    **Verify:** `! grep -q '\./pre-commit\.sh' WORKFLOW.md && grep -q 'configured \`hooks.pre-commit\` is green' WORKFLOW.md`
 
-7. [ ] Generalize `skills/debug/SKILL.md` L81 — remove the `\`./pre-commit.sh\` or` literal segment. Preserve the bullet's intent: debug runs no side-effecting tests beyond minimum reproduction. New text: `- Does NOT execute tests beyond what is needed to confirm reproduction.`
+7. [x] Generalize `skills/debug/SKILL.md` L81 — remove the `\`./pre-commit.sh\` or` literal segment. Preserve the bullet's intent: debug runs no side-effecting tests beyond minimum reproduction. New text: `- Does NOT execute tests beyond what is needed to confirm reproduction.`
    **Verify:** `! grep -q '\./pre-commit\.sh' skills/debug/SKILL.md && grep -q 'NOT execute tests beyond' skills/debug/SKILL.md`
 
 8. [ ] Update `ARCHITECTURE.md` Security Considerations (L232-239) to name `.jim/config.md` as a shell-execution authority via `hooks.*` keys. Append to the existing Security-relevant files paragraph; do not restructure the section. Cross-reference the schema's Hook keys section. Depends on task 2 (schema section must exist before architecture references it).
