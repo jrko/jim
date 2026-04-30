@@ -70,7 +70,14 @@ For each unchecked `[ ]` task in `plan.md`, in order:
 - If any tidy move breaks tests: revert that move immediately. Do not fix broken tests during tidy — that is a behavioral change and belongs in a new task.
 
 **Commit**
-- Run `./pre-commit.sh` via Bash before committing. If it fails: show the error output, fix the issues, re-run all tests, and re-run `./pre-commit.sh` until it passes. Do NOT commit until `./pre-commit.sh` is green.
+- Resolve `hooks.pre-commit` via Bash before committing:
+
+  ```bash
+  HOOK="$({jim_path} hooks.pre-commit)" || { echo "jim_path failed; aborting commit" >&2; exit 1; }
+  [ -n "$HOOK" ] && bash -c "$HOOK"
+  ```
+
+  If `jim_path` itself exits non-zero (malformed config, schema-read failure, plugin not loaded), abort the commit and surface the error — fail-loud, not silent-skip. If the configured hook exits non-zero: show the error output, fix the issues, re-run all tests, and re-run the hook until it passes. Do NOT commit until the hook is green. If `hooks.pre-commit` is empty (default), the second line's `[ -n "$HOOK" ]` guard short-circuits and the build proceeds directly to commit.
 - Follow Tidy First: one commit per logical unit, structural OR behavioral, never mixed.
 - Use conventional prefixes: `test:` (Red), `feat:` / `fix:` (Green), `refactor:` (Tidy).
 - First check `.jim/skills/build/references/tdd-guide.md` — if it exists, use it instead of the built-in. See `references/tdd-guide.md` — Commit Discipline section.
