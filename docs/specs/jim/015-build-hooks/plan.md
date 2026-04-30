@@ -277,7 +277,7 @@ sequenceDiagram
 5. [x] Generalize `agents/coder.md` L82 — replace `\`./pre-commit.sh\`` with `the configured pre-commit hook`. Preserve the bullet's structural shape (leading dash, trailing semicolon clause, "the human decides what is next" tail).
    **Verify:** `! grep -q '\./pre-commit\.sh' agents/coder.md && grep -q 'configured pre-commit hook' agents/coder.md`
 
-6. [ ] Rewrite `WORKFLOW.md` L400 from `**Gate:** All tests pass. \`./pre-commit.sh\` is green.` to `**Gate:** All tests pass. The configured \`hooks.pre-commit\` is green, when set.`
+6. [x] Rewrite `WORKFLOW.md` L400 from `**Gate:** All tests pass. \`./pre-commit.sh\` is green.` to `**Gate:** All tests pass. The configured \`hooks.pre-commit\` is green, when set.`
    **Verify:** `! grep -q '\./pre-commit\.sh' WORKFLOW.md && grep -q 'configured \`hooks.pre-commit\` is green' WORKFLOW.md`
 
 7. [ ] Generalize `skills/debug/SKILL.md` L81 — remove the `\`./pre-commit.sh\` or` literal segment. Preserve the bullet's intent: debug runs no side-effecting tests beyond minimum reproduction. New text: `- Does NOT execute tests beyond what is needed to confirm reproduction.`
