@@ -103,10 +103,18 @@ Then read the next unchecked task and repeat.
 
 After all tasks are marked `[x]`:
 
-1. Check if `{path.architecture}` exists. If it does, invoke `/jim:arch` to run a differential update — the architect will scan the codebase, compare against the existing document, and present any changes for your approval. If it does not exist, skip this step.
-2. Check if `{path.backlog}` exists. If it does, invoke `/jim:backlog` to regenerate it — the PM will scan for deferred work, consolidate items, and present the updated backlog for your approval. If it does not exist, skip this step.
-3. Report to the user and ask: "Should I mark the plan status as `complete`?"
-4. STOP. Wait for the human to confirm. Do not proceed to the next SDLC phase, do not auto-invoke review. Update the plan frontmatter to `status: complete` only after explicit confirmation.
+1. Resolve `hooks.pre-completion` via Bash:
+
+   ```bash
+   HOOK="$({jim_path} hooks.pre-completion)" || { echo "jim_path failed; aborting completion gate" >&2; exit 1; }
+   [ -n "$HOOK" ] && bash -c "$HOOK"
+   ```
+
+   If `jim_path` itself exits non-zero (malformed config, schema-read failure, plugin not loaded), STOP the completion gate immediately and surface the error — fail-loud, not silent-skip. If the configured hook exits non-zero: STOP the completion gate immediately. Report the failure output. Do NOT invoke `/jim:arch`, do NOT invoke `/jim:backlog`, do NOT prompt for plan completion. The user can re-invoke `/jim:build` to retry — step 6 re-enters because all tasks are already `[x]`. If `hooks.pre-completion` is empty (default), the second line's `[ -n "$HOOK" ]` guard short-circuits and the gate proceeds.
+2. Check if `{path.architecture}` exists. If it does, invoke `/jim:arch` to run a differential update — the architect will scan the codebase, compare against the existing document, and present any changes for your approval. If it does not exist, skip this step.
+3. Check if `{path.backlog}` exists. If it does, invoke `/jim:backlog` to regenerate it — the PM will scan for deferred work, consolidate items, and present the updated backlog for your approval. If it does not exist, skip this step.
+4. Report to the user and ask: "Should I mark the plan status as `complete`?"
+5. STOP. Wait for the human to confirm. Do not proceed to the next SDLC phase, do not auto-invoke review. Update the plan frontmatter to `status: complete` only after explicit confirmation.
 
 ## Scope Discipline
 
