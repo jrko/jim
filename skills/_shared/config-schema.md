@@ -45,6 +45,12 @@ keys:
   - name: workflow.require-plan-approval
     default: true
     type: boolean
+  - name: hooks.pre-commit
+    default: ""
+    type: string
+  - name: hooks.pre-completion
+    default: ""
+    type: string
 ---
 
 # Jim Config Schema
@@ -86,6 +92,21 @@ All `path.*` keys are relative to the project root.
 | `workflow.require-research` | `false` | boolean | When `true`, `/jim:plan` halts if no `research.md` exists in the spec directory. |
 | `workflow.require-security` | `false` | boolean | When `true`, `/jim:build` halts if no `security.md` exists in the spec directory. |
 | `workflow.require-plan-approval` | `true` | boolean | When `true`, `/jim:build` halts if `plan.md` is still `status: draft`. |
+
+### Hook keys
+
+| Key | Default | Type | Purpose |
+| :--- | :--- | :--- | :--- |
+| `hooks.pre-commit` | `""` | string | Shell command run before each commit in `/jim:build`'s TDD loop. Empty disables. |
+| `hooks.pre-completion` | `""` | string | Shell command run at the start of `/jim:build`'s completion gate, before `/jim:arch` and `/jim:backlog`. Empty disables. |
+
+**Empty-default posture.** Both hooks default to the empty string. An empty value disables the hook entirely — `/jim:build` skips the corresponding step without error. The empty default provides no automated quality signal; projects opt in by configuring a value in `.jim/config.md`.
+
+**Embedded-quote limitation.** `bin/jim_path`'s embedded-quote handling strips only the outermost `"..."` from a configured value. Complex shell logic with pipes or nested quotes (e.g., `bash -c "a && b | c"`) does not survive round-trip through the YAML parser. Package complex commands as a script file (e.g., `./ci.sh`) and configure the script path as the hook value: `hooks.pre-completion: ./ci.sh`.
+
+**Trust model.** `hooks.*` values are arbitrary shell commands executed by Bash with the invoking user's privileges. `.jim/config.md` is therefore a shell-execution authority equivalent to a committed script file. The schema's `string` type rule ("any string accepted") defers all validation to the user. PR reviewers must scrutinize `hooks.*` changes the same way they scrutinize script-file content — a one-line config change can introduce arbitrary code execution on next `/jim:build` invocation.
+
+**Agent-context exposure.** Hook stdout and stderr are captured into the agent's conversation context via the Bash tool. Avoid hook commands that echo untrusted file contents, environment variables, or other attacker-controllable bytes — those bytes flow into the agent's subsequent decisions during the same `/jim:build` invocation, including the `/jim:arch` and `/jim:backlog` differential updates that fire immediately after `hooks.pre-completion`.
 
 ## Derived Placeholders
 

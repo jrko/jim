@@ -78,4 +78,4 @@ STOP. Do not fix the code. Do not open a spec or update a plan. The human decide
 - Does NOT fix code — diagnosis only.
 - Does NOT modify spec.md or plan.md files.
 - Does NOT open new specs or plans automatically.
-- Does NOT run `./pre-commit.sh` or execute tests beyond what is needed to confirm reproduction.
+- Does NOT execute tests beyond what is needed to confirm reproduction.
