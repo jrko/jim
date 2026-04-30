@@ -1,6 +1,6 @@
 # Architecture — Jim
 
-*Last updated: 2026-04-29 (014-meta-test build)*
+*Last updated: 2026-04-29 (015-build-hooks build)*
 
 > This document is generated and maintained by `/jim:arch`. Edit via the skill to preserve consistency.
 
@@ -288,6 +288,7 @@ Conventions that govern how jim's agents, skills, and tools interact with Claude
 - **`{jim_path}` derived placeholder for Bash calls:** native tool calls (Write, Edit, Read, Glob) cannot shell-substitute, so `{path.*}` placeholders in skill prose are resolved by the agent before tool invocation. Bash invocations have no equivalent forcing function — to close that gap, skills compose `$({jim_path} <key>)` substitutions in Bash code blocks, where `{jim_path}` expands to `jim_path --root='<absolute-project-root>'` (the helper itself is on the Bash tool's PATH via Claude Code's plugin `bin/` convention; the placeholder injects only the project root, single-quoted with `'\''` escape, for cd-safety). At runtime Bash evaluates the substitution by invoking the helper, which prints the resolved value. Wrong path becomes a runtime impossibility rather than a per-call agent judgment. See the Plugin Executables component above and `docs/specs/jim/013-jim-path-helper/`.
 - **Workflow gates:** `workflow.require-research`, `workflow.require-security`, `workflow.require-plan-approval` control phase-entry enforcement in plan and build skills.
 - **Spec ID format:** `specs.id-padding` and `specs.id-prefix` control ID generation in the spec skill.
+- **Build hooks:** `hooks.pre-commit` and `hooks.pre-completion` (added in spec 015) configure shell commands run by `/jim:build` at per-commit and completion-gate touchpoints. Empty defaults disable; configured values are arbitrary shell commands. The build-skill consumer composes `$({jim_path} hooks.X)` substitutions paired with `||`-chain exit-code capture so a malformed `.jim/config.md` halts loudly rather than silently disabling the gate. See Security Considerations for the trust model.
 - **Asset/reference overlay:** Skills check `.jim/skills/{skill-name}/assets/{file}` and `.jim/skills/{skill-name}/references/{file}` before reading built-in files. File presence wins — no config key needed.
 - **Shared-primitives boundary:** `skills/_shared/` is **not overlayable** via `.jim/skills/_shared/`. Schema and preamble are plugin contract; user files at the overlay path are silently ignored.
 - **Agent overlay:** Handled natively by Claude Code via `.claude/agents/` (project-level agents override plugin agents by priority). Not a jim-specific mechanism.
