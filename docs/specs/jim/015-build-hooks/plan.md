@@ -286,7 +286,7 @@ sequenceDiagram
 8. [x] Update `ARCHITECTURE.md` Security Considerations (L232-239) to name `.jim/config.md` as a shell-execution authority via `hooks.*` keys. Append to the existing Security-relevant files paragraph; do not restructure the section. Cross-reference the schema's Hook keys section. Depends on task 2 (schema section must exist before architecture references it).
    **Verify:** `awk '/^## Security Considerations/{flag=1;next} /^## /{flag=0} flag' ARCHITECTURE.md | grep -q 'shell-execution authority' && awk '/^## Security Considerations/{flag=1;next} /^## /{flag=0} flag' ARCHITECTURE.md | grep -q 'hooks\.'`
 
-9. [ ] Final meta-test invariant sweep across all touched files. Verify that `skills/build/SKILL.md` retains its step-1 preamble reference (Check 1), the Bash blocks use `$({jim_path} hooks.*)` form (Check 4), and no literal `./pre-commit.sh` survives in the audit surface (skills/, agents/). Depends on tasks 1–8.
+9. [x] Final meta-test invariant sweep across all touched files. Verify that `skills/build/SKILL.md` retains its step-1 preamble reference (Check 1), the Bash blocks use `$({jim_path} hooks.*)` form (Check 4), and no literal `./pre-commit.sh` survives in the audit surface (skills/, agents/). Depends on tasks 1–8.
    **Verify:** `grep -q 'skills/_shared/resolve-paths.md' skills/build/SKILL.md && grep -qE '\$\(\{jim_path\} hooks\.(pre-commit|pre-completion)\)' skills/build/SKILL.md && ! grep -rq '\./pre-commit\.sh' skills/ agents/`
 
 ## Requirements Coverage Summary
