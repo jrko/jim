@@ -274,7 +274,7 @@ sequenceDiagram
 4. [x] Prepend a new step 1 to `skills/build/SKILL.md` step 6 (Completion gate, L95-103) using the fail-loud + skip-if-empty idiom from Interface Contracts. Halt the gate immediately on non-zero exit from `jim_path` itself OR from the configured hook. Renumber the existing steps to 2–5 (arch invocation, backlog invocation, mark-complete prompt, STOP). Depends on task 1.
    **Verify:** `grep -q '{jim_path} hooks.pre-completion' skills/build/SKILL.md && [ "$(grep -n 'hooks\.pre-completion' skills/build/SKILL.md | head -1 | cut -d: -f1)" -lt "$(grep -n '/jim:arch' skills/build/SKILL.md | head -1 | cut -d: -f1)" ]`
 
-5. [ ] Generalize `agents/coder.md` L82 — replace `\`./pre-commit.sh\`` with `the configured pre-commit hook`. Preserve the bullet's structural shape (leading dash, trailing semicolon clause, "the human decides what is next" tail).
+5. [x] Generalize `agents/coder.md` L82 — replace `\`./pre-commit.sh\`` with `the configured pre-commit hook`. Preserve the bullet's structural shape (leading dash, trailing semicolon clause, "the human decides what is next" tail).
    **Verify:** `! grep -q '\./pre-commit\.sh' agents/coder.md && grep -q 'configured pre-commit hook' agents/coder.md`
 
 6. [ ] Rewrite `WORKFLOW.md` L400 from `**Gate:** All tests pass. \`./pre-commit.sh\` is green.` to `**Gate:** All tests pass. The configured \`hooks.pre-commit\` is green, when set.`
