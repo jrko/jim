@@ -2,7 +2,7 @@
 title: "Configurable build hooks (pre-commit and pre-completion)"
 spec: "spec.md"
 type: feature
-status: approved
+status: complete
 ---
 
 # 015 Configurable build hooks (pre-commit and pre-completion) — Plan
