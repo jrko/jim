@@ -40,12 +40,6 @@ Persistent log file (e.g., `.jim/logs/resolved-paths.jsonl`) capturing each skil
 
 **Sources:** `docs/specs/jim/012-config-adherence/spec.md`, `docs/brainstorms/20260422-config-adherence.md`
 
-### `/jim:config` scaffolding for `hooks.*` values
-
-When `/jim:config` is updated to scaffold the `hooks.*` keys introduced in spec 015, the scaffolding prompt should explicitly ask the user whether to wire a `hooks.pre-commit` command rather than defaulting to empty. Without this prompt, fresh `/jim:config` runs leave projects with silent-no-gate-by-default — degraded compared to the prior fail-loud-without-script posture. Out of scope for 015 per its scope (config scaffolding is a `/jim:config` concern, not `/jim:build`); tracked here for follow-up.
-
-**Sources:** `docs/specs/jim/015-build-hooks/spec.md`, `docs/specs/jim/015-build-hooks/security.md`
-
 ### Cross-framework integration
 
 Integration with other coding agents — Codex, Gemini CLI, and similar — so jim's SDLC discipline can travel beyond Claude Code. Currently jim is Claude-Code-only by design, but the pattern (specs, plans, research, agents) is portable. Larger investment than the other items; appropriate post-2.0 release.
@@ -104,6 +98,6 @@ Continuous-enforcement work for jim itself, separate from the SDLC artifacts jim
 
 ### Workflow extension
 
-Deepening the SDLC surface beyond the current skills. Splitting `/jim:complete` out of `/jim:build` is the immediate move; refining research collaboration based on real-world signals is the longer-term one. The new `hooks.*` configurability (spec 015) opens a follow-on `/jim:config` scaffolding concern that fits here as well.
+Deepening the SDLC surface beyond the current skills. Splitting `/jim:complete` out of `/jim:build` is the immediate move; refining research collaboration based on real-world signals is the longer-term one.
 
-**Related items:** `/jim:complete` skill, Research collaboration improvements, `/jim:config` scaffolding for `hooks.*` values
+**Related items:** `/jim:complete` skill, Research collaboration improvements

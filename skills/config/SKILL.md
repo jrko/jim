@@ -50,6 +50,12 @@ Skip if the user has no opinion — defaults are fine.
   - `require-security` — build phase stops if security.md is missing (default: off)
   - `require-plan-approval` — build phase requires approved plan (default: on)
 
+**Hooks (always ask — do not skip):**
+- "Want a per-commit quality gate? `hooks.pre-commit` runs a shell command before each TDD commit in `/jim:build`. Common values: `make test`, `./pre-commit.sh`. Empty disables — `/jim:build` will commit with no automated check."
+- "Want a fuller end-of-build check? `hooks.pre-completion` runs once before `/jim:arch` and `/jim:backlog` regenerate. Use for slower suites (integration, full lint) too expensive per-commit. Empty disables."
+
+Both values execute as Bash with the user's privileges — once set, `.jim/config.md` becomes a shell-execution authority. Surface this trust model when the user proposes a hook command. For complex shell logic (pipes, nested quotes), recommend a script file and configure the script path as the hook value.
+
 **Overlay:**
 - Mention the overlay directory briefly: "You can also override skill templates and references by placing files in `.jim/skills/{skill}/assets/` or `.jim/skills/{skill}/references/`. Want me to scaffold any overlay directories?"
 
