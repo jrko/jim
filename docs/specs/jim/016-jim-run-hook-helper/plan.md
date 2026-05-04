@@ -2,7 +2,7 @@
 title: "bin/jim_run_hook — single-call hook dispatcher"
 spec: "spec.md"
 type: feature
-status: approved
+status: complete
 ---
 
 # 016 bin/jim_run_hook — single-call hook dispatcher — Plan
