@@ -100,6 +100,8 @@ All `path.*` keys are relative to the project root.
 | `hooks.pre-commit` | `""` | string | Shell command run before each commit in `/jim:build`'s TDD loop. Empty disables. |
 | `hooks.pre-completion` | `""` | string | Shell command run at the start of `/jim:build`'s completion gate, before `/jim:arch` and `/jim:backlog`. Empty disables. |
 
+**Canonical invoker.** Configured `hooks.<event>` values are dispatched by `bin/jim_run_hook` (skill prose uses the `{jim_run_hook}` derived placeholder). Per-skill in-prose composition is no longer used — see `docs/specs/jim/016-jim-run-hook-helper/spec.md`.
+
 **Empty-default posture.** Both hooks default to the empty string. An empty value disables the hook entirely — `/jim:build` skips the corresponding step without error. The empty default provides no automated quality signal; projects opt in by configuring a value in `.jim/config.md`.
 
 **Embedded-quote limitation.** `bin/jim_path`'s embedded-quote handling strips only the outermost `"..."` from a configured value. Complex shell logic with pipes or nested quotes (e.g., `bash -c "a && b | c"`) does not survive round-trip through the YAML parser. Package complex commands as a script file (e.g., `./ci.sh`) and configure the script path as the hook value: `hooks.pre-completion: ./ci.sh`.
@@ -114,7 +116,8 @@ In addition to the configurable keys above, the resolve-paths preamble (`skills/
 
 | Placeholder | Source | Substitution form | Purpose |
 | :--- | :--- | :--- | :--- |
-| `{jim_path}` | Claude Code's session-level primary working directory | `jim_path --root='<absolute-project-root>'` | Shell-mediated config-adherent path resolution for skill Bash calls. Helper discovery uses Claude Code's plugin `bin/` PATH convention; the placeholder expansion injects the absolute project root via `--root` so the helper is cd-safe. The expansion is multi-token — the documented pattern for any future placeholder that resolves to a shell command rather than a single value. |
+| `{jim_path}` | Claude Code's session-level primary working directory | `jim_path --root='<absolute-project-root>'` | Shell-mediated config-adherent path resolution for skill Bash calls. Helper discovery uses Claude Code's plugin `bin/` PATH convention; the placeholder expansion injects the absolute project root via `--root` so the helper is cd-safe. The expansion is multi-token — the documented pattern for any derived placeholder that resolves to a shell command rather than a single value. |
+| `{jim_run_hook}` | Claude Code's session-level primary working directory | `jim_run_hook --root='<absolute-project-root>'` | Single-call invocation of a configured `hooks.<event>` shell command — replaces the in-prose resolve-and-exec idiom from spec 015. Helper discovery and quoting algorithm are identical to `{jim_path}`. See `bin/jim_run_hook` and `docs/specs/jim/016-jim-run-hook-helper/`. |
 
 Skills reference derived placeholders the same way they reference configurable keys — by literal `{name}` substitution at point of use. Derived placeholders do not flow into tool calls unresolved.
 
