@@ -1,6 +1,6 @@
 # Architecture — Jim
 
-*Last updated: 2026-04-29 (015-build-hooks build)*
+*Last updated: 2026-05-04 (016-jim-run-hook-helper build)*
 
 > This document is generated and maintained by `/jim:arch`. Edit via the skill to preserve consistency.
 
@@ -15,7 +15,8 @@ jim/
 ├── .claude/
 │   └── settings.local.json  # Local permission allowlists (WebFetch domains, etc.)
 ├── bin/                     # Plugin executables — auto-added to Bash tool's PATH (Claude Code plugin convention)
-│   └── jim_path             # Resolves a config key from .jim/config.md → stdout (or schema default)
+│   ├── jim_path             # Resolves a config key from .jim/config.md → stdout (or schema default)
+│   └── jim_run_hook         # Resolves a hooks.<event> via jim_path and execs the configured shell command
 ├── agents/                  # Agent definitions — one .md per agent persona
 │   ├── pm.md                # @jim:pm — product manager
 │   ├── architect.md         # @jim:architect — technical architect
@@ -235,7 +236,7 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 - **Entry point:** `.claude-plugin/plugin.json` — Claude Code discovers and loads the plugin from this manifest
 - **Configuration:** `.claude/settings.local.json` for permission allowlists. `.jim/config.md` for project-level configuration (paths, workflow gates, spec ID format). `.jim/skills/` for asset/reference overlays. All optional — zero-config defaults match upstream layout.
 - **Distribution:** Git repository. Users install by cloning/adding the repo as a Claude Code plugin.
-- **Environment requirements:** Claude Code CLI. No build step, no dependencies, no package manager. Mostly markdown — one bash script (`bin/jim_path`) ships under Claude Code's plugin `bin/` PATH convention; it has no library dependencies and runs under any POSIX bash.
+- **Environment requirements:** Claude Code CLI. No build step, no dependencies, no package manager. Mostly markdown — two bash scripts (`bin/jim_path`, `bin/jim_run_hook`) ship under Claude Code's plugin `bin/` PATH convention; neither has library dependencies and both run under any POSIX bash.
 
 ## Security Considerations
 
@@ -249,9 +250,9 @@ Skills are SKILL.md files inside `skills/{name}/` directories, optionally accomp
 ## Development & Testing
 
 - **Setup:** Clone the repository and configure it as a Claude Code plugin
-- **Run tests:** No automated test suite. Jim is mostly markdown plus one bash script (`bin/jim_path`); the helper's contract is verified via the inline verify battery documented in `docs/specs/jim/013-jim-path-helper/plan.md` Task 2. Skill and agent config-adherence invariants are audited via `/jim:meta-test` — a static-audit meta-skill that runs in-conversation and reports pass/fail across four checks (preamble invocation, schema value rules, literal-default-filename position, Bash placeholder substitution). Continuous static analysis (`shellcheck bin/*`) is tracked in `BACKLOG.md` for follow-up.
+- **Run tests:** No automated test suite. Jim is mostly markdown plus two bash scripts (`bin/jim_path`, `bin/jim_run_hook`); each helper's contract is verified via the inline verify battery documented in its spec plan (`docs/specs/jim/013-jim-path-helper/plan.md` Task 2 for `jim_path`; `docs/specs/jim/016-jim-run-hook-helper/plan.md` Task 1 for `jim_run_hook`). Skill and agent config-adherence invariants are audited via `/jim:meta-test` — a static-audit meta-skill that runs in-conversation and reports pass/fail across four checks (preamble invocation, schema value rules, literal-default-filename position, Bash placeholder substitution). Continuous static analysis (`shellcheck bin/*`) is tracked in `BACKLOG.md` for follow-up.
 - **Test framework:** N/A
-- **Test conventions:** Jim validates its own output through validation checklists embedded in each skill's process section. Executable artifact (`bin/jim_path`) is exercised against fixture plugin trees constructed under `mktemp -d` per the plan's verify battery.
+- **Test conventions:** Jim validates its own output through validation checklists embedded in each skill's process section. Executable artifacts (`bin/jim_path`, `bin/jim_run_hook`) are exercised against fixture plugin trees constructed under `mktemp -d` per their respective plan verify batteries.
 - **Linting / formatting:** Markdown consistency enforced by templates in `skills/*/assets/`. Bash linting (`shellcheck`) is in backlog.
 
 ## Plugin Conventions
