@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# bin/jim_run_hook — dispatch a configured hooks.<event> shell command.
+# Contracts: docs/specs/jim/016-jim-run-hook-helper/plan.md (A, B, C).
+
+set -euo pipefail
+
+# === Step 1: Parse arguments — flags and one event positional, then forward rest. ===
+event=""
+root="$PWD"
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --root)
+            shift
+            if [ $# -eq 0 ]; then
+                echo "jim_run_hook: --root requires a value" >&2
+                exit 1
+            fi
+            root="$1"
+            shift
+            ;;
+        --root=*)
+            root="${1#--root=}"
+            shift
+            ;;
+        --*)
+            echo "jim_run_hook: unknown flag" >&2
+            exit 1
+            ;;
+        *)
+            event="$1"
+            shift
+            break
+            ;;
+    esac
+done
+
+# === Step 2: Resolve hooks.<event> via jim_path. Caller-provided args quoted. ===
+value="$(jim_path --root="$root" "hooks.$event")" || exit $?
+
+# === Step 3: Skip silently if value is empty (schema default or empty config). ===
+[ -z "$value" ] && exit 0
+
+# === Step 4: Exec the configured command with forwarded args. ===
+exec bash -c "$value \"\$@\"" bash "$@"
